@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="UnitData" format=3 uid="uid://ql0p33fwkjh2"]
+
+[ext_resource type="Script" uid="uid://cj64f6138rwks" path="res://src/resources/SkillData.cs" id="1_ep01q"]
+[ext_resource type="Resource" uid="uid://x8a3hu34rtqx" path="res://data/skills/basic_attack.tres" id="1_uhx0b"]
+[ext_resource type="Script" uid="uid://gf5aflblyd6c" path="res://src/resources/UnitData.cs" id="2_23f0t"]
+[ext_resource type="Script" uid="uid://buoybrmc2squi" path="res://src/resources/UnitStats.cs" id="2_uhx0b"]
+
+[sub_resource type="Resource" id="Resource_e4miv"]
+script = ExtResource("2_uhx0b")
+MaxHealth = 10.0
+AttackRange = 20.0
+MovementSpeed = 50.0
+metadata/_custom_type_script = "uid://buoybrmc2squi"
+
+[resource]
+script = ExtResource("2_23f0t")
+Id = "party_member_1"
+DisplayName = "Party Member #1"
+Stats = SubResource("Resource_e4miv")
+BasicAttack = ExtResource("1_uhx0b")
+metadata/_custom_type_script = "uid://gf5aflblyd6c"

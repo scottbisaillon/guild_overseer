@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://dt6dmpwoagne2"]
+
+[ext_resource type="Script" uid="uid://0q0628ir0kfs" path="res://src/levels/test_level/TestLevel.cs" id="1_stvbi"]
+[ext_resource type="PackedScene" uid="uid://cki0clphwajmp" path="res://src/damage_number/DamageNumber.tscn" id="2_m8asx"]
+
+[node name="TestLevel" type="Node2D" unique_id=2046468543]
+script = ExtResource("1_stvbi")
+DamageNumberScene = ExtResource("2_m8asx")
+
+[node name="PartyMemberSpawn" type="Node2D" parent="." unique_id=1435838684]
+unique_name_in_owner = true
+position = Vector2(218, 315)
+
+[node name="EnemySpawn" type="Node2D" parent="." unique_id=783810328]
+unique_name_in_owner = true
+position = Vector2(921, 323)

@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://b4j7cbu54llf"]
+
+[ext_resource type="Script" uid="uid://dqg0684y8lpdn" path="res://src/party_selection/PartySelection.cs" id="1_jascv"]
+[ext_resource type="PackedScene" uid="uid://ckp0nlcfo2fhh" path="res://src/party_selection/party_select_list_item/PartySelectListItem.tscn" id="2_c7a27"]
+
+[node name="PartySelection" type="Control" unique_id=308709194]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_jascv")
+PartySelectListItem = ExtResource("2_c7a27")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1611245245]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.25
+anchor_top = 0.125
+anchor_right = 0.75
+anchor_bottom = 0.875
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=1705742779]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="PanelContainer/VBoxContainer" unique_id=2107436468]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PartyMemberList" type="VBoxContainer" parent="PanelContainer/VBoxContainer/ScrollContainer" unique_id=2003835130]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/VBoxContainer" unique_id=2019273269]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/MarginContainer" unique_id=1503907234]
+layout_mode = 2
+
+[node name="TotalSelectedLabel" type="Label" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer" unique_id=1009982515]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "X / 4 Party Members Selected"
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer" unique_id=481641042]
+unique_name_in_owner = true
+layout_mode = 2
+disabled = true
+text = "Start"

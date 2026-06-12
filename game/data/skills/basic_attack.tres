@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="SkillData" format=3 uid="uid://x8a3hu34rtqx"]
+
+[ext_resource type="Script" uid="uid://cj64f6138rwks" path="res://src/resources/SkillData.cs" id="1_ggvdl"]
+
+[resource]
+script = ExtResource("1_ggvdl")
+Id = "basic_attack"
+DisplayName = "Basic Attack"
+BaseDamage = 1.0
+Cooldown = 1.0
+metadata/_custom_type_script = "uid://cj64f6138rwks"

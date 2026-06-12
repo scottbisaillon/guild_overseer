@@ -11,8 +11,16 @@ config_version=5
 [application]
 
 config/name="GuildOverseer"
-config/features=PackedStringArray("4.6", "Mobile")
+run/main_scene="uid://bum6sboahbtmw"
+config/features=PackedStringArray("4.6", "C#", "Mobile")
 config/icon="res://icon.svg"
+
+[autoload]
+
+CombatEvents="*uid://b66ssbuawq8r"
+ActiveDungeonManager="*uid://ca6uoegjsebmh"
+UnitLibrary="*uid://dyseclawrn0ng"
+SkillLibrary="*uid://d2vr123baxlno"
 
 [dotnet]
 

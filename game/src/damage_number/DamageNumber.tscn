@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cki0clphwajmp"]
+
+[ext_resource type="Script" uid="uid://fmfnt0u20da4" path="res://src/damage_number/DamageNumber.cs" id="1_k2uan"]
+
+[node name="DamageNumber" type="Label" unique_id=901479987]
+script = ExtResource("1_k2uan")

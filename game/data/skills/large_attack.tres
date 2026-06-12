@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="SkillData" format=3 uid="uid://bi8p7xvekpopp"]
+
+[ext_resource type="Script" uid="uid://cj64f6138rwks" path="res://src/resources/SkillData.cs" id="1_68ai1"]
+
+[resource]
+script = ExtResource("1_68ai1")
+Id = "large_attack"
+DisplayName = "Large Attack"
+BaseDamage = 5.0
+Cooldown = 3.0
+metadata/_custom_type_script = "uid://cj64f6138rwks"

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="UnitData" format=3 uid="uid://dakjoporm5fb0"]
+
+[ext_resource type="Script" uid="uid://cj64f6138rwks" path="res://src/resources/SkillData.cs" id="1_cp1mh"]
+[ext_resource type="Resource" uid="uid://x8a3hu34rtqx" path="res://data/skills/basic_attack.tres" id="1_rvtyg"]
+[ext_resource type="Script" uid="uid://gf5aflblyd6c" path="res://src/resources/UnitData.cs" id="2_i23y2"]
+[ext_resource type="Script" uid="uid://buoybrmc2squi" path="res://src/resources/UnitStats.cs" id="2_vk7cs"]
+[ext_resource type="Resource" uid="uid://bi8p7xvekpopp" path="res://data/skills/large_attack.tres" id="3_0n3g4"]
+
+[sub_resource type="Resource" id="Resource_rvtyg"]
+script = ExtResource("2_vk7cs")
+MaxHealth = 20.0
+AttackRange = 50.0
+MovementSpeed = 100.0
+metadata/_custom_type_script = "uid://buoybrmc2squi"
+
+[resource]
+script = ExtResource("2_i23y2")
+Id = "party_member_2"
+DisplayName = "Party Member #2"
+Stats = SubResource("Resource_rvtyg")
+BasicAttack = ExtResource("1_rvtyg")
+Skills = Array[ExtResource("1_cp1mh")]([ExtResource("3_0n3g4")])
+metadata/_custom_type_script = "uid://gf5aflblyd6c"

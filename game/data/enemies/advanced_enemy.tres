@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="UnitData" format=3 uid="uid://blrv56vtctuin"]
+
+[ext_resource type="Script" uid="uid://cj64f6138rwks" path="res://src/resources/SkillData.cs" id="1_8jl4e"]
+[ext_resource type="Resource" uid="uid://x8a3hu34rtqx" path="res://data/skills/basic_attack.tres" id="1_bfofd"]
+[ext_resource type="Script" uid="uid://gf5aflblyd6c" path="res://src/resources/UnitData.cs" id="2_0sckx"]
+[ext_resource type="Script" uid="uid://buoybrmc2squi" path="res://src/resources/UnitStats.cs" id="3_0t7r0"]
+
+[sub_resource type="Resource" id="Resource_8h3lm"]
+script = ExtResource("3_0t7r0")
+MaxHealth = 20.0
+AttackRange = 50.0
+MovementSpeed = 50.0
+metadata/_custom_type_script = "uid://buoybrmc2squi"
+
+[resource]
+script = ExtResource("2_0sckx")
+Id = "advanced_enemy"
+DisplayName = "Advanced Enemy"
+Stats = SubResource("Resource_8h3lm")
+BasicAttack = ExtResource("1_bfofd")
+metadata/_custom_type_script = "uid://gf5aflblyd6c"
