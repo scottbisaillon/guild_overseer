@@ -22,7 +22,7 @@ public partial class PartySelection : Control
 
         StartButton.Pressed += OnStartClicked;
 
-        foreach (var (id, member) in UnitLibrary.Instance.PartyMembers)
+        foreach (var (id, member) in UnitRegistry.Instance.PartyMembers)
         {
             var item = PartySelectListItem.Instantiate<PartySelectListItem>();
             PartyMemberList.AddChild(item);

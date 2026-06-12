@@ -4,9 +4,9 @@ using Godot;
 
 namespace Game;
 
-public partial class UnitLibrary : Node
+public partial class UnitRegistry : Node
 {
-    public static UnitLibrary Instance { get; private set; } = null!;
+    public static UnitRegistry Instance { get; private set; } = null!;
 
     public Dictionary<string, UnitData> PartyMembers { get; set; } = [];
     public Dictionary<string, UnitData> Enemies { get; set; } = [];
@@ -32,22 +32,22 @@ public partial class UnitLibrary : Node
         }
     }
 
-    public Unit BuildPartyMember(string id)
+    public Unit CreatePartyMember(string id)
     {
         var data = PartyMembers[id];
-        var unit = BuildUnit(data);
+        var unit = CreateUnit(data);
         return unit;
     }
 
-    public Unit BuildEnemy(string id)
+    public Unit CreateEnemy(string id)
     {
         var data = Enemies[id];
-        var unit = BuildUnit(data);
+        var unit = CreateUnit(data);
         unit.IsEnemy = true;
         return unit;
     }
 
-    private Unit BuildUnit(UnitData data)
+    private Unit CreateUnit(UnitData data)
     {
         var unit = _unitScene.Instantiate<Unit>();
         unit.Data = data;

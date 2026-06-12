@@ -19,8 +19,8 @@ config/icon="res://icon.svg"
 
 CombatEvents="*uid://b66ssbuawq8r"
 ActiveDungeonManager="*uid://ca6uoegjsebmh"
-UnitLibrary="*uid://dyseclawrn0ng"
-SkillLibrary="*uid://d2vr123baxlno"
+SkillRegistry="*uid://dy5af6wlk002x"
+UnitRegistry="*uid://dv6u43fsflihs"
 
 [dotnet]
 

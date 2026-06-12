@@ -18,7 +18,7 @@ public partial class TestLevel : Node2D
 
         for (int i = 0; i < ActiveDungeonManager.Instance.SelectedMemberIds.Count; i++)
         {
-            var member = UnitLibrary.Instance.BuildPartyMember(
+            var member = UnitRegistry.Instance.CreatePartyMember(
                 ActiveDungeonManager.Instance.SelectedMemberIds[i]
             );
             member.Position = GetSpawnLocation(
@@ -29,13 +29,13 @@ public partial class TestLevel : Node2D
             AddChild(member);
         }
 
-        for (int i = 0; i < UnitLibrary.Instance.Enemies.Count; i++)
+        for (int i = 0; i < UnitRegistry.Instance.Enemies.Count; i++)
         {
-            var enemy = UnitLibrary.Instance.BuildEnemy(
-                UnitLibrary.Instance.Enemies.ElementAt(i).Value.Id
+            var enemy = UnitRegistry.Instance.CreateEnemy(
+                UnitRegistry.Instance.Enemies.ElementAt(i).Value.Id
             );
             enemy.Position = GetSpawnLocation(
-                UnitLibrary.Instance.Enemies.Count,
+                UnitRegistry.Instance.Enemies.Count,
                 i,
                 EnemySpawn.GlobalPosition
             );

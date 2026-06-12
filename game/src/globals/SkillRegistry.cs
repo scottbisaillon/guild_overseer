@@ -3,9 +3,9 @@ using Godot;
 
 namespace Game;
 
-public partial class SkillLibrary : Node
+public partial class SkillRegistry : Node
 {
-    public static SkillLibrary Instance { get; set; } = null!;
+    public static SkillRegistry Instance { get; set; } = null!;
 
     public Dictionary<string, SkillData> Skills = [];
 

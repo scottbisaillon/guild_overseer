@@ -42,10 +42,10 @@ public partial class Unit : Node2D
 
         foreach (var skill in Data.Skills)
         {
-            Skills.AddChild(SkillLibrary.Instance.CreateSkillFromData(skill));
+            Skills.AddChild(SkillRegistry.Instance.CreateSkillFromData(skill));
         }
 
-        Skills.AddChild(SkillLibrary.Instance.CreateSkillFromData(Data.BasicAttack));
+        Skills.AddChild(SkillRegistry.Instance.CreateSkillFromData(Data.BasicAttack));
 
         HealthBar.Value = Data.Stats.MaxHealth;
         HealthBar.MaxValue = Data.Stats.MaxHealth;
