@@ -8,10 +8,12 @@ namespace GuildOverseer.Core;
 
 public partial class MainGame : Node2D
 {
-    public static MainGame Instance { get; private set; } = null!;
+    public static MainGame Instance { get; private set; } = default!;
 
-    private Node2D LevelRoot { get; set; } = null!;
-    private Control ScreenRoot { get; set; } = null!;
+    private Node2D LevelRoot { get; set; } = default!;
+    private Node2D EntityRoot { get; set; } = default!;
+    private Node2D EffectRoot { get; set; } = default!;
+    private Control ScreenRoot { get; set; } = default!;
 
     private BaseLevel? _currentLevel;
     private Control? _currentScreen;
@@ -21,6 +23,8 @@ public partial class MainGame : Node2D
         Instance = this;
 
         LevelRoot = GetNode<Node2D>("%LevelRoot");
+        EffectRoot = GetNode<Node2D>("%EffectRoot");
+        EntityRoot = GetNode<Node2D>("%EntityRoot");
         ScreenRoot = GetNode<Control>("%ScreenRoot");
 
         ShowScreen(Scenes.Screens.MainMenu);
@@ -73,5 +77,15 @@ public partial class MainGame : Node2D
         await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
 
         // TODO: Signal that the scene has fully loaded?
+    }
+
+    public void AddEntity(Node node)
+    {
+        EntityRoot.AddChild(node);
+    }
+
+    public void AddEffect(Node node)
+    {
+        EffectRoot.AddChild(node);
     }
 }

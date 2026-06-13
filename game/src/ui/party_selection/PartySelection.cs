@@ -8,11 +8,11 @@ namespace GuildOverseer.Ui;
 public partial class PartySelection : Control
 {
     [Export]
-    public PackedScene PartySelectListItem = null!;
+    public PackedScene PartySelectListItem = default!;
 
-    public VBoxContainer PartyMemberList = null!;
-    public Label TotalSelectedLabel = null!;
-    public Button StartButton = null!;
+    public VBoxContainer PartyMemberList = default!;
+    public Label TotalSelectedLabel = default!;
+    public Button StartButton = default!;
 
     public override void _Ready()
     {

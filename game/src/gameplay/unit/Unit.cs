@@ -10,11 +10,11 @@ public partial class Unit : Node2D
 {
     const double GCD = 1.0;
 
-    private ColorRect Visuals { get; set; } = null!;
-    private Node Skills { get; set; } = null!;
-    private ProgressBar HealthBar { get; set; } = null!;
+    private Sprite2D Visuals { get; set; } = default!;
+    private Node Skills { get; set; } = default!;
+    private ProgressBar HealthBar { get; set; } = default!;
 
-    public UnitData Data { get; set; } = null!;
+    public UnitData Data { get; set; } = default!;
 
     public bool IsEnemy { get; set; } = false;
 
@@ -27,7 +27,7 @@ public partial class Unit : Node2D
     {
         AddToGroup("combatants");
 
-        Visuals = GetNode<ColorRect>("ColorRect");
+        Visuals = GetNode<Sprite2D>("Sprite2D");
         Skills = GetNode<Node>("Skills");
         HealthBar = GetNode<ProgressBar>("%HealthBar");
 
@@ -35,11 +35,11 @@ public partial class Unit : Node2D
 
         if (IsEnemy)
         {
-            Visuals.Color = Colors.Red;
+            Visuals.Modulate = Colors.Red;
         }
         else
         {
-            Visuals.Color = Colors.Blue;
+            Visuals.Modulate = Colors.Blue;
         }
 
         foreach (var skill in Data.Skills)
@@ -51,10 +51,10 @@ public partial class Unit : Node2D
 
         HealthBar.Value = Data.Stats.MaxHealth;
         HealthBar.MaxValue = Data.Stats.MaxHealth;
-        HealthBar.Size = new Vector2(Visuals.Size.X, 4.0f);
+        HealthBar.Size = new Vector2(Visuals.GetRect().Size.X, 4.0f);
         HealthBar.Position = new Vector2(
             -HealthBar.Size.X / 2,
-            -(Visuals.Size.Y / 2) - 10 - HealthBar.Size.Y
+            -(Visuals.GetRect().Size.Y / 2) - 10 - HealthBar.Size.Y
         );
     }
 

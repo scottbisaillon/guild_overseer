@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Godot;
+using GuildOverseer.Core;
 using GuildOverseer.Core.Autoload;
 using GuildOverseer.Gameplay;
 
@@ -9,9 +10,9 @@ namespace GuildOverseer.Levels.Prototypes;
 public partial class TestLevel : BaseLevel
 {
     [Export]
-    private PackedScene DamageNumberScene { get; set; } = null!;
+    private PackedScene DamageNumberScene { get; set; } = default!;
 
-    private Marker2D EnemySpawn { get; set; } = null!;
+    private Marker2D EnemySpawn { get; set; } = default!;
 
     public override void _Ready()
     {
@@ -27,7 +28,7 @@ public partial class TestLevel : BaseLevel
                 i,
                 GetPartySpawnLocation()
             );
-            AddChild(member);
+            MainGame.Instance.AddEntity(member);
         }
 
         for (int i = 0; i < UnitRegistry.Instance.Enemies.Count; i++)
@@ -48,7 +49,7 @@ public partial class TestLevel : BaseLevel
             var damageNumber = DamageNumberScene.Instantiate<DamageNumber>();
             damageNumber.Text = amount.ToString();
             damageNumber.GlobalPosition = target.GlobalPosition;
-            AddChild(damageNumber);
+            MainGame.Instance.AddEffect(damageNumber);
         };
     }
 

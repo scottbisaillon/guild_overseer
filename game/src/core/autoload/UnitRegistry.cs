@@ -7,12 +7,12 @@ namespace GuildOverseer.Core.Autoload;
 
 public partial class UnitRegistry : Node
 {
-    public static UnitRegistry Instance { get; private set; } = null!;
+    public static UnitRegistry Instance { get; private set; } = default!;
 
     public Dictionary<string, UnitData> PartyMembers { get; set; } = [];
     public Dictionary<string, UnitData> Enemies { get; set; } = [];
 
-    private PackedScene _unitScene { get; set; } = null!;
+    private PackedScene _unitScene { get; set; } = default!;
 
     public override void _Ready()
     {

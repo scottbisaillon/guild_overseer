@@ -6,18 +6,18 @@ namespace GuildOverseer.Ui;
 public partial class PartySelectListItem : PanelContainer
 {
     [Export]
-    public StyleBoxFlat NormalStyle { get; set; } = null!;
+    public StyleBoxFlat NormalStyle { get; set; } = default!;
 
     [Export]
-    public StyleBoxFlat HoverStyle { get; set; } = null!;
+    public StyleBoxFlat HoverStyle { get; set; } = default!;
 
     [Export]
-    public StyleBoxFlat SelectedStyle { get; set; } = null!;
+    public StyleBoxFlat SelectedStyle { get; set; } = default!;
 
-    public Label Label { get; set; } = null!;
-    public CheckBox CheckBox { get; set; } = null!;
+    public Label Label { get; set; } = default!;
+    public CheckBox CheckBox { get; set; } = default!;
 
-    private UnitData _data = null!;
+    private UnitData _data = default!;
     private bool _selected;
 
     [Signal]

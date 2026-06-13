@@ -6,7 +6,7 @@ namespace GuildOverseer.Ui;
 
 public partial class MainMenu : Control
 {
-    public Button EnterButton { get; set; } = null!;
+    public Button EnterButton { get; set; } = default!;
 
     public override void _Ready()
     {

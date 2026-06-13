@@ -7,7 +7,7 @@ namespace GuildOverseer.Core.Autoload;
 
 public partial class SkillRegistry : Node
 {
-    public static SkillRegistry Instance { get; set; } = null!;
+    public static SkillRegistry Instance { get; set; } = default!;
 
     public Dictionary<string, SkillData> Skills = [];
 

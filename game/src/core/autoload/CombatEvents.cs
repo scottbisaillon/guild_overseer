@@ -5,7 +5,7 @@ namespace GuildOverseer.Core.Autoload;
 
 public partial class CombatEvents : Node
 {
-    public static CombatEvents Instance { get; private set; } = null!;
+    public static CombatEvents Instance { get; private set; } = default!;
 
     [Signal]
     public delegate void DamageDealtEventHandler(Unit target, double amount);

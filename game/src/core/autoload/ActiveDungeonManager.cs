@@ -5,7 +5,7 @@ namespace GuildOverseer.Core.Autoload;
 
 public partial class ActiveDungeonManager : Node
 {
-    public static ActiveDungeonManager Instance { get; private set; } = null!;
+    public static ActiveDungeonManager Instance { get; private set; } = default!;
 
     public List<string> SelectedMemberIds { get; set; } = [];
 

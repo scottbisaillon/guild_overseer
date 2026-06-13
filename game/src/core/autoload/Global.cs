@@ -4,7 +4,7 @@ namespace GuildOverseer.Core.Autoload;
 
 public partial class Global : Node
 {
-    public static Global Instance { get; private set; } = null!;
+    public static Global Instance { get; private set; } = default!;
 
     public override void _Ready()
     {
