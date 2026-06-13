@@ -1,6 +1,7 @@
 using Godot;
+using GuildOverseer.Resources;
 
-namespace Game;
+namespace GuildOverseer.Ui;
 
 public partial class PartySelectListItem : PanelContainer
 {

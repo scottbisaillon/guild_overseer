@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Game;
+namespace GuildOverseer.Resources;
 
 [GlobalClass]
 public partial class UnitData : Resource

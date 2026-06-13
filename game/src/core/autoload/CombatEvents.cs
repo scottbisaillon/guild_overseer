@@ -1,5 +1,5 @@
-using Game;
 using Godot;
+using GuildOverseer.Gameplay;
 
 namespace GuildOverseer.Core.Autoload;
 

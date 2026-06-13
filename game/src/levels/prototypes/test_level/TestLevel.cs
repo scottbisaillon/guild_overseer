@@ -1,9 +1,10 @@
 using System;
 using System.Linq;
-using Game;
 using Godot;
 using GuildOverseer.Core.Autoload;
-using GuildOverseer.Levels;
+using GuildOverseer.Gameplay;
+
+namespace GuildOverseer.Levels.Prototypes;
 
 public partial class TestLevel : BaseLevel
 {

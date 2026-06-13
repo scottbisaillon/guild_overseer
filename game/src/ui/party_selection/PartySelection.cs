@@ -1,7 +1,9 @@
-using Game;
 using Godot;
+using GuildOverseer.Core;
 using GuildOverseer.Core.Autoload;
 using GuildOverseer.Core.Constants;
+
+namespace GuildOverseer.Ui;
 
 public partial class PartySelection : Control
 {

@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Game;
+namespace GuildOverseer.Resources;
 
 public partial class EffectData : Resource
 {

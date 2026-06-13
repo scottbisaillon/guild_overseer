@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using Game;
 using Godot;
+using GuildOverseer.Gameplay;
+using GuildOverseer.Resources;
 
 namespace GuildOverseer.Core.Autoload;
 
@@ -17,7 +18,7 @@ public partial class UnitRegistry : Node
     {
         Instance = this;
 
-        _unitScene = GD.Load<PackedScene>("res://src/unit/Unit.tscn");
+        _unitScene = GD.Load<PackedScene>("res://src/gameplay/unit/Unit.tscn");
 
         var manifest = GD.Load<UnitManifest>("res://data/unit_manifest.tres");
 

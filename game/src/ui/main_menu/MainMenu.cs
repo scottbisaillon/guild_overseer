@@ -1,6 +1,8 @@
 using Godot;
-using GuildOverseer.Core.Autoload;
+using GuildOverseer.Core;
 using GuildOverseer.Core.Constants;
+
+namespace GuildOverseer.Ui;
 
 public partial class MainMenu : Control
 {

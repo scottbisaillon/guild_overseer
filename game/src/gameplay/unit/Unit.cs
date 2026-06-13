@@ -2,8 +2,9 @@ using System;
 using System.Linq;
 using Godot;
 using GuildOverseer.Core.Autoload;
+using GuildOverseer.Resources;
 
-namespace Game;
+namespace GuildOverseer.Gameplay;
 
 public partial class Unit : Node2D
 {

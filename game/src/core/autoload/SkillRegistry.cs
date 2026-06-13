@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using Game;
 using Godot;
+using GuildOverseer.Gameplay;
+using GuildOverseer.Resources;
 
 namespace GuildOverseer.Core.Autoload;
 

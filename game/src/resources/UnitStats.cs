@@ -1,5 +1,7 @@
 using Godot;
 
+namespace GuildOverseer.Resources;
+
 [GlobalClass]
 public partial class UnitStats : Resource
 {

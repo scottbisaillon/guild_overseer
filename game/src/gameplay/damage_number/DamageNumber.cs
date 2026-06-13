@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Game;
+namespace GuildOverseer.Gameplay;
 
 public partial class DamageNumber : Label
 {
