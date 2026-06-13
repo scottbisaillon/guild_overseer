@@ -1,6 +1,7 @@
 using System;
 using Game;
 using Godot;
+using GuildOverseer.Core.Autoload;
 
 public partial class Skill(SkillData data) : Node
 {

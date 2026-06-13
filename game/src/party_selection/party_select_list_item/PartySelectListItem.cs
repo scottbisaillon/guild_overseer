@@ -1,5 +1,7 @@
 using Godot;
 
+namespace Game;
+
 public partial class PartySelectListItem : PanelContainer
 {
     [Export]

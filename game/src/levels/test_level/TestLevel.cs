@@ -2,19 +2,19 @@ using System;
 using System.Linq;
 using Game;
 using Godot;
+using GuildOverseer.Core.Autoload;
+using GuildOverseer.Levels;
 
-public partial class TestLevel : Node2D
+public partial class TestLevel : BaseLevel
 {
     [Export]
     private PackedScene DamageNumberScene { get; set; } = null!;
 
-    private Node2D PartyMemberSpawn { get; set; } = null!;
-    private Node2D EnemySpawn { get; set; } = null!;
+    private Marker2D EnemySpawn { get; set; } = null!;
 
     public override void _Ready()
     {
-        PartyMemberSpawn = GetNode<Node2D>("%PartyMemberSpawn");
-        EnemySpawn = GetNode<Node2D>("%EnemySpawn");
+        EnemySpawn = GetNode<Marker2D>("%EnemySpawn");
 
         for (int i = 0; i < ActiveDungeonManager.Instance.SelectedMemberIds.Count; i++)
         {
@@ -24,7 +24,7 @@ public partial class TestLevel : Node2D
             member.Position = GetSpawnLocation(
                 ActiveDungeonManager.Instance.SelectedMemberIds.Count,
                 i,
-                PartyMemberSpawn.GlobalPosition
+                GetPartySpawnLocation()
             );
             AddChild(member);
         }
@@ -51,11 +51,14 @@ public partial class TestLevel : Node2D
         };
     }
 
-    public override void _Process(double delta) { }
-
     private Vector2 GetSpawnLocation(int total, int index, Vector2 origin)
     {
         var angle = index * (Math.Tau / total);
         return origin + Vector2.Up.Rotated((float)angle) * 50;
+    }
+
+    public override Vector2 GetPartySpawnLocation()
+    {
+        return GetNode<Marker2D>("%PartyMemberSpawn").GlobalPosition;
     }
 }

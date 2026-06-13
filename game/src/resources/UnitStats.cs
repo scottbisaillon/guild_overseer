@@ -4,23 +4,13 @@ using Godot;
 public partial class UnitStats : Resource
 {
     [Export]
-    public double MaxHealth;
+    public double MaxHealth { get; set; } = 0.0;
 
     [Export]
-    public double AttackRange;
+    public double AttackRange { get; set; } = 0.0;
 
     [Export]
-    public float MovementSpeed;
+    public float MovementSpeed { get; set; } = 0.0f;
 
     public double AttackRangeSq => AttackRange * AttackRange;
-
-    public UnitStats()
-        : this(0, 0, 0) { }
-
-    public UnitStats(double maxHealth, double attackRange, float movementSpeed)
-    {
-        MaxHealth = maxHealth;
-        AttackRange = attackRange;
-        MovementSpeed = movementSpeed;
-    }
 }

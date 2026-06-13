@@ -7,10 +7,10 @@
 script = ExtResource("1_stvbi")
 DamageNumberScene = ExtResource("2_m8asx")
 
-[node name="PartyMemberSpawn" type="Node2D" parent="." unique_id=1435838684]
+[node name="PartyMemberSpawn" type="Marker2D" parent="." unique_id=1155314219]
 unique_name_in_owner = true
-position = Vector2(218, 315)
+position = Vector2(91, 175)
 
-[node name="EnemySpawn" type="Node2D" parent="." unique_id=783810328]
+[node name="EnemySpawn" type="Marker2D" parent="." unique_id=253445933]
 unique_name_in_owner = true
-position = Vector2(921, 323)
+position = Vector2(535, 184)

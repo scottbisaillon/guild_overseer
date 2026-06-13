@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using Game;
 using Godot;
 
-namespace Game;
+namespace GuildOverseer.Core.Autoload;
 
 public partial class SkillRegistry : Node
 {
@@ -13,9 +14,9 @@ public partial class SkillRegistry : Node
     {
         Instance = this;
 
-        var allSkills = GD.Load<AllSkills>("res://data/all_skills.tres");
+        var manifest = GD.Load<SkillManifest>("res://data/skill_manifest.tres");
 
-        foreach (var skill in allSkills.SkillsList)
+        foreach (var skill in manifest.Skills)
         {
             Skills[skill.Id] = skill;
         }

@@ -1,6 +1,7 @@
+using Game;
 using Godot;
 
-namespace Game;
+namespace GuildOverseer.Core.Autoload;
 
 public partial class CombatEvents : Node
 {

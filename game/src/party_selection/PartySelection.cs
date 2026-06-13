@@ -1,6 +1,7 @@
-using System;
 using Game;
 using Godot;
+using GuildOverseer.Core.Autoload;
+using GuildOverseer.Core.Constants;
 
 public partial class PartySelection : Control
 {
@@ -42,6 +43,7 @@ public partial class PartySelection : Control
 
     public void OnStartClicked()
     {
-        GetTree().ChangeSceneToFile("res://src/levels/test_level/TestLevel.tscn");
+        MainGame.Instance.ClearScreen();
+        MainGame.Instance.LoadLevel(Scenes.Levels.TestLevel);
     }
 }

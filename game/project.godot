@@ -11,7 +11,8 @@ config_version=5
 [application]
 
 config/name="GuildOverseer"
-run/main_scene="uid://bum6sboahbtmw"
+config/version="0.0.1"
+run/main_scene="uid://xixhgb4awrc6"
 config/features=PackedStringArray("4.6", "C#", "Mobile")
 config/icon="res://icon.svg"
 
@@ -21,6 +22,15 @@ CombatEvents="*uid://b66ssbuawq8r"
 ActiveDungeonManager="*uid://ca6uoegjsebmh"
 SkillRegistry="*uid://dy5af6wlk002x"
 UnitRegistry="*uid://dv6u43fsflihs"
+Global="*uid://7rdg22k8rasj"
+
+[display]
+
+window/size/viewport_width=640
+window/size/viewport_height=360
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
 
 [dotnet]
 

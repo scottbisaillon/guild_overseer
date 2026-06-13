@@ -1,5 +1,6 @@
-using System;
 using Godot;
+using GuildOverseer.Core.Autoload;
+using GuildOverseer.Core.Constants;
 
 public partial class MainMenu : Control
 {
@@ -11,7 +12,7 @@ public partial class MainMenu : Control
 
         EnterButton.Pressed += () =>
         {
-            GetTree().ChangeSceneToFile("res://src/party_selection/PartySelection.tscn");
+            MainGame.Instance.ShowScreen(Scenes.Screens.PartySelection);
         };
     }
 }

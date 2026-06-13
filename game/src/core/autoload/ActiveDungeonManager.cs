@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace Game;
+namespace GuildOverseer.Core.Autoload;
 
 public partial class ActiveDungeonManager : Node
 {

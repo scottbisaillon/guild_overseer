@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UnitManifest" format=3 uid="uid://cefrf78keku1l"]
+
+[ext_resource type="Script" uid="uid://gf5aflblyd6c" path="res://src/resources/UnitData.cs" id="1_22cot"]
+[ext_resource type="Resource" uid="uid://b7i1tubreb0x3" path="res://data/enemies/basic_enemy.tres" id="2_kncyg"]
+[ext_resource type="Resource" uid="uid://blrv56vtctuin" path="res://data/enemies/advanced_enemy.tres" id="3_tile8"]
+[ext_resource type="Resource" uid="uid://ql0p33fwkjh2" path="res://data/party_members/party_member_1.tres" id="4_6hri4"]
+[ext_resource type="Resource" uid="uid://dakjoporm5fb0" path="res://data/party_members/party_member_2.tres" id="5_lotyv"]
+[ext_resource type="Script" uid="uid://bbo3cigai6aam" path="res://src/resources/UnitManifest.cs" id="6_ut2x0"]
+
+[resource]
+script = ExtResource("6_ut2x0")
+PartyMembers = Array[ExtResource("1_22cot")]([ExtResource("4_6hri4"), ExtResource("5_lotyv")])
+Enemies = Array[ExtResource("1_22cot")]([ExtResource("2_kncyg"), ExtResource("3_tile8")])
+metadata/_custom_type_script = "uid://bbo3cigai6aam"

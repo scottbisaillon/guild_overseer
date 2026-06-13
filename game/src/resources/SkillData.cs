@@ -6,25 +6,14 @@ namespace Game;
 public partial class SkillData : Resource
 {
     [Export]
-    public string Id;
+    public string Id { get; set; } = "";
 
     [Export]
-    public string DisplayName;
+    public string DisplayName { get; set; } = "";
 
     [Export]
-    public double BaseDamage;
+    public double BaseDamage { get; set; } = 0.0;
 
     [Export]
-    public double Cooldown;
-
-    public SkillData()
-        : this("", "", 0, 0) { }
-
-    public SkillData(string id, string displayName, double baseDamage, double cooldown)
-    {
-        Id = id;
-        DisplayName = displayName;
-        BaseDamage = baseDamage;
-        Cooldown = cooldown;
-    }
+    public double Cooldown { get; set; } = 0.0;
 }

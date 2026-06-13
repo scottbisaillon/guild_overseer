@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using System.Data.Common;
+using Game;
 using Godot;
 
-namespace Game;
+namespace GuildOverseer.Core.Autoload;
 
 public partial class UnitRegistry : Node
 {
@@ -19,14 +19,14 @@ public partial class UnitRegistry : Node
 
         _unitScene = GD.Load<PackedScene>("res://src/unit/Unit.tscn");
 
-        var allUnits = GD.Load<AllUnits>("res://data/all_units.tres");
+        var manifest = GD.Load<UnitManifest>("res://data/unit_manifest.tres");
 
-        foreach (var member in allUnits.UnitsList)
+        foreach (var member in manifest.PartyMembers)
         {
             PartyMembers.Add(member.Id, member);
         }
 
-        foreach (var enemy in allUnits.EnemiesList)
+        foreach (var enemy in manifest.Enemies)
         {
             Enemies.Add(enemy.Id, enemy);
         }

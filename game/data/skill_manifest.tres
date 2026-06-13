@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cj64f6138rwks" path="res://src/resources/SkillData.cs" id="1_7qcx4"]
 [ext_resource type="Resource" uid="uid://x8a3hu34rtqx" path="res://data/skills/basic_attack.tres" id="2_gwt6f"]
-[ext_resource type="Script" uid="uid://bwxb5cgcmbvg3" path="res://src/resources/AllSkills.cs" id="2_rkapc"]
+[ext_resource type="Script" uid="uid://bwxb5cgcmbvg3" path="res://src/resources/SkillManifest.cs" id="2_rkapc"]
 
 [resource]
 script = ExtResource("2_rkapc")
