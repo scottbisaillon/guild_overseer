@@ -1,0 +1,26 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# MonoGame content pipeline intermediate/output
+Content/bin/
+Content/obj/
+
+# Visual Studio / Rider user-specific files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.idea/
+
+# dotnet
+*.binlog
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
