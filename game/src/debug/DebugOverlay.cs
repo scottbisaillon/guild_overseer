@@ -5,8 +5,8 @@ namespace GuildOverseer.Debug;
 
 public partial class DebugOverlay : Control
 {
-    private Label FpsLabel { get; set; } = null!;
-    private Label VersionLabel { get; set; } = null!;
+    private Label FpsLabel { get; set; } = default!;
+    private Label VersionLabel { get; set; } = default!;
 
     public override void _Ready()
     {

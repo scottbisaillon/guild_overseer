@@ -4,6 +4,8 @@ using Godot;
 using GuildOverseer.Core.Constants;
 using GuildOverseer.Levels;
 
+namespace GuildOverseer.Core;
+
 public partial class MainGame : Node2D
 {
     public static MainGame Instance { get; private set; } = null!;
@@ -58,7 +60,7 @@ public partial class MainGame : Node2D
 
         var newLevelPacked = GD.Load<PackedScene>(levelUID);
 
-        _currentLevel = newLevelPacked.Instantiate<BaseLevel>();
+        _currentLevel = newLevelPacked.Instantiate() as BaseLevel;
 
         if (_currentLevel == null)
         {
