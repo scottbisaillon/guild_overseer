@@ -1,2 +1,2 @@
-﻿using var game = new GuildOverseer.Game1();
+﻿using var game = new GuildOverseer.GuildOverseerGame();
 game.Run();

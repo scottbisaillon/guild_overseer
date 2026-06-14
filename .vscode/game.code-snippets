@@ -1,0 +1,36 @@
+{
+    "MonoGame Scene": {
+        "scope": "csharp",
+        "prefix": "goscene",
+        "description": "Guild Overseer Scene subclass",
+        "body": [
+            "using GuildOverseer.Library;",
+            "using GuildOverseer.Library.Scenes;",
+            "using Gum.Forms.Controls;",
+            "using Microsoft.Xna.Framework;",
+            "using MonoGameGum;",
+            "",
+            "namespace GuildOverseer.Scenes;",
+            "",
+            "public class ${TM_FILENAME_BASE} : Scene",
+            "{",
+            "    public override void LoadContent()",
+            "    {",
+            "        GumService.Default.Root.Children.Clear();",
+            "",
+            "        $0",
+            "    }",
+            "",
+            "    public override void Update(GameTime gameTime)",
+            "    {",
+            "        base.Update(gameTime);",
+            "    }",
+            "",
+            "    public override void Draw(GameTime gameTime)",
+            "    {",
+            "        base.Draw(gameTime);",
+            "    }",
+            "}"
+        ]
+    }
+}

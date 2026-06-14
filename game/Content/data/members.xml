@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:ns="Microsoft.Xna.Framework">
+  <Asset Type="GuildOverseer.Data.MemberData[]">
+    <Item>
+      <Id>beginner_1</Id>
+      <Name>Beginner #1</Name>
+      <Stats>
+        <MaxHealth>10.0</MaxHealth>
+        <MovementSpeed>125.0</MovementSpeed>
+        <AttackRange>50.0</AttackRange>
+      </Stats>
+    </Item>
+    <Item>
+      <Id>beginner_2</Id>
+      <Name>Beginner #2</Name>
+      <Stats>
+        <MaxHealth>10.0</MaxHealth>
+        <MovementSpeed>100.0</MovementSpeed>
+        <AttackRange>50.0</AttackRange>
+      </Stats>
+    </Item>
+  </Asset>
+</XnaContent>

@@ -10,6 +10,12 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\..\GuildOverseer.Data\bin\Debug\net8.0\GuildOverseer.Data.dll
 
 #---------------------------------- Content ---------------------------------#
+
+#begin data/members.xml
+/importer:XmlImporter
+/processor:PassThroughProcessor
+/build:data/members.xml
 
