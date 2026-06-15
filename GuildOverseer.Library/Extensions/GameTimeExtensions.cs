@@ -1,6 +1,6 @@
-using Microsoft.Xna.Framework;
-
 namespace GuildOverseer.Library.Extensions;
+
+using Microsoft.Xna.Framework;
 
 public static class GameTimeExtensions
 {

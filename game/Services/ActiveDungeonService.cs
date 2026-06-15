@@ -1,6 +1,6 @@
-using System.Collections.Generic;
-
 namespace GuildOverseer.Globals;
+
+using System.Collections.Generic;
 
 public sealed record LevelOption(string Id, string Name)
 {
@@ -9,7 +9,7 @@ public sealed record LevelOption(string Id, string Name)
 
 public class ActiveDungeonService
 {
-    public const int MaxPartySize = 4;
+    public const int MAX_PARTY_SIZE = 4;
     public LevelOption SelectedRun { get; private set; } = default!;
 
     public readonly List<string> Party = [];
@@ -31,8 +31,13 @@ public class ActiveDungeonService
     public void ToggleMemberSelection(string memberId)
     {
         if (Party.Remove(memberId))
+        {
             return;
-        if (Party.Count < MaxPartySize)
+        }
+
+        if (Party.Count < MAX_PARTY_SIZE)
+        {
             Party.Add(memberId);
+        }
     }
 }

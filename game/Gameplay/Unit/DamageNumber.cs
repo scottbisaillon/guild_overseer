@@ -1,9 +1,9 @@
+namespace GuildOverseer.Gameplay;
+
 using GuildOverseer.Library.Entity;
 using GuildOverseer.Library.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
-namespace GuildOverseer.Gameplay;
 
 public class DamageNumber : Entity
 {
@@ -34,7 +34,7 @@ public class DamageNumber : Entity
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        float alpha = 1f - _elapsed / Lifetime;
+        var alpha = 1f - (_elapsed / Lifetime);
         var origin = Font.MeasureString(Text) / 2f;
         spriteBatch.DrawString(
             Font,

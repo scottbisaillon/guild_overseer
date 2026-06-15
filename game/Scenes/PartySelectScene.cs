@@ -1,6 +1,7 @@
+namespace GuildOverseer.Scenes;
+
 using System;
 using System.Linq;
-using System.Linq.Expressions;
 using GuildOverseer.Data;
 using GuildOverseer.Globals;
 using GuildOverseer.Library;
@@ -10,23 +11,26 @@ using Gum.Wireframe;
 using Microsoft.Xna.Framework;
 using MonoGameGum;
 
-namespace GuildOverseer.Scenes;
-
 public class PartySelectScene : Scene
 {
+    #region Services
     private ActiveDungeonService ActiveDungeonService { get; set; } = default!;
+    #endregion
 
+    #region State
     private ListBox MembersList { get; set; } = default!;
     private Label TotalSelectedLabel { get; set; } = default!;
     private Button NextButton { get; set; } = default!;
+    #endregion
 
+    #region Lifecycle
     public override void LoadContent()
     {
         GumService.Default.Root.Children.Clear();
 
         ActiveDungeonService = Core.Instance.Services.GetService<ActiveDungeonService>();
 
-        var members = Content.Load<MemberData[]>("data/members");
+        var members = _content.Load<MemberData[]>("data/members");
 
         var root = new StackPanel { Spacing = 10 };
         root.Anchor(Anchor.Center);
@@ -36,7 +40,7 @@ public class PartySelectScene : Scene
 
         TotalSelectedLabel = new Label
         {
-            Text = $"Selected: X / {ActiveDungeonService.MaxPartySize}",
+            Text = $"Selected: X / {ActiveDungeonService.MAX_PARTY_SIZE}",
         };
         root.AddChild(TotalSelectedLabel);
 
@@ -67,17 +71,16 @@ public class PartySelectScene : Scene
         buttonRow.AddChild(NextButton);
     }
 
-    public override void Update(GameTime gameTime)
-    {
-        base.Update(gameTime);
-    }
+    public override void Update(GameTime gameTime) => base.Update(gameTime);
 
     public override void Draw(GameTime gameTime)
     {
         Core.GraphicsDevice.Clear(Color.DarkSlateGray);
         base.Draw(gameTime);
     }
+    #endregion
 
+    #region Events
     private void HandleMemberListSelectionChanged(object arg1, SelectionChangedEventArgs args)
     {
         var ids = MembersList.SelectedItems.Cast<MemberData>().Select(m => m.Id).ToList();
@@ -85,20 +88,19 @@ public class PartySelectScene : Scene
         RefreshUI();
     }
 
-    private void HandleBackButtonClicked(object? sender, EventArgs e)
-    {
+    private void HandleBackButtonClicked(object? sender, EventArgs e) =>
         Core.ChangeScene(new LevelSelectScene());
-    }
 
-    private void HandleNextButtonClicked(object? sender, EventArgs e)
-    {
+    private void HandleNextButtonClicked(object? sender, EventArgs e) =>
         Core.ChangeScene(new DungeonScene());
-    }
+    #endregion
 
+    #region Helpers
     private void RefreshUI()
     {
         TotalSelectedLabel.Text =
-            $"Selected: {ActiveDungeonService.SelectedMembersCount} / {ActiveDungeonService.MaxPartySize}";
+            $"Selected: {ActiveDungeonService.SelectedMembersCount} / {ActiveDungeonService.MAX_PARTY_SIZE}";
         NextButton.IsEnabled = ActiveDungeonService.CanStart;
     }
+    #endregion
 }

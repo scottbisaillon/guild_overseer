@@ -1,5 +1,8 @@
+namespace GuildOverseer.Scenes;
+
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using GuildOverseer.Data;
 using GuildOverseer.Gameplay;
@@ -8,15 +11,31 @@ using GuildOverseer.Library;
 using GuildOverseer.Library.Graphics;
 using GuildOverseer.Library.Scenes;
 using GuildOverseer.Services;
-using Gum.Forms.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameGum;
 
-namespace GuildOverseer.Scenes;
-
 public class DungeonScene : Scene
 {
+    #region Services
+    private ActiveDungeonService _activeDungeonService = default!;
+    private CombatEvents _combat = default!;
+    #endregion
+
+    #region Assets
+    private Texture2D _pixel = default!;
+    private Texture2D _circle = default!;
+    private SpriteFont _font = default!;
+    #endregion
+
+    #region State
+    private readonly List<Unit> _units = [];
+    private readonly List<DamageNumber> _damageNumbers = [];
+    private readonly List<Unit> _pendingRemoval = [];
+    private readonly Random _random = new();
+    #endregion
+
+    #region Encounter
     private readonly List<MemberData> _enemies =
     [
         new MemberData
@@ -59,21 +78,9 @@ public class DungeonScene : Scene
             },
         },
     ];
+    #endregion
 
-    private readonly List<Unit> _pendingRemoval = [];
-    private Random _random = new();
-
-    private ActiveDungeonService _activeDungeonService = default!;
-    private CombatEvents _combat = default!;
-    private List<DamageNumber> _damageNumbers = [];
-
-    private Texture2D _pixel = default!;
-    private Texture2D _circle = default!;
-
-    private SpriteFont _font = default!;
-
-    private readonly List<Unit> _units = [];
-
+    #region Lifecycle
     public override void LoadContent()
     {
         GumService.Default.Root.Children.Clear();
@@ -89,7 +96,7 @@ public class DungeonScene : Scene
 
         _pixel = ShapeTexture.CreatePixel(Core.GraphicsDevice);
         _circle = ShapeTexture.CreateCircle(Core.GraphicsDevice, 48);
-        _font = Content.Load<SpriteFont>("fonts/default");
+        _font = _content.Load<SpriteFont>("fonts/default");
 
         PlaceColumn(
             _activeDungeonService.Party.Select(mId =>
@@ -135,49 +142,6 @@ public class DungeonScene : Scene
             ],
             x: 1030
         );
-    }
-
-    private void HandleDamageDealt(DamageInfo info)
-    {
-        var spawn =
-            info.Target.Position
-            + new Vector2(_random.NextSingle() * 30f - 15f, _random.NextSingle() * 20f - 10f);
-        float angle = -MathHelper.PiOver2 + (_random.NextSingle() - 0.5f) * 1.2f;
-        var drift = new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * 40f;
-
-        _damageNumbers.Add(
-            new DamageNumber
-            {
-                Font = _font,
-                Text = ((int)info.Amount).ToString(),
-                Position = spawn,
-                Drift = drift,
-            }
-        );
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _combat.UnitDied -= HandleUnitDied;
-            _combat.DamageDealt -= HandleDamageDealt;
-            _pixel?.Dispose();
-            _circle?.Dispose();
-        }
-        base.Dispose(disposing);
-    }
-
-    private void HandleUnitDied(Unit unit)
-    {
-        foreach (var u in _units)
-        {
-            if (u.Target == unit)
-            {
-                u.Target = null;
-            }
-        }
-        _pendingRemoval.Add(unit);
     }
 
     public override void Update(GameTime gameTime)
@@ -227,15 +191,62 @@ public class DungeonScene : Scene
         base.Draw(gameTime);
     }
 
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _combat.UnitDied -= HandleUnitDied;
+            _combat.DamageDealt -= HandleDamageDealt;
+            _pixel?.Dispose();
+            _circle?.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+    #endregion
+
+    #region Events
+    private void HandleUnitDied(Unit unit)
+    {
+        foreach (var u in _units)
+        {
+            if (u.Target == unit)
+            {
+                u.Target = null;
+            }
+        }
+        _pendingRemoval.Add(unit);
+    }
+
+    private void HandleDamageDealt(DamageInfo info)
+    {
+        var spawn =
+            info.Target.Position
+            + new Vector2((_random.NextSingle() * 30f) - 15f, (_random.NextSingle() * 20f) - 10f);
+        var angle = -MathHelper.PiOver2 + ((_random.NextSingle() - 0.5f) * 1.2f);
+        var drift = new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * 40f;
+
+        _damageNumbers.Add(
+            new DamageNumber
+            {
+                Font = _font,
+                Text = ((int)info.Amount).ToString(CultureInfo.InvariantCulture),
+                Position = spawn,
+                Drift = drift,
+            }
+        );
+    }
+    #endregion
+
+    #region Helpers
     private void PlaceColumn(IEnumerable<Unit> units, float x)
     {
         var list = units.ToList();
-        float centerY = Core.GraphicsDevice.Viewport.Height / 2f;
-        float spacing = 80f;
-        float offset = centerY - (list.Count - 1) * spacing / 2f;
-        for (int i = 0; i < list.Count; i++)
+        var centerY = Core.GraphicsDevice.Viewport.Height / 2f;
+        var spacing = 80f;
+        var offset = centerY - ((list.Count - 1) * spacing / 2f);
+        for (var i = 0; i < list.Count; i++)
         {
-            list[i].Position = new Vector2(x, offset + i * spacing);
+            list[i].Position = new Vector2(x, offset + (i * spacing));
             _units.Add(list[i]);
         }
     }
@@ -245,10 +256,12 @@ public class DungeonScene : Scene
         foreach (var unit in _units)
         {
             if (unit.Target != null)
+            {
                 continue;
+            }
 
             Unit? nearest = null;
-            float best = float.MaxValue;
+            var best = float.MaxValue;
 
             foreach (var other in _units)
             {
@@ -257,7 +270,7 @@ public class DungeonScene : Scene
                     continue;
                 }
 
-                float distSq = Vector2.DistanceSquared(unit.Position, other.Position);
+                var distSq = Vector2.DistanceSquared(unit.Position, other.Position);
                 if (distSq < best)
                 {
                     nearest = other;
@@ -271,4 +284,5 @@ public class DungeonScene : Scene
             }
         }
     }
+    #endregion
 }

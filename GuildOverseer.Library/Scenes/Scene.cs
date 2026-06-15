@@ -1,35 +1,30 @@
-﻿using System;
+﻿namespace GuildOverseer.Library.Scenes;
+
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 
-namespace GuildOverseer.Library.Scenes;
-
 public abstract class Scene : IDisposable
 {
-    protected ContentManager Content;
+    protected ContentManager _content;
 
     public bool IsDisposed { get; private set; }
 
     public Scene()
     {
-        Content = new ContentManager(Core.Content.ServiceProvider);
-
-        Content.RootDirectory = Core.Content.RootDirectory;
+        _content = new ContentManager(Core.Content.ServiceProvider)
+        {
+            RootDirectory = Core.Content.RootDirectory,
+        };
     }
 
     ~Scene() => Dispose(false);
 
-    public virtual void Initialize()
-    {
-        LoadContent();
-    }
+    public virtual void Initialize() => LoadContent();
 
     public virtual void LoadContent() { }
 
-    public virtual void UnloadContent()
-    {
-        Content.Unload();
-    }
+    public virtual void UnloadContent() => _content.Unload();
 
     public virtual void Update(GameTime gameTime) { }
 
@@ -51,7 +46,7 @@ public abstract class Scene : IDisposable
         if (disposing)
         {
             UnloadContent();
-            Content.Dispose();
+            _content.Dispose();
         }
 
         IsDisposed = true;

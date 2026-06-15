@@ -1,8 +1,8 @@
+namespace GuildOverseer.Services;
+
 using System.Collections.Generic;
 using GuildOverseer.Data;
 using Microsoft.Xna.Framework.Content;
-
-namespace GuildOverseer.Services;
 
 public class UnitRegistry
 {

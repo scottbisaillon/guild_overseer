@@ -1,14 +1,15 @@
-﻿using System;
+namespace GuildOverseer.Scenes;
+
+using System;
 using GuildOverseer.Library;
 using GuildOverseer.Library.Scenes;
 using Gum.Forms.Controls;
 using Microsoft.Xna.Framework;
 using MonoGameGum;
 
-namespace GuildOverseer.Scenes;
-
 public class TitleScene : Scene
 {
+    #region Lifecycle
     public override void LoadContent()
     {
         GumService.Default.Root.Children.Clear();
@@ -32,14 +33,12 @@ public class TitleScene : Scene
 
         base.Draw(gameTime);
     }
+    #endregion
 
-    private void HandlePlayButtonClicked(object? sender, EventArgs e)
-    {
+    #region Events
+    private void HandlePlayButtonClicked(object? sender, EventArgs e) =>
         Core.ChangeScene(new LevelSelectScene());
-    }
 
-    private void HandleQuitButtonClicked(object? sender, EventArgs e)
-    {
-        Core.Instance.Quit();
-    }
+    private void HandleQuitButtonClicked(object? sender, EventArgs e) => Core.Instance.Quit();
+    #endregion
 }

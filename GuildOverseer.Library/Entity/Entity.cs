@@ -1,7 +1,7 @@
+namespace GuildOverseer.Library.Entity;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
-namespace GuildOverseer.Library.Entity;
 
 public abstract class Entity
 {

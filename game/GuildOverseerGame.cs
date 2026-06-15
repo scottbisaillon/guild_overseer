@@ -1,11 +1,11 @@
-﻿using GuildOverseer.Globals;
+﻿namespace GuildOverseer;
+
+using GuildOverseer.Globals;
 using GuildOverseer.Library;
 using GuildOverseer.Scenes;
 using GuildOverseer.Services;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-
-namespace GuildOverseer;
 
 public class GuildOverseerGame() : Core("GuildOverseer", 1280, 720, false)
 {
@@ -39,13 +39,12 @@ public class GuildOverseerGame() : Core("GuildOverseer", 1280, 720, false)
             GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
             || Keyboard.GetState().IsKeyDown(Keys.Escape)
         )
+        {
             Exit();
+        }
 
         base.Update(gameTime);
     }
 
-    protected override void Draw(GameTime gameTime)
-    {
-        base.Draw(gameTime);
-    }
+    protected override void Draw(GameTime gameTime) => base.Draw(gameTime);
 }

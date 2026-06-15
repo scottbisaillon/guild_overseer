@@ -1,8 +1,7 @@
-using System;
-using System.Runtime.ConstrainedExecution;
-using GuildOverseer.Gameplay;
-
 namespace GuildOverseer.Services;
+
+using System;
+using GuildOverseer.Gameplay;
 
 public record DamageInfo(Unit Source, Unit Target, double Amount);
 
@@ -14,15 +13,11 @@ public class CombatEvents
     public void DealDamage(Unit source, Unit target, double amount)
     {
         var final = amount;
-        bool wasAlive = target.IsAlive;
+        var wasAlive = target.IsAlive;
 
         target.TakeDamage(final);
 
         DamageDealt?.Invoke(new DamageInfo(source, target, final));
-
-        Console.WriteLine(
-            $"{source.MemberData.Name} damaged {target.MemberData.Name} for {final} damage"
-        );
 
         if (wasAlive && !target.IsAlive)
         {

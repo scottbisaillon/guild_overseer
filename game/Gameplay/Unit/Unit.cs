@@ -1,3 +1,5 @@
+namespace GuildOverseer.Gameplay;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,8 +8,6 @@ using GuildOverseer.Library.Entity;
 using GuildOverseer.Services;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
-namespace GuildOverseer.Gameplay;
 
 public enum Faction
 {
@@ -18,7 +18,7 @@ public enum Faction
 public class Unit : Entity
 {
     #region Constants
-    const float GCD = 1.0f;
+    private const float GCD = 1.0f;
     #endregion
 
     #region Services
@@ -107,23 +107,23 @@ public class Unit : Entity
     public override void Draw(SpriteBatch spriteBatch)
     {
         var rect = new Rectangle(
-            (int)Position.X - Size / 2,
-            (int)(Position.Y - Size / 2),
+            (int)Position.X - (Size / 2),
+            (int)(Position.Y - (Size / 2)),
             Size,
             Size
         );
         spriteBatch.Draw(Texture, rect, Color);
 
         var backgroundRect = new Rectangle(
-            (int)Position.X - Size / 2,
-            (int)(Position.Y - Size / 2) - 10,
+            (int)Position.X - (Size / 2),
+            (int)(Position.Y - (Size / 2)) - 10,
             Size,
             4
         );
 
         var foregroundRect = new Rectangle(
-            (int)Position.X - Size / 2,
-            (int)(Position.Y - Size / 2) - 10,
+            (int)Position.X - (Size / 2),
+            (int)(Position.Y - (Size / 2)) - 10,
             (int)(Size * Math.Max(0, _currentHealth / MaxHealth)),
             4
         );

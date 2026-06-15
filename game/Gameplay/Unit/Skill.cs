@@ -1,15 +1,15 @@
+namespace GuildOverseer.Gameplay;
+
 using System;
 using GuildOverseer.Data;
 using GuildOverseer.Services;
 using Microsoft.Xna.Framework;
 
-namespace GuildOverseer.Gameplay;
-
 public class Skill
 {
     public required SkillData Data { get; init; }
 
-    private float _timeUntilReady = 0.0f;
+    private float _timeUntilReady;
 
     public bool IsReady => _timeUntilReady <= 0.0f;
 
