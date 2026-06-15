@@ -11,12 +11,20 @@ using GuildOverseer.Library;
 using GuildOverseer.Library.Graphics;
 using GuildOverseer.Library.Scenes;
 using GuildOverseer.Services;
+using Gum.Forms.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameGum;
 
 public class DungeonScene : Scene
 {
+    private enum Outcome
+    {
+        InProgress,
+        AlliesCleared,
+        EnemiesCleared,
+    }
+
     #region Services
     private ActiveDungeonService _activeDungeonService = default!;
     private CombatEvents _combat = default!;
@@ -29,6 +37,7 @@ public class DungeonScene : Scene
     #endregion
 
     #region State
+    private Outcome _outcome = Outcome.InProgress;
     private readonly List<Unit> _units = [];
     private readonly List<DamageNumber> _damageNumbers = [];
     private readonly List<Unit> _pendingRemoval = [];
@@ -146,19 +155,24 @@ public class DungeonScene : Scene
 
     public override void Update(GameTime gameTime)
     {
-        AcquireTargets();
-
-        foreach (var unit in _units)
+        if (_outcome == Outcome.InProgress)
         {
-            unit.Update(gameTime);
-        }
+            AcquireTargets();
 
-        foreach (var unit in _pendingRemoval)
-        {
-            _units.Remove(unit);
-        }
+            foreach (var unit in _units)
+            {
+                unit.Update(gameTime);
+            }
 
-        _pendingRemoval.Clear();
+            foreach (var unit in _pendingRemoval)
+            {
+                _units.Remove(unit);
+            }
+
+            _pendingRemoval.Clear();
+
+            CheckAndSetOutcome();
+        }
 
         foreach (var damageNumber in _damageNumbers)
         {
@@ -283,6 +297,39 @@ public class DungeonScene : Scene
                 unit.Target = nearest;
             }
         }
+    }
+
+    private void CheckAndSetOutcome()
+    {
+        var alliesAlive = _units.Any(u => u.Faction == Faction.Ally);
+        var enemiesAlive = _units.Any(u => u.Faction == Faction.Enemy);
+
+        if (alliesAlive && enemiesAlive)
+        {
+            return;
+        }
+
+        _outcome =
+            alliesAlive && enemiesAlive ? Outcome.InProgress
+            : alliesAlive ? Outcome.EnemiesCleared
+            : Outcome.EnemiesCleared;
+        ShowOutcomeOverlay();
+    }
+
+    private void ShowOutcomeOverlay()
+    {
+        var panel = new StackPanel { Spacing = 10 };
+        panel.Anchor(Gum.Wireframe.Anchor.Center);
+        panel.AddToRoot();
+
+        var row = new StackPanel { Orientation = Orientation.Horizontal };
+        row.Anchor(Gum.Wireframe.Anchor.CenterHorizontally);
+        row.AddChild(new Label { Text = _outcome.ToString() });
+        panel.AddChild(row);
+
+        var button = new Button { Text = "Return" };
+        button.Click += (s, e) => Core.ChangeScene(new TitleScene());
+        panel.AddChild(button);
     }
     #endregion
 }

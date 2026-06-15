@@ -14,7 +14,7 @@ public class TitleScene : Scene
     {
         GumService.Default.Root.Children.Clear();
 
-        var panel = new StackPanel();
+        var panel = new StackPanel { Spacing = 10 };
         panel.Anchor(Gum.Wireframe.Anchor.Center);
         panel.AddToRoot();
 

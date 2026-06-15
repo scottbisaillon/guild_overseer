@@ -21,7 +21,6 @@ public class CombatEvents
 
         if (wasAlive && !target.IsAlive)
         {
-            Console.WriteLine($"{target.MemberData.Name} died");
             UnitDied?.Invoke(target);
         }
     }

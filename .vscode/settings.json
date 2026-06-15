@@ -1,3 +1,7 @@
 {
-    "dotnet.defaultSolution": "GuildOverseer.sln"
+  "dotnet.defaultSolution": "GuildOverseer.sln",
+  "files.exclude": {
+    "**/obj": true,
+    "**/bin": true,
+  }
 }
