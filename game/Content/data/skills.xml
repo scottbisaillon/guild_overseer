@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:ns="Microsoft.Xna.Framework">
+  <Asset Type="GuildOverseer.Data.SkillData[]">
+    <Item>
+      <Id>basic_attack</Id>
+      <Name>Basic Attack</Name>
+      <BaseDamage>1.0</BaseDamage>
+      <Cooldown>1.0</Cooldown>
+    </Item>
+    <Item>
+      <Id>large_attack</Id>
+      <Name>Large Attack</Name>
+      <BaseDamage>5.0</BaseDamage>
+      <Cooldown>2.0</Cooldown>
+    </Item>
+  </Asset>
+</XnaContent>

@@ -6,6 +6,10 @@ public class MemberData
     public required string Name;
     public required Stats Stats;
 
+    public required string BasicAttackId;
+
+    public required string[] SkillIds = [];
+
     public override string ToString() => Name;
 }
 

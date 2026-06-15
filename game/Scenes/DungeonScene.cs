@@ -17,10 +17,60 @@ namespace GuildOverseer.Scenes;
 
 public class DungeonScene : Scene
 {
+    private readonly List<MemberData> _enemies =
+    [
+        new MemberData
+        {
+            Id = "enemy_1",
+            Name = "Enemy 1",
+            BasicAttackId = "basic_attack",
+            SkillIds = [],
+            Stats = new Stats
+            {
+                MaxHealth = 10.0,
+                MovementSpeed = 100.0f,
+                AttackRange = 25.0f,
+            },
+        },
+        new MemberData
+        {
+            Id = "enemy_2",
+            Name = "Enemy 2",
+            BasicAttackId = "basic_attack",
+            SkillIds = [],
+            Stats = new Stats
+            {
+                MaxHealth = 10.0,
+                MovementSpeed = 150.0f,
+                AttackRange = 30.0f,
+            },
+        },
+        new MemberData
+        {
+            Id = "enemy_3",
+            Name = "Enemy 3",
+            BasicAttackId = "basic_attack",
+            SkillIds = [],
+            Stats = new Stats
+            {
+                MaxHealth = 10.0,
+                MovementSpeed = 75.0f,
+                AttackRange = 50.0f,
+            },
+        },
+    ];
+
+    private readonly List<Unit> _pendingRemoval = [];
+    private Random _random = new();
+
     private ActiveDungeonService _activeDungeonService = default!;
+    private CombatEvents _combat = default!;
+    private List<DamageNumber> _damageNumbers = [];
 
     private Texture2D _pixel = default!;
     private Texture2D _circle = default!;
+
+    private SpriteFont _font = default!;
 
     private readonly List<Unit> _units = [];
 
@@ -28,79 +78,106 @@ public class DungeonScene : Scene
     {
         GumService.Default.Root.Children.Clear();
 
-        var registry = Core.Instance.Services.GetService<UnitRegistry>();
+        var unitRegistry = Core.Instance.Services.GetService<UnitRegistry>();
+        var skillRegistry = Core.Instance.Services.GetService<SkillRegistry>();
+
         _activeDungeonService = Core.Instance.Services.GetService<ActiveDungeonService>();
+        _combat = Core.Instance.Services.GetService<CombatEvents>();
+
+        _combat.UnitDied += HandleUnitDied;
+        _combat.DamageDealt += HandleDamageDealt;
 
         _pixel = ShapeTexture.CreatePixel(Core.GraphicsDevice);
         _circle = ShapeTexture.CreateCircle(Core.GraphicsDevice, 48);
+        _font = Content.Load<SpriteFont>("fonts/default");
 
         PlaceColumn(
-            _activeDungeonService.Party.Select(m => new Unit
+            _activeDungeonService.Party.Select(mId =>
             {
-                Texture = _pixel,
-                Faction = Faction.Ally,
-                Color = Color.CornflowerBlue,
-                MemberData = registry.Get(m),
+                var memberData = unitRegistry.Get(mId);
+                return new Unit
+                {
+                    Texture = _pixel,
+                    HealthBarTexture = _pixel,
+                    Faction = Faction.Ally,
+                    Color = Color.CornflowerBlue,
+                    Combat = _combat,
+                    MemberData = memberData,
+                    BasicAttack = new Skill { Data = skillRegistry.Get(memberData.BasicAttackId) },
+                    Skills =
+                    [
+                        .. memberData.SkillIds.Select(sId => new Skill
+                        {
+                            Data = skillRegistry.Get(sId),
+                        }),
+                    ],
+                };
             }),
             x: 250
         );
 
         PlaceColumn(
             [
-                new Unit
+                .. _enemies.Select(data => new Unit
                 {
                     Texture = _circle,
-                    Color = Color.IndianRed,
+                    HealthBarTexture = _pixel,
                     Faction = Faction.Enemy,
-                    MemberData = new MemberData
-                    {
-                        Id = "enemy_1",
-                        Name = "Enemy 1",
-                        Stats = new Stats
-                        {
-                            MaxHealth = 10.0,
-                            MovementSpeed = 100.0f,
-                            AttackRange = 25.0f,
-                        },
-                    },
-                },
-                new Unit
-                {
-                    Texture = _circle,
                     Color = Color.IndianRed,
-                    Faction = Faction.Enemy,
-                    MemberData = new MemberData
-                    {
-                        Id = "enemy_2",
-                        Name = "Enemy 2",
-                        Stats = new Stats
-                        {
-                            MaxHealth = 10.0,
-                            MovementSpeed = 150.0f,
-                            AttackRange = 30.0f,
-                        },
-                    },
-                },
-                new Unit
-                {
-                    Texture = _circle,
-                    Color = Color.IndianRed,
-                    Faction = Faction.Enemy,
-                    MemberData = new MemberData
-                    {
-                        Id = "enemy_3",
-                        Name = "Enemy 3",
-                        Stats = new Stats
-                        {
-                            MaxHealth = 10.0,
-                            MovementSpeed = 75.0f,
-                            AttackRange = 50.0f,
-                        },
-                    },
-                },
+                    Combat = _combat,
+                    MemberData = data,
+                    BasicAttack = new Skill { Data = skillRegistry.Get(data.BasicAttackId) },
+                    Skills =
+                    [
+                        .. data.SkillIds.Select(sId => new Skill { Data = skillRegistry.Get(sId) }),
+                    ],
+                }),
             ],
             x: 1030
         );
+    }
+
+    private void HandleDamageDealt(DamageInfo info)
+    {
+        var spawn =
+            info.Target.Position
+            + new Vector2(_random.NextSingle() * 30f - 15f, _random.NextSingle() * 20f - 10f);
+        float angle = -MathHelper.PiOver2 + (_random.NextSingle() - 0.5f) * 1.2f;
+        var drift = new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * 40f;
+
+        _damageNumbers.Add(
+            new DamageNumber
+            {
+                Font = _font,
+                Text = ((int)info.Amount).ToString(),
+                Position = spawn,
+                Drift = drift,
+            }
+        );
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _combat.UnitDied -= HandleUnitDied;
+            _combat.DamageDealt -= HandleDamageDealt;
+            _pixel?.Dispose();
+            _circle?.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+
+    private void HandleUnitDied(Unit unit)
+    {
+        foreach (var u in _units)
+        {
+            if (u.Target == unit)
+            {
+                u.Target = null;
+            }
+        }
+        _pendingRemoval.Add(unit);
     }
 
     public override void Update(GameTime gameTime)
@@ -111,6 +188,20 @@ public class DungeonScene : Scene
         {
             unit.Update(gameTime);
         }
+
+        foreach (var unit in _pendingRemoval)
+        {
+            _units.Remove(unit);
+        }
+
+        _pendingRemoval.Clear();
+
+        foreach (var damageNumber in _damageNumbers)
+        {
+            damageNumber.Update(gameTime);
+        }
+
+        _damageNumbers.RemoveAll(e => e.IsExpired);
 
         base.Update(gameTime);
     }
@@ -124,6 +215,11 @@ public class DungeonScene : Scene
         foreach (var unit in _units)
         {
             unit.Draw(Core.SpriteBatch);
+        }
+
+        foreach (var damageNumber in _damageNumbers)
+        {
+            damageNumber.Draw(Core.SpriteBatch);
         }
 
         Core.SpriteBatch.End();

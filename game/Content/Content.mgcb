@@ -19,3 +19,15 @@
 /processor:PassThroughProcessor
 /build:data/members.xml
 
+#begin data/skills.xml
+/importer:XmlImporter
+/processor:PassThroughProcessor
+/build:data/skills.xml
+
+#begin fonts/default.spritefont
+/importer:FontDescriptionImporter
+/processor:LocalizedFontProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/default.spritefont
+

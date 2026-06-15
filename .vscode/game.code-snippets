@@ -32,5 +32,44 @@
             "    }",
             "}"
         ]
+    },
+    "Game Entity": {
+        "scope": "csharp",
+        "prefix": "goentity",
+        "description": "Guild Overseer Entity subclass with standard regions",
+        "body": [
+            "using GuildOverseer.Library.Entity;",
+            "using Microsoft.Xna.Framework;",
+            "using Microsoft.Xna.Framework.Graphics;",
+            "",
+            "namespace GuildOverseer.Gameplay;",
+            "",
+            "public class ${TM_FILENAME_BASE} : Entity",
+            "{",
+            "    #region Configuration",
+            "    $0",
+            "    #endregion",
+            "",
+            "    #region State",
+            "    public Vector2 Position;",
+            "    #endregion",
+            "",
+            "    #region Derived",
+            "    #endregion",
+            "",
+            "    #region Lifecycle",
+            "    public override void Update(GameTime gameTime)",
+            "    {",
+            "    }",
+            "",
+            "    public override void Draw(SpriteBatch spriteBatch)",
+            "    {",
+            "    }",
+            "    #endregion",
+            "",
+            "    #region Behavior",
+            "    #endregion",
+            "}"
+        ]
     }
 }

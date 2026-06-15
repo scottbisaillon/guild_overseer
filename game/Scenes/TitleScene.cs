@@ -20,7 +20,7 @@ public class TitleScene : Scene
         var playButton = new Button { Text = "Play" };
         playButton.Click += HandlePlayButtonClicked;
         panel.AddChild(playButton);
-        
+
         var quitButton = new Button { Text = "Quit" };
         quitButton.Click += HandleQuitButtonClicked;
         panel.AddChild(quitButton);
@@ -28,16 +28,16 @@ public class TitleScene : Scene
 
     public override void Draw(GameTime gameTime)
     {
-        Core.GraphicsDevice.Clear(Color.Gray);
-        
+        Core.GraphicsDevice.Clear(Color.DarkSlateGray);
+
         base.Draw(gameTime);
     }
-    
+
     private void HandlePlayButtonClicked(object? sender, EventArgs e)
     {
         Core.ChangeScene(new LevelSelectScene());
     }
-    
+
     private void HandleQuitButtonClicked(object? sender, EventArgs e)
     {
         Core.Instance.Quit();

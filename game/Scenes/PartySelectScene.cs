@@ -74,7 +74,7 @@ public class PartySelectScene : Scene
 
     public override void Draw(GameTime gameTime)
     {
-        Core.GraphicsDevice.Clear(Color.Orange);
+        Core.GraphicsDevice.Clear(Color.DarkSlateGray);
         base.Draw(gameTime);
     }
 

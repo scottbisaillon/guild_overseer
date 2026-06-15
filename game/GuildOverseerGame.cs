@@ -17,6 +17,12 @@ public class GuildOverseerGame() : Core("GuildOverseer", 1280, 720, false)
         unitRegistry.Load(Content);
         Services.AddService(unitRegistry);
 
+        var skillRegistry = new SkillRegistry();
+        skillRegistry.Load(Content);
+        Services.AddService(skillRegistry);
+
+        Services.AddService(new CombatEvents());
+
         base.Initialize();
     }
 
