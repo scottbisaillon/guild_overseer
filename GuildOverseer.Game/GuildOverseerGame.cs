@@ -7,7 +7,7 @@ using GuildOverseer.Services;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-public class GuildOverseerGame() : Core("GuildOverseer", 1280, 720, false)
+public class GuildOverseerGame() : Core("GuildOverseer.Game", 1280, 720, false)
 {
     protected override void Initialize()
     {

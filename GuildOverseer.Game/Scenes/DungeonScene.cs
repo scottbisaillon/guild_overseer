@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Friflo.Engine.ECS;
 using GuildOverseer.Data;
 using GuildOverseer.Gameplay;
 using GuildOverseer.Globals;
@@ -25,7 +26,7 @@ public class DungeonScene : Scene
         EnemiesCleared,
     }
 
-    #region Services
+    #region Service
     private ActiveDungeonService _activeDungeonService = default!;
     private CombatEvents _combat = default!;
     #endregion
@@ -37,6 +38,7 @@ public class DungeonScene : Scene
     #endregion
 
     #region State
+    private EntityStore _world = new();
     private Outcome _outcome = Outcome.InProgress;
     private readonly List<Unit> _units = [];
     private readonly List<DamageNumber> _damageNumbers = [];
