@@ -8,7 +8,7 @@
         "name": "C#: GuildOverseer Debug",
         "type": "dotnet",
         "request": "launch",
-        "projectPath": "${workspaceFolder}/game/GuildOverseer.csproj"
+        "projectPath": "${workspaceFolder}/GuildOverseer.Game/GuildOverseer.Game.csproj"
       }
     ],
   }

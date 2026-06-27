@@ -1,27 +1,13 @@
 namespace GuildOverseer.Services;
 
 using System;
-using GuildOverseer.Gameplay;
+using Friflo.Engine.ECS;
 
-public record DamageInfo(Unit Source, Unit Target, double Amount);
+public readonly record struct DamageInfo(Entity Source, Entity Target, double Amount);
 
 public class CombatEvents
 {
     public event Action<DamageInfo>? DamageDealt;
-    public event Action<Unit>? UnitDied;
 
-    public void DealDamage(Unit source, Unit target, double amount)
-    {
-        var final = amount;
-        var wasAlive = target.IsAlive;
-
-        target.TakeDamage(final);
-
-        DamageDealt?.Invoke(new DamageInfo(source, target, final));
-
-        if (wasAlive && !target.IsAlive)
-        {
-            UnitDied?.Invoke(target);
-        }
-    }
+    public void EmitDamageDealt(DamageInfo info) => DamageDealt?.Invoke(info);
 }

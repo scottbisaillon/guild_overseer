@@ -15,7 +15,7 @@ public class MemberData
 
 public class Stats
 {
-    public required double MaxHealth;
+    public required float MaxHealth;
     public required float MovementSpeed;
     public required float AttackRange;
 

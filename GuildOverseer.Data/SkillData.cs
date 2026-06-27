@@ -4,6 +4,6 @@ public class SkillData
 {
     public required string Id;
     public required string Name;
-    public required double BaseDamage;
+    public required float BaseDamage;
     public required float Cooldown;
 }

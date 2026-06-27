@@ -2,6 +2,7 @@ namespace GuildOverseer.Services;
 
 using System.Collections.Generic;
 using GuildOverseer.Data;
+using GuildOverseer.Gameplay;
 using Microsoft.Xna.Framework.Content;
 
 public class SkillRegistry
@@ -17,4 +18,6 @@ public class SkillRegistry
     }
 
     public SkillData Get(string id) => _skills[id];
+
+    public Skill Create(string id) => new() { Data = _skills[id] };
 }

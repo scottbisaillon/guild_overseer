@@ -5,10 +5,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Friflo.Engine.ECS;
+using Friflo.Engine.ECS.Systems;
 using GuildOverseer.Data;
 using GuildOverseer.Gameplay;
+using GuildOverseer.Gameplay.Systems;
 using GuildOverseer.Globals;
 using GuildOverseer.Library;
+using GuildOverseer.Library.Extensions;
 using GuildOverseer.Library.Graphics;
 using GuildOverseer.Library.Scenes;
 using GuildOverseer.Services;
@@ -19,9 +22,12 @@ using MonoGameGum;
 
 public class DungeonScene : Scene
 {
+    public delegate Entity UnitFactory(string id, Vector2 pos);
+
     private enum Outcome
     {
         InProgress,
+        Draw,
         AlliesCleared,
         EnemiesCleared,
     }
@@ -38,11 +44,9 @@ public class DungeonScene : Scene
     #endregion
 
     #region State
-    private EntityStore _world = new();
+    private readonly EntityStore _world = new();
+    private SystemRoot _root = default!;
     private Outcome _outcome = Outcome.InProgress;
-    private readonly List<Unit> _units = [];
-    private readonly List<DamageNumber> _damageNumbers = [];
-    private readonly List<Unit> _pendingRemoval = [];
     private readonly Random _random = new();
     #endregion
 
@@ -57,7 +61,7 @@ public class DungeonScene : Scene
             SkillIds = [],
             Stats = new Stats
             {
-                MaxHealth = 10.0,
+                MaxHealth = 10.0f,
                 MovementSpeed = 100.0f,
                 AttackRange = 25.0f,
             },
@@ -70,7 +74,7 @@ public class DungeonScene : Scene
             SkillIds = [],
             Stats = new Stats
             {
-                MaxHealth = 10.0,
+                MaxHealth = 10.0f,
                 MovementSpeed = 150.0f,
                 AttackRange = 30.0f,
             },
@@ -83,7 +87,7 @@ public class DungeonScene : Scene
             SkillIds = [],
             Stats = new Stats
             {
-                MaxHealth = 10.0,
+                MaxHealth = 10.0f,
                 MovementSpeed = 75.0f,
                 AttackRange = 50.0f,
             },
@@ -102,86 +106,86 @@ public class DungeonScene : Scene
         _activeDungeonService = Core.Instance.Services.GetService<ActiveDungeonService>();
         _combat = Core.Instance.Services.GetService<CombatEvents>();
 
-        _combat.UnitDied += HandleUnitDied;
         _combat.DamageDealt += HandleDamageDealt;
+
+        _root = new SystemRoot(_world)
+        {
+            new TargetSystem(),
+            new MoveSystem(),
+            new CooldownSystem(),
+            new AttackSystem(_combat),
+            new DeathSystem(),
+            new DamageNumberSystem(),
+        };
 
         _pixel = ShapeTexture.CreatePixel(Core.GraphicsDevice);
         _circle = ShapeTexture.CreateCircle(Core.GraphicsDevice, 48);
         _font = _content.Load<SpriteFont>("fonts/default");
 
-        PlaceColumn(
-            _activeDungeonService.Party.Select(mId =>
-            {
-                var memberData = unitRegistry.Get(mId);
-                return new Unit
+        var party = _activeDungeonService.Party.Select(unitRegistry.Get).ToList();
+        foreach (var (member, pos) in party.Zip(ColumnPositions(party.Count, x: 250)))
+        {
+            _world.CreateEntity(
+                new Position2D { Value = pos },
+                new Sprite
                 {
                     Texture = _pixel,
-                    HealthBarTexture = _pixel,
-                    Faction = Faction.Ally,
-                    Color = Color.CornflowerBlue,
-                    Combat = _combat,
-                    MemberData = memberData,
-                    BasicAttack = new Skill { Data = skillRegistry.Get(memberData.BasicAttackId) },
-                    Skills =
-                    [
-                        .. memberData.SkillIds.Select(sId => new Skill
-                        {
-                            Data = skillRegistry.Get(sId),
-                        }),
-                    ],
-                };
-            }),
-            x: 250
-        );
+                    Color = Color.Green,
+                    Size = 16,
+                },
+                new MemberDataComponent { Value = member },
+                new GlobalCooldown(),
+                new Health { Current = member.Stats.MaxHealth },
+                new SkillLoadout
+                {
+                    BasicAttack = skillRegistry.Create(member.BasicAttackId),
+                    Skills = [.. member.SkillIds.Select(skillRegistry.Create)],
+                },
+                Tags.Get<UnitTag, Ally>()
+            );
+        }
 
-        PlaceColumn(
-            [
-                .. _enemies.Select(data => new Unit
+        foreach (var (enemy, pos) in _enemies.Zip(ColumnPositions(_enemies.Count, x: 1030)))
+        {
+            _world.CreateEntity(
+                new Position2D { Value = pos },
+                new Sprite
                 {
                     Texture = _circle,
-                    HealthBarTexture = _pixel,
-                    Faction = Faction.Enemy,
                     Color = Color.IndianRed,
-                    Combat = _combat,
-                    MemberData = data,
-                    BasicAttack = new Skill { Data = skillRegistry.Get(data.BasicAttackId) },
-                    Skills =
-                    [
-                        .. data.SkillIds.Select(sId => new Skill { Data = skillRegistry.Get(sId) }),
-                    ],
-                }),
-            ],
-            x: 1030
-        );
+                    Size = 16,
+                },
+                new MemberDataComponent { Value = enemy },
+                new GlobalCooldown(),
+                new Health { Current = enemy.Stats.MaxHealth },
+                new SkillLoadout
+                {
+                    BasicAttack = skillRegistry.Create(enemy.BasicAttackId),
+                    Skills = [.. enemy.SkillIds.Select(skillRegistry.Create)],
+                },
+                Tags.Get<UnitTag, Enemy>()
+            );
+        }
     }
 
     public override void Update(GameTime gameTime)
     {
+        _root.Update(new UpdateTick(gameTime.Delta(), (float)gameTime.TotalGameTime.TotalSeconds));
+
         if (_outcome == Outcome.InProgress)
         {
-            AcquireTargets();
+            var alliesAlive = _world.Query().AllTags(Tags.Get<Ally>()).Count > 0;
+            var enemiesAlive = _world.Query().AllTags(Tags.Get<Enemy>()).Count > 0;
 
-            foreach (var unit in _units)
+            if (!alliesAlive || !enemiesAlive)
             {
-                unit.Update(gameTime);
+                _outcome =
+                    alliesAlive ? Outcome.EnemiesCleared
+                    : enemiesAlive ? Outcome.AlliesCleared
+                    : Outcome.Draw;
+                ShowOutcomeOverlay();
             }
-
-            foreach (var unit in _pendingRemoval)
-            {
-                _units.Remove(unit);
-            }
-
-            _pendingRemoval.Clear();
-
-            CheckAndSetOutcome();
         }
-
-        foreach (var damageNumber in _damageNumbers)
-        {
-            damageNumber.Update(gameTime);
-        }
-
-        _damageNumbers.RemoveAll(e => e.IsExpired);
 
         base.Update(gameTime);
     }
@@ -192,15 +196,40 @@ public class DungeonScene : Scene
 
         Core.SpriteBatch.Begin();
 
-        foreach (var unit in _units)
-        {
-            unit.Draw(Core.SpriteBatch);
-        }
+        var query = _world.Query<Sprite, Position2D>().AllComponents(ComponentTypes.Get<Sprite>());
+        query.ForEachEntity(
+            (ref Sprite sprite, ref Position2D pos, Entity entity) =>
+            {
+                var rect = new Rectangle(
+                    (int)pos.Value.X - (sprite.Size / 2),
+                    (int)(pos.Value.Y - (sprite.Size / 2)),
+                    sprite.Size,
+                    sprite.Size
+                );
+                Core.SpriteBatch.Draw(sprite.Texture, rect, sprite.Color);
+            }
+        );
 
-        foreach (var damageNumber in _damageNumbers)
-        {
-            damageNumber.Draw(Core.SpriteBatch);
-        }
+        _world
+            .Query<Position2D, DamageNumber>()
+            .ForEachEntity(
+                (ref Position2D pos, ref DamageNumber dn, Entity e) =>
+                {
+                    var alpha = 1f - (dn.Elapsed / dn.Lifetime);
+                    var origin = _font.MeasureString(dn.Text) / 2f;
+                    Core.SpriteBatch.DrawString(
+                        _font,
+                        dn.Text,
+                        pos.Value,
+                        Color.White * alpha,
+                        0f,
+                        origin,
+                        1f,
+                        SpriteEffects.None,
+                        0f
+                    );
+                }
+            );
 
         Core.SpriteBatch.End();
 
@@ -211,7 +240,6 @@ public class DungeonScene : Scene
     {
         if (disposing)
         {
-            _combat.UnitDied -= HandleUnitDied;
             _combat.DamageDealt -= HandleDamageDealt;
             _pixel?.Dispose();
             _circle?.Dispose();
@@ -221,101 +249,39 @@ public class DungeonScene : Scene
     #endregion
 
     #region Events
-    private void HandleUnitDied(Unit unit)
-    {
-        foreach (var u in _units)
-        {
-            if (u.Target == unit)
-            {
-                u.Target = null;
-            }
-        }
-        _pendingRemoval.Add(unit);
-    }
 
     private void HandleDamageDealt(DamageInfo info)
     {
+        var targetPosition = info.Target.GetComponent<Position2D>().Value;
+
         var spawn =
-            info.Target.Position
+            targetPosition
             + new Vector2((_random.NextSingle() * 30f) - 15f, (_random.NextSingle() * 20f) - 10f);
         var angle = -MathHelper.PiOver2 + ((_random.NextSingle() - 0.5f) * 1.2f);
         var drift = new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * 40f;
 
-        _damageNumbers.Add(
+        _world.CreateEntity(
+            new Position2D { Value = spawn },
             new DamageNumber
             {
-                Font = _font,
                 Text = ((int)info.Amount).ToString(CultureInfo.InvariantCulture),
-                Position = spawn,
                 Drift = drift,
+                Lifetime = 1f,
             }
         );
     }
     #endregion
 
     #region Helpers
-    private void PlaceColumn(IEnumerable<Unit> units, float x)
+
+    private static IEnumerable<Vector2> ColumnPositions(int count, float x, float spacing = 80f)
     {
-        var list = units.ToList();
         var centerY = Core.GraphicsDevice.Viewport.Height / 2f;
-        var spacing = 80f;
-        var offset = centerY - ((list.Count - 1) * spacing / 2f);
-        for (var i = 0; i < list.Count; i++)
+        var offset = centerY - ((count - 1) * spacing / 2f);
+        for (var i = 0; i < count; i++)
         {
-            list[i].Position = new Vector2(x, offset + (i * spacing));
-            _units.Add(list[i]);
+            yield return new Vector2(x, offset + (i * spacing));
         }
-    }
-
-    private void AcquireTargets()
-    {
-        foreach (var unit in _units)
-        {
-            if (unit.Target != null)
-            {
-                continue;
-            }
-
-            Unit? nearest = null;
-            var best = float.MaxValue;
-
-            foreach (var other in _units)
-            {
-                if (unit.Faction == other.Faction)
-                {
-                    continue;
-                }
-
-                var distSq = Vector2.DistanceSquared(unit.Position, other.Position);
-                if (distSq < best)
-                {
-                    nearest = other;
-                    best = distSq;
-                }
-            }
-
-            if (nearest != null)
-            {
-                unit.Target = nearest;
-            }
-        }
-    }
-
-    private void CheckAndSetOutcome()
-    {
-        var alliesAlive = _units.Any(u => u.Faction == Faction.Ally);
-        var enemiesAlive = _units.Any(u => u.Faction == Faction.Enemy);
-
-        if (alliesAlive && enemiesAlive)
-        {
-            return;
-        }
-
-        _outcome =
-            alliesAlive && enemiesAlive ? Outcome.InProgress
-            : alliesAlive ? Outcome.EnemiesCleared
-            : Outcome.EnemiesCleared;
-        ShowOutcomeOverlay();
     }
 
     private void ShowOutcomeOverlay()
