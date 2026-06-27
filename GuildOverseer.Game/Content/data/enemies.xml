@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:ns="Microsoft.Xna.Framework">
+  <Asset Type="GuildOverseer.Data.UnitData[]">
+    <Item>
+      <Id>enemy_1</Id>
+      <Name>Enemy 1</Name>
+      <Stats>
+        <MaxHealth>10.0</MaxHealth>
+        <MovementSpeed>100.0</MovementSpeed>
+        <AttackRange>25.0</AttackRange>
+      </Stats>
+      <BasicAttackId>basic_attack</BasicAttackId>
+      <SkillIds />
+    </Item>
+  </Asset>
+</XnaContent>

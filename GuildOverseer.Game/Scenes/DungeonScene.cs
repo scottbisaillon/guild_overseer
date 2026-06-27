@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Linq;
 using Friflo.Engine.ECS;
 using Friflo.Engine.ECS.Systems;
-using GuildOverseer.Data;
 using GuildOverseer.Gameplay;
 using GuildOverseer.Gameplay.Systems;
 using GuildOverseer.Globals;
@@ -50,57 +49,13 @@ public class DungeonScene : Scene
     private readonly Random _random = new();
     #endregion
 
-    #region Encounter
-    private readonly List<MemberData> _enemies =
-    [
-        new MemberData
-        {
-            Id = "enemy_1",
-            Name = "Enemy 1",
-            BasicAttackId = "basic_attack",
-            SkillIds = [],
-            Stats = new Stats
-            {
-                MaxHealth = 10.0f,
-                MovementSpeed = 100.0f,
-                AttackRange = 25.0f,
-            },
-        },
-        new MemberData
-        {
-            Id = "enemy_2",
-            Name = "Enemy 2",
-            BasicAttackId = "basic_attack",
-            SkillIds = [],
-            Stats = new Stats
-            {
-                MaxHealth = 10.0f,
-                MovementSpeed = 150.0f,
-                AttackRange = 30.0f,
-            },
-        },
-        new MemberData
-        {
-            Id = "enemy_3",
-            Name = "Enemy 3",
-            BasicAttackId = "basic_attack",
-            SkillIds = [],
-            Stats = new Stats
-            {
-                MaxHealth = 10.0f,
-                MovementSpeed = 75.0f,
-                AttackRange = 50.0f,
-            },
-        },
-    ];
-    #endregion
-
     #region Lifecycle
     public override void LoadContent()
     {
         GumService.Default.Root.Children.Clear();
 
         var unitRegistry = Core.Instance.Services.GetService<UnitRegistry>();
+        var enemyRegistry = Core.Instance.Services.GetService<EnemyRegistry>();
         var skillRegistry = Core.Instance.Services.GetService<SkillRegistry>();
 
         _activeDungeonService = Core.Instance.Services.GetService<ActiveDungeonService>();
@@ -133,8 +88,12 @@ public class DungeonScene : Scene
                     Color = Color.Green,
                     Size = 16,
                 },
-                new MemberDataComponent { Value = member },
                 new GlobalCooldown(),
+                new CombatStats
+                {
+                    MoveSpeed = member.Stats.MovementSpeed,
+                    AttackRangeSq = member.Stats.AttackRangeSq,
+                },
                 new Health { Current = member.Stats.MaxHealth },
                 new SkillLoadout
                 {
@@ -145,7 +104,10 @@ public class DungeonScene : Scene
             );
         }
 
-        foreach (var (enemy, pos) in _enemies.Zip(ColumnPositions(_enemies.Count, x: 1030)))
+        var enemies = Enumerable.Repeat(enemyRegistry.Get("enemy_1"), 10).ToList();
+        foreach (
+            var (enemy, pos) in enemies.Zip(ColumnPositions(enemies.Count, spacing: 40f, x: 1030))
+        )
         {
             _world.CreateEntity(
                 new Position2D { Value = pos },
@@ -155,8 +117,12 @@ public class DungeonScene : Scene
                     Color = Color.IndianRed,
                     Size = 16,
                 },
-                new MemberDataComponent { Value = enemy },
                 new GlobalCooldown(),
+                new CombatStats
+                {
+                    MoveSpeed = enemy.Stats.MovementSpeed,
+                    AttackRangeSq = enemy.Stats.AttackRangeSq,
+                },
                 new Health { Current = enemy.Stats.MaxHealth },
                 new SkillLoadout
                 {

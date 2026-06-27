@@ -9,7 +9,8 @@ using GuildOverseer.Gameplay;
 using GuildOverseer.Services;
 using Microsoft.Xna.Framework;
 
-public class AttackSystem : QuerySystem<Position2D, Target, GlobalCooldown, SkillLoadout>
+public class AttackSystem
+    : QuerySystem<Position2D, Target, CombatStats, GlobalCooldown, SkillLoadout>
 {
     private readonly CombatEvents _combat;
 
@@ -18,7 +19,6 @@ public class AttackSystem : QuerySystem<Position2D, Target, GlobalCooldown, Skil
     public AttackSystem(CombatEvents combat)
     {
         _combat = combat;
-        Filter.AnyComponents(ComponentTypes.Get<Target>());
     }
 
     protected override void OnUpdate()
@@ -28,6 +28,7 @@ public class AttackSystem : QuerySystem<Position2D, Target, GlobalCooldown, Skil
             (
                 ref Position2D pos,
                 ref Target target,
+                ref CombatStats combatStats,
                 ref GlobalCooldown gcd,
                 ref SkillLoadout loadout,
                 Entity entity
@@ -40,15 +41,9 @@ public class AttackSystem : QuerySystem<Position2D, Target, GlobalCooldown, Skil
                     return;
                 }
 
-                var memberData = entity.GetComponent<MemberDataComponent>().Value;
                 var targetPos = target.Value.GetComponent<Position2D>().Value;
 
-                if (
-                    !(
-                        Vector2.DistanceSquared(pos.Value, targetPos)
-                        < memberData.Stats.AttackRangeSq
-                    )
-                )
+                if (!(Vector2.DistanceSquared(pos.Value, targetPos) < combatStats.AttackRangeSq))
                 {
                     return;
                 }

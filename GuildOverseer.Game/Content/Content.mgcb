@@ -19,6 +19,11 @@
 /processor:PassThroughProcessor
 /build:data/members.xml
 
+#begin data/enemies.xml
+/importer:XmlImporter
+/processor:PassThroughProcessor
+/build:data/enemies.xml
+
 #begin data/skills.xml
 /importer:XmlImporter
 /processor:PassThroughProcessor

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <XnaContent xmlns:ns="Microsoft.Xna.Framework">
-  <Asset Type="GuildOverseer.Data.MemberData[]">
+  <Asset Type="GuildOverseer.Data.UnitData[]">
     <Item>
       <Id>beginner_1</Id>
       <Name>Beginner #1</Name>

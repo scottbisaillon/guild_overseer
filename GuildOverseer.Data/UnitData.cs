@@ -1,6 +1,6 @@
 namespace GuildOverseer.Data;
 
-public class MemberData
+public class UnitData
 {
     public required string Id;
     public required string Name;

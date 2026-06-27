@@ -30,7 +30,7 @@ public class PartySelectScene : Scene
 
         ActiveDungeonService = Core.Instance.Services.GetService<ActiveDungeonService>();
 
-        var members = _content.Load<MemberData[]>("data/members");
+        var members = _content.Load<UnitData[]>("data/members");
 
         var root = new StackPanel { Spacing = 10 };
         root.Anchor(Anchor.Center);
@@ -83,7 +83,7 @@ public class PartySelectScene : Scene
     #region Events
     private void HandleMemberListSelectionChanged(object arg1, SelectionChangedEventArgs args)
     {
-        var ids = MembersList.SelectedItems.Cast<MemberData>().Select(m => m.Id).ToList();
+        var ids = MembersList.SelectedItems.Cast<UnitData>().Select(m => m.Id).ToList();
         ActiveDungeonService.SetParty(ids);
         RefreshUI();
     }

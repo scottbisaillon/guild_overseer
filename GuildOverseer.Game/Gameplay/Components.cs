@@ -37,11 +37,6 @@ public struct Position2D : IComponent
     public Position2D() { }
 }
 
-public struct MemberDataComponent : IComponent
-{
-    public MemberData Value;
-}
-
 public struct Target : ILinkComponent
 {
     public Entity Value;
@@ -53,6 +48,12 @@ public struct GlobalCooldown : IComponent
 {
     public const float GCD = 1.0f;
     public float Remaining;
+}
+
+public struct CombatStats : IComponent
+{
+    public float MoveSpeed;
+    public float AttackRangeSq;
 }
 
 public struct Health : IComponent
