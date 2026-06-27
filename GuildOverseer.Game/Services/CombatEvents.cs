@@ -3,7 +3,7 @@ namespace GuildOverseer.Services;
 using System;
 using Friflo.Engine.ECS;
 
-public readonly record struct DamageInfo(Entity Source, Entity Target, double Amount);
+public readonly record struct DamageInfo(Entity Source, Entity Target, float Amount);
 
 public class CombatEvents
 {
