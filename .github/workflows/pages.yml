@@ -1,0 +1,74 @@
+# Builds the Flutter web client and publishes it to GitHub Pages.
+#
+# Pages must be set to deploy from GitHub Actions:
+# Settings -> Pages -> Source: GitHub Actions.
+name: Deploy web client to Pages
+
+on:
+  push:
+    # impl/flutter is here so the mockup can be seen before it merges. Drop it
+    # once this branch lands and main is the only thing that should publish.
+    branches: [main, impl/flutter]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time. A newer run queues rather than racing an in-flight one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.4
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - run: flutter analyze
+
+      - run: flutter test
+
+      # A project page is served from /<repo>/, so the app has to be told what
+      # it is rooted at or every asset request goes to the domain root.
+      - name: Build web
+        run: >-
+          flutter build web
+          --release
+          --base-href /${{ github.event.repository.name }}/
+          --no-web-resources-cdn
+
+      # Pages serves 404.html for any path it has no file for. Handing it the
+      # app means a refresh on /battle still boots the app on that route
+      # instead of showing the Pages 404 page.
+      - name: Add SPA fallback
+        run: cp build/web/index.html build/web/404.html
+
+      # Paths here are relative to the workspace, not to the job's
+      # working-directory.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: app/build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

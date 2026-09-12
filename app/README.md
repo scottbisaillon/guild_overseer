@@ -107,6 +107,37 @@ Continuous state (health, cooldowns) arrives on a 10 Hz `BattleSampled` event
 rather than per frame; discrete facts (damage, deaths, re-targeting) arrive as
 they happen and become combat log lines.
 
+## Deployment
+
+`.github/workflows/pages.yml` builds the web client and publishes it to GitHub
+Pages on every push to `main` (and, for now, to `impl/flutter` — drop that line
+from the workflow once this branch lands). Pages is set to deploy from GitHub
+Actions.
+
+Two details make a project page work, both handled by the workflow:
+
+- **`--base-href /guild_overseer/`** — a project page is served from a
+  subdirectory, and without this every asset request goes to the domain root and
+  the page comes up blank.
+- **`404.html`** — Pages serves it for any path it has no file for, so copying
+  `index.html` over it means a refresh on `/battle` boots the app on that route.
+  This is what `usePathUrlStrategy()` in `main.dart` needs in order to use real
+  paths instead of `/#/battle`.
+
+The build also passes `--no-web-resources-cdn`, which bundles CanvasKit with the
+site instead of fetching it from `gstatic.com` at runtime. Drop that flag to use
+Google's CDN and shave a few MB off the deploy.
+
+To reproduce a deploy build locally:
+
+```bash
+flutter build web --release --base-href /guild_overseer/ --no-web-resources-cdn
+cp build/web/index.html build/web/404.html
+```
+
+Serving `build/web` at the domain root will 404 on its assets — it expects to
+live under `/guild_overseer/`. For a plain local run, build without `--base-href`.
+
 ## Next steps
 
 The natural follow-ons, in the order the design docs suggest:
