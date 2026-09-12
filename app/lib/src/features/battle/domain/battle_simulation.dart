@@ -57,6 +57,9 @@ class BattleSimulation {
   double _elapsed = 0;
   double _sampleAccumulator = 0;
 
+  /// Simulated time banked by [update] but not yet spent on a whole step.
+  double _stepAccumulator = 0;
+
   /// The one channel out of the simulation. The Flame layer listens to spawn
   /// effects; the Bloc listens to build HUD state.
   Stream<GameEvent> get events => _events.stream;
@@ -120,6 +123,7 @@ class BattleSimulation {
     _winner = null;
     _elapsed = 0;
     _sampleAccumulator = 0;
+    _stepAccumulator = 0;
     _emit(const BattleReset());
     _emit(const BattleStarted());
     _emitSample();
@@ -131,17 +135,24 @@ class BattleSimulation {
   }
 
   /// Advances the fight by [dt] seconds of real time, scaled by [speed].
+  ///
+  /// The fight only ever moves in whole [maxStep] slices. Time left over at the
+  /// end of a frame is banked and spent on the next one, so the outcome depends
+  /// on how much time has passed and not on how it was delivered: 60Hz, 120Hz,
+  /// a stuttering frame and the test harness all resolve the same fight. Paying
+  /// out the remainder as a short ragged step instead would move every cooldown
+  /// boundary by a sliver and quietly make the rendered fight a different fight
+  /// from the recorded one.
   void update(double dt) {
     if (_status != BattleStatus.running || dt <= 0) {
       return;
     }
     // A long frame (first frame, a resize, a backgrounded app) must not fast
     // forward the fight, so the raw delta is capped before scaling.
-    double remaining = math.min(dt, 0.25) * _speed;
-    while (remaining > 0 && _status == BattleStatus.running) {
-      final double step = math.min(remaining, maxStep);
-      _step(step);
-      remaining -= step;
+    _stepAccumulator += math.min(dt, 0.25) * _speed;
+    while (_stepAccumulator >= maxStep && _status == BattleStatus.running) {
+      _step(maxStep);
+      _stepAccumulator -= maxStep;
     }
   }
 
