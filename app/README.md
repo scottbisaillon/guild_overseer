@@ -24,6 +24,7 @@ flutter run                        # any connected device
 flutter test                       # unit + widget tests
 flutter analyze                    # lints
 dart run tool/simulate_battle.dart # the same fight, headless, in the terminal
+dart run tool/record_fight.dart    # re-record the golden fight transcript
 ```
 
 ## The battle mockup
@@ -87,7 +88,9 @@ lib/
         bloc/                    GameEvent stream -> HUD state
         view/                    Flutter HUD over the GameWidget
 tool/simulate_battle.dart        headless runner
+tool/record_fight.dart           re-records the golden transcript
 test/battle/                     targeting, rotation and simulation tests
+test/battle/goldens/             the recorded fight the tests compare against
 ```
 
 ### How the layers fit
@@ -106,6 +109,38 @@ fight the game renders, with no engine attached.
 Continuous state (health, cooldowns) arrives on a 10 Hz `BattleSampled` event
 rather than per frame; discrete facts (damage, deaths, re-targeting) arrive as
 they happen and become combat log lines.
+
+### The golden fight
+
+`test/battle/golden_fight_test.dart` runs the mock roster to the end and
+compares every decision the simulation published against a recorded transcript
+in `test/battle/goldens/`. It is the net that makes refactoring safe: change how
+the code is organised and the transcript should not move, so any diff is either
+a bug you just introduced or a change you meant to make.
+
+```bash
+flutter test test/battle/golden_fight_test.dart
+```
+
+When a change is *meant* to alter the fight, re-record it and read the diff
+before committing — the diff is the review:
+
+```bash
+dart run tool/record_fight.dart
+git diff test/battle/goldens/
+```
+
+The transcript is plain text rather than a hash so that a failure says which
+beat of the fight moved, not merely that something did. It holds because the
+fight is a pure function of its roster and its seed: the same roster resolves
+identically twice in a row, after a restart, at any frame rate, and at any speed
+setting. Those four properties are themselves tested alongside the golden — if
+one breaks, the golden stops being evidence of anything, so it is worth knowing
+first.
+
+One caveat: the guarantee is a Dart VM one. `flutter test` runs on the VM, which
+is where `dart:math`'s seeded `Random` is stable. Run the suite compiled to
+JavaScript (`--platform chrome`) and the golden may legitimately differ.
 
 ## Deployment
 

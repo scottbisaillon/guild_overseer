@@ -434,12 +434,26 @@ anyway.
 
 ## Cross-cutting concerns
 
-**Determinism.** Every roll — variance, crit, proc chance, random target
-selection — must draw from the RNG threaded through `ResolutionContext`, never
-from an ad-hoc `Random()`. Add a golden test that runs the mock roster to
-completion and asserts a hash of the full event stream. It is three lines of
-test code and it is the only thing that will catch an accidental reordering of
-resolution that silently changes every fight.
+**Determinism.** This is the foundation the whole migration stands on, and it
+now has a test: `golden_fight_test.dart` records the mock roster's fight as a
+text transcript and fails on any change to it. As the systems above land, the
+rule is that every roll — variance, crit, proc chance, random target selection —
+draws from the RNG threaded through `ResolutionContext`, never from an ad-hoc
+`Random()`. Resolution order is then the only thing that can move a fight, and
+the golden is what notices when it does.
+
+Three properties have to hold for the golden to mean anything, so they are
+tested next to it: the same roster resolves identically twice, a `restart()`
+replays the fight it just played, and neither the frame rate nor the speed
+setting changes the outcome.
+
+That last one was not true when the plan was written. `update(dt)` spent each
+frame's time as whole steps plus a short ragged remainder, so a 120Hz display,
+a stutter, and the test harness each resolved a *different* fight — at 1/120
+the mock roster ran 2.1s longer and lost an extra unit. The simulation now banks
+leftover time and only ever advances in whole `maxStep` slices, which costs six
+lines and buys the property the golden needs: **the fight players watch is the
+fight the test records.**
 
 **Step ordering, written down.** With more systems, "what happens first" stops
 being obvious. Fix it and document it in `battle_simulation.dart`:
@@ -482,7 +496,7 @@ dependency, and deliberately front-loaded with the least glamorous work.
 
 | # | Stage | Why here | Rough size |
 |---|---|---|---|
-| 0 | **Golden test of the current fight** | A safety net *before* any refactor. Asserts a hash of the event stream from the mock roster. | XS |
+| 0 | **Golden test of the current fight** — *done* | A safety net *before* any refactor. `test/battle/golden_fight_test.dart` records every decision the mock-roster fight publishes and compares it against `test/battle/goldens/`. | XS |
 | 1 | **`Stat`, `StatBlock`, `StatModifier`** | Effects scale off stats; everything downstream needs this. `maxHealth` becomes a stat. No behaviour change — golden test must still pass. | M |
 | 2 | **Effect lists** | `kind`+`power` → `List<EffectSpec>`; damage and heal become effects; `power` becomes `coefficient × stat`. Golden test changes once, intentionally, and is re-pinned. | L |
 | 3 | **Composable targeting** | Fold `SkillTargeting` and `TargetPriority` into `TargetSelector`. Pure refactor with a large payoff in authoring freedom. | M |
@@ -500,8 +514,10 @@ visible dividends, and is a good checkpoint to reassess before continuing.
 
 ## Test strategy
 
-- **Golden fight test** — hash of the event stream from a fixed roster and seed.
-  Catches accidental changes to ordering, RNG draw order, or resolution.
+- **Golden fight test** *(in place)* — a text transcript of every decision from a
+  fixed roster and seed. Catches accidental changes to ordering, RNG draw order,
+  or resolution. Text rather than a hash so a failure names the beat that moved.
+  Guarded by its own determinism, restart, frame-rate and speed tests.
 - **One unit test per effect kind** — resolve it against a hand-built context,
   assert the numbers. Cheap, and they are the regression net when the resolver
   grows.
