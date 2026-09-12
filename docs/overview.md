@@ -36,3 +36,4 @@ Every system introduced in the early game scales into the guild phase. The trait
 - [[gameplay-loop]] — The three interconnected loops post-guild
 - [[plan]] — Vertical slice task plan
 - [[roadmap]] — Release phases and future systems
+- [[architecture/combat-extensibility]] — How the combat systems stay extensible
