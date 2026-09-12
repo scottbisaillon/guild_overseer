@@ -110,9 +110,14 @@ they happen and become combat log lines.
 ## Deployment
 
 `.github/workflows/pages.yml` builds the web client and publishes it to GitHub
-Pages on every push to `main` (and, for now, to `impl/flutter` — drop that line
-from the workflow once this branch lands). Pages is set to deploy from GitHub
-Actions.
+Pages. Pages is set to deploy from GitHub Actions.
+
+Pushes to `main` build and deploy. Pushes to `impl/flutter` build, analyze and
+test, then stop: the `github-pages` environment only accepts deployments from
+the default branch, so the deploy job is gated on `main` rather than attempting
+a publish that GitHub will reject. To publish from another branch, add it under
+Settings -> Environments -> github-pages -> Deployment branches, and relax that
+gate.
 
 Two details make a project page work, both handled by the workflow:
 
