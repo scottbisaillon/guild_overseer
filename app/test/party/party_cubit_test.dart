@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:guild_overseer/src/features/battle/domain/party_formation.dart';
+import 'package:guild_overseer/src/features/battle/domain/party_skills.dart';
 import 'package:guild_overseer/src/features/party/cubit/party_cubit.dart';
 import 'package:guild_overseer/src/features/party/cubit/party_state.dart';
 
@@ -102,6 +103,61 @@ void main() {
 
       expect(cubit.state, const PartyState.initial());
       expect(cubit.state.canDispatch, isFalse);
+    });
+  });
+
+  group('choosing skills', () {
+    test('a unit is given the rotation the picker built', () {
+      final PartyCubit cubit = PartyCubit()
+        ..chooseSkills('bramm', <String>['fortify', 'cleave']);
+
+      expect(cubit.state.skills.forUnit('bramm'), <String>['fortify', 'cleave']);
+      expect(cubit.state.isCustomised('bramm'), isTrue);
+    });
+
+    test('a unit is handed back to its authored skills', () {
+      final PartyCubit cubit = PartyCubit()
+        ..chooseSkills('bramm', <String>['fortify'])
+        ..resetSkills('bramm');
+
+      expect(cubit.state.isCustomised('bramm'), isFalse);
+    });
+
+    test('choosing skills leaves the board and the hand alone', () {
+      final PartyCubit cubit = PartyCubit()
+        ..dropOnSlot('bramm', front)
+        ..tapUnit('fenn')
+        ..chooseSkills('bramm', <String>['cleave']);
+
+      expect(cubit.state.formation.at(front), 'bramm');
+      expect(cubit.state.heldUnitId, 'fenn');
+    });
+
+    test('clearing the board keeps the rotations already tuned', () {
+      final PartyCubit cubit = PartyCubit()
+        ..dropOnSlot('bramm', front)
+        ..chooseSkills('bramm', <String>['cleave'])
+        ..clearAll();
+
+      expect(cubit.state.formation.isEmpty, isTrue);
+      expect(cubit.state.skills.forUnit('bramm'), <String>['cleave']);
+    });
+
+    test('only the units being dispatched carry their skills along', () {
+      final PartyCubit cubit = PartyCubit()
+        ..dropOnSlot('bramm', front)
+        ..chooseSkills('bramm', <String>['cleave'])
+        ..chooseSkills('fenn', <String>['mend']);
+
+      expect(cubit.state.dispatchedSkills.hasChoiceFor('fenn'), isFalse);
+      expect(cubit.state.dispatchedSkills.forUnit('bramm'), <String>['cleave']);
+    });
+
+    test('a cubit can open on a selection, for a link that carries one', () {
+      final PartySkills skills =
+          const PartySkills.empty().withUnit('bramm', <String>['mend']);
+
+      expect(PartyCubit(skills: skills).state.skills, skills);
     });
   });
 

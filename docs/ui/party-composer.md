@@ -45,11 +45,20 @@ the front line on the right, as the arena draws it.
 - **Placing** — tap a unit and tap a slot, or drag it across. Both land on
   `PartyFormation`, which keeps one unit per slot and one slot per unit, so a
   drop onto an occupied cell swaps rather than overwrites.
-- **Dispatch** — encodes the formation into `/battle?party=…`, so a composed
-  party is a link that survives a reload. `buildRoster` stands it up as
-  combatants; a party that names nobody it recognises falls back to the
-  authored one.
+- **Choosing skills** — the bolt on a unit opens a picker: its rotation in
+  priority order above, the skill pool below. Up to three skills per unit, from
+  one pool every unit shares; the unit's basic attack is not in the pool and
+  always sits last, so a rotation can never empty itself. A unit nobody has
+  opened the picker for fights with the skills it was authored with, and
+  "Reset to default" puts it back there.
+- **Dispatch** — encodes the formation into `/battle?party=…` and the chosen
+  skills into `&skills=…`, so a composed party is a link that survives a
+  reload. `buildRoster` stands it up as combatants; a party that names nobody
+  it recognises falls back to the authored one, and a skill it does not
+  recognise is dropped from that unit's rotation.
 
-Not built yet: dungeon selection, trait conflicts, composition score, RQS, and
-skill selection. Skills are whatever the unit was authored with — when skill
-selection lands it belongs on this screen, on the unit being placed.
+Not built yet: dungeon selection, trait conflicts, composition score and RQS.
+The skill pool is general — every unit may take anything in it — because the
+[[../systems/skills|skill trees]] that will decide what a unit may learn are
+not built yet. When they are, the picker asks the tree what it may offer and
+the rest of the screen stays as it is.

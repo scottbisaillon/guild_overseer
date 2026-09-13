@@ -12,9 +12,10 @@ import 'skill.dart';
 /// blueprints and decides where each one stands, and only then — at the moment
 /// a fight begins — does a blueprint become a combatant in a slot.
 ///
-/// Everything that makes a unit what it is lives here. Skills are fixed for
-/// now; when skill selection lands it becomes another thing the player chooses
-/// on the way from a blueprint to a combatant, not a new kind of unit.
+/// Everything that makes a unit what it is lives here, including the skills it
+/// was authored with. The player may trade those out on the party screen —
+/// [withSkills] hands back the same unit carrying different ones, because a
+/// customised unit is a unit, not a new kind of thing.
 class UnitBlueprint {
   const UnitBlueprint({
     required this.id,
@@ -40,9 +41,39 @@ class UnitBlueprint {
   /// Skills in rotation order: the first ready one fires.
   final List<SkillDefinition> skills;
 
+  /// The skills the player chose, or the authored ones until they choose:
+  /// everything this unit brings apart from its basic attack.
+  List<SkillDefinition> get chosenSkills => <SkillDefinition>[
+        for (final SkillDefinition skill in skills)
+          if (!skill.isBasic) skill,
+      ];
+
+  /// The fallback this unit never gives up. A basic attack is what a unit does
+  /// while its specials cool down, so it is not the player's to trade away and
+  /// it always sits at the bottom of the rotation.
+  List<SkillDefinition> get basicSkills => <SkillDefinition>[
+        for (final SkillDefinition skill in skills)
+          if (skill.isBasic) skill,
+      ];
+
   /// Worn from the start. Gear reaches the unit's numbers through the stat
   /// pipeline, so equipping here is the whole of it.
   final List<ItemDefinition> gear;
+
+  /// The same unit fighting with [chosen] instead of what it was authored
+  /// with, its basic attack still last in the rotation.
+  ///
+  /// Order is priority order, so the order [chosen] arrives in is the order
+  /// the player put them in.
+  UnitBlueprint withSkills(List<SkillDefinition> chosen) => UnitBlueprint(
+        id: id,
+        name: name,
+        role: role,
+        maxHealth: maxHealth,
+        priority: priority,
+        skills: <SkillDefinition>[...chosen, ...basicSkills],
+        gear: gear,
+      );
 
   /// A fresh combatant of this unit, standing at [row]/[column].
   ///

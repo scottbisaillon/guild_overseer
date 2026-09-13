@@ -16,6 +16,7 @@ class BlueprintCard extends StatelessWidget {
     this.held = false,
     this.placed = false,
     this.onTap,
+    this.onEditSkills,
     super.key,
   });
 
@@ -29,6 +30,10 @@ class BlueprintCard extends StatelessWidget {
   final bool placed;
 
   final VoidCallback? onTap;
+
+  /// Opens the skill picker for this unit. Null on a card that is only being
+  /// looked at — the one floating under a drag, for instance.
+  final VoidCallback? onEditSkills;
 
   @override
   Widget build(BuildContext context) {
@@ -112,12 +117,22 @@ class BlueprintCard extends StatelessWidget {
               color: BattlePalette.textMuted,
             ),
           ),
+          if (onEditSkills != null)
+            IconButton(
+              onPressed: onEditSkills,
+              visualDensity: VisualDensity.compact,
+              iconSize: 14,
+              constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+              padding: EdgeInsets.zero,
+              tooltip: 'Skills for ${blueprint.name}',
+              icon: const Icon(Icons.bolt, color: BattlePalette.textMuted),
+            ),
         ],
       );
 }
 
-/// A skill the unit brings. Flat, because there is nothing to choose yet —
-/// skill selection is the next thing this screen grows.
+/// A skill the unit brings: what it was authored with until the player opens
+/// the picker, and what they chose afterwards.
 class _SkillTag extends StatelessWidget {
   const _SkillTag({required this.name, required this.accent});
 

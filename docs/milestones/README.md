@@ -26,6 +26,7 @@ Each file follows the same shape:
 10. [Visual feedback](10-visual-feedback.md) — health bars and floating numbers
 11. [Data-driven skills](11-data-driven-skills.md) — skill definitions move to a data file
 12. [Party selection screen](12-party-selection.md) — pre-gameplay UI for picking a party
+13. [Customizing a unit's skills](13-skill-customization.md) — a general skill pool the player picks a rotation from
 
 ## Notes on porting
 

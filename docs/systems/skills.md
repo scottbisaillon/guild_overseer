@@ -78,6 +78,25 @@ Active skills occupy [[rotation|rotation slots]]. Passive, Reactive, and Aura sk
 
 ---
 
+## Built so far
+
+The prototype has no trees yet. What it has is one **general skill pool**: a
+flat list of skills, any of which any unit may take, chosen on the
+[[../ui/party-composer|party screen]] rather than in a skill editor of its own.
+
+| Interim rule | Why |
+|---|---|
+| Up to three skills per unit | Rotation order is priority order, and a long rotation is one whose tail never fires. |
+| Order is chosen, and is priority order | The same rule the fight already runs on: the first ready skill fires. |
+| Basic attacks are not in the pool | A unit keeps its own so it always has something to do while its specials cool down, and it stays last in the rotation. |
+| No class gating | The tree is what will narrow the pool. Until it exists, gating would be a rule with nothing behind it. |
+
+When trees land they replace the pool as the source of what a unit may take —
+the picker asks the tree instead of the pool — and Passive, Reactive and Aura
+skills join Active ones, at which point only Actives occupy rotation slots.
+
+---
+
 ## Respeccing
 
 | Method | Cost | Scope |

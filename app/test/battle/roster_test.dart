@@ -3,6 +3,8 @@ import 'package:guild_overseer/src/core/domain/faction.dart';
 import 'package:guild_overseer/src/features/battle/data/mock_roster.dart';
 import 'package:guild_overseer/src/features/battle/domain/combatant.dart';
 import 'package:guild_overseer/src/features/battle/domain/party_formation.dart';
+import 'package:guild_overseer/src/features/battle/domain/party_skills.dart';
+import 'package:guild_overseer/src/features/battle/domain/skill.dart';
 import 'package:guild_overseer/src/features/battle/domain/unit_blueprint.dart';
 
 /// What the party screen hands the battle is a formation of unit ids, and this
@@ -80,6 +82,80 @@ void main() {
       allies.map((Combatant unit) => unit.id),
       alliesOf(buildMockRoster()).map((Combatant unit) => unit.id),
     );
+  });
+
+  group('the skills the player chose', () {
+    final PartyFormation party =
+        const PartyFormation.empty().place('ally_bramm', (row: 0, column: 0));
+
+    List<String> rotationOf(List<Combatant> roster) => roster.first.rotation
+        .map((SkillSlot slot) => slot.definition.id)
+        .toList(growable: false);
+
+    test('a unit fights with what it was given, in the order given', () {
+      final List<Combatant> allies = alliesOf(buildRoster(
+        party: party,
+        skills: const PartySkills.empty()
+            .withUnit('ally_bramm', <String>['mend', 'cleave']),
+      ));
+
+      // The basic attack the unit was authored with stays, and stays last.
+      expect(rotationOf(allies), <String>['mend', 'cleave', 'strike']);
+    });
+
+    test('a unit nobody chose for keeps the skills it was authored with', () {
+      final List<Combatant> allies = alliesOf(buildRoster(
+        party: party,
+        skills: const PartySkills.empty()
+            .withUnit('ally_fenn', <String>['mend']),
+      ));
+
+      expect(rotationOf(allies), <String>['fortify', 'shield_slam', 'strike']);
+    });
+
+    test('a unit can give up its specials and still have something to do', () {
+      final List<Combatant> allies = alliesOf(buildRoster(
+        party: party,
+        skills: const PartySkills.empty()
+            .withUnit('ally_bramm', <String>[]),
+      ));
+
+      expect(rotationOf(allies), <String>['strike']);
+    });
+
+    test('a link naming skills that do not exist drops them', () {
+      final List<Combatant> allies = alliesOf(buildRoster(
+        party: party,
+        skills: PartySkills.decode('ally_bramm:cleave.sorcery'),
+      ));
+
+      expect(rotationOf(allies), <String>['cleave', 'strike']);
+    });
+
+    test('every skill a unit was authored with can be chosen again', () {
+      for (final UnitBlueprint unit in kRecruitableUnits) {
+        for (final SkillDefinition skill in unit.chosenSkills) {
+          expect(
+            poolSkill(skill.id),
+            isNotNull,
+            reason: '${unit.name} starts with ${skill.name}, which the pool '
+                'does not offer — resetting would be a one-way trip',
+          );
+        }
+        expect(
+          unit.basicSkills,
+          isNotEmpty,
+          reason: '${unit.name} would stand still with an empty rotation',
+        );
+      }
+    });
+
+    test('every pool skill has an id of its own', () {
+      final Set<String> ids =
+          kSkillPool.map((SkillDefinition skill) => skill.id).toSet();
+
+      expect(ids.length, kSkillPool.length);
+    });
   });
 
   test('every recruitable unit has an id of its own', () {
