@@ -14,7 +14,7 @@ class HomeScreen extends StatelessWidget {
     'Guild Hall — hub, roster, event feed',
     'Tavern — recruitment pool and trait badges',
     'Skill Editor — skill tree and rotation builder',
-    'Party Composer — dungeon select and dispatch',
+    'Party Composer — dungeon select, traits and skill loadouts',
     'Loot Distribution — post-run assignment',
   ];
 
@@ -47,7 +47,19 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 32),
+                // Composing a party is the way in: it picks who fights and
+                // where they stand, and hands the battle the result. The
+                // second button is the same fight with the authored party, for
+                // when the mockup is what you came to look at.
                 FilledButton(
+                  onPressed: () => context.go('/party'),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                    child: Text('Compose a party'),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton(
                   onPressed: () => context.go('/battle'),
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
