@@ -72,6 +72,9 @@ lib/
     core/
       domain/                    vocabulary shared across features
                                  (faction, role, target priority, snapshots)
+        stat.dart                the stats anything is allowed to change
+        stat_modifier.dart       one change, and what granted it
+        stat_block.dart          the pipeline gear and buffs both feed
       events/game_event.dart     the sealed GameEvent hierarchy — one bus
     features/
       home/view/                 landing screen
@@ -89,6 +92,7 @@ lib/
         view/                    Flutter HUD over the GameWidget
 tool/simulate_battle.dart        headless runner
 tool/record_fight.dart           re-records the golden transcript
+test/core/                       the stat modifier pipeline
 test/battle/                     targeting, rotation and simulation tests
 test/battle/goldens/             the recorded fight the tests compare against
 ```

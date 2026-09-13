@@ -497,7 +497,7 @@ dependency, and deliberately front-loaded with the least glamorous work.
 | # | Stage | Why here | Rough size |
 |---|---|---|---|
 | 0 | **Golden test of the current fight** — *done* | A safety net *before* any refactor. `test/battle/golden_fight_test.dart` records every decision the mock-roster fight publishes and compares it against `test/battle/goldens/`. | XS |
-| 1 | **`Stat`, `StatBlock`, `StatModifier`** | Effects scale off stats; everything downstream needs this. `maxHealth` becomes a stat. No behaviour change — golden test must still pass. | M |
+| 1 | **`Stat`, `StatBlock`, `StatModifier`** — *done* | Effects scale off stats; everything downstream needs this. `maxHealth` and `globalCooldown` are now stats read through the pipeline. The golden transcript came out byte-identical, which is the point: no behaviour moved. | M |
 | 2 | **Effect lists** | `kind`+`power` → `List<EffectSpec>`; damage and heal become effects; `power` becomes `coefficient × stat`. Golden test changes once, intentionally, and is re-pinned. | L |
 | 3 | **Composable targeting** | Fold `SkillTargeting` and `TargetPriority` into `TargetSelector`. Pure refactor with a large payoff in authoring freedom. | M |
 | 4 | **Statuses** | First stage that adds *new* mechanics. Ship Rend→bleed and Fortify as proof. | L |
