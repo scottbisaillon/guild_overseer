@@ -2,7 +2,7 @@ import '../../../core/domain/faction.dart';
 import '../../../core/domain/target_priority.dart';
 import 'arena_layout.dart';
 import 'combatant.dart';
-import 'skill.dart';
+import 'skill_effect.dart';
 
 /// Target selection, as pure functions over plain data.
 ///
@@ -84,16 +84,17 @@ Combatant? lowestHealthAlly(List<Combatant> units, Faction faction) {
   return best;
 }
 
-/// Everyone a skill resolves against, given the caster's current target.
+/// Everyone one effect of a skill resolves against, given the caster's current
+/// target.
 ///
-/// An empty result means the skill cannot fire right now.
+/// An empty result means that effect has nothing to land on, and is skipped.
 List<Combatant> resolveSkillTargets({
   required Combatant unit,
-  required SkillDefinition skill,
+  required SkillTargeting targeting,
   required Combatant? currentTarget,
   required List<Combatant> units,
 }) {
-  switch (skill.targeting) {
+  switch (targeting) {
     case SkillTargeting.opposingPriority:
       if (currentTarget == null || !currentTarget.isAlive) {
         return const <Combatant>[];

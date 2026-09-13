@@ -82,6 +82,8 @@ lib/
         domain/                  the fight, as pure Dart
           arena_layout.dart      where formation slots sit
           skill.dart             skill definitions and live cooldowns
+          skill_effect.dart      what a skill does, as data
+          effect_resolver.dart   the one place that carries an effect out
           combatant.dart         a unit that fights
           targeting.dart         who to hit
           rotation.dart          what to fire

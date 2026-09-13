@@ -3,10 +3,10 @@ import 'dart:math' as math;
 
 import '../../../core/domain/combat_snapshot.dart';
 import '../../../core/domain/faction.dart';
-import '../../../core/domain/skill_kind.dart';
 import '../../../core/events/game_event.dart';
 import 'arena_layout.dart';
 import 'combatant.dart';
+import 'effect_resolver.dart';
 import 'rotation.dart';
 import 'skill.dart';
 import 'targeting.dart';
@@ -238,47 +238,17 @@ class BattleSimulation {
       delivery: skill.delivery,
     ));
 
-    for (final Combatant target in decision.targets) {
-      final double amount = _roll(skill.power);
-      switch (skill.kind) {
-        case SkillKind.damage:
-          final double dealt = target.applyDamage(amount);
-          _emit(DamageDealt(
-            sourceId: unit.id,
-            sourceName: unit.name,
-            targetId: target.id,
-            targetName: target.name,
-            skillName: skill.name,
-            amount: dealt,
-            remainingHealth: target.health,
-          ));
-          if (!target.isAlive) {
-            _emit(UnitDied(
-              unitId: target.id,
-              unitName: target.name,
-              faction: target.faction,
-            ));
-          }
-        case SkillKind.heal:
-          final double healed = target.applyHeal(amount);
-          _emit(HealApplied(
-            sourceId: unit.id,
-            sourceName: unit.name,
-            targetId: target.id,
-            targetName: target.name,
-            skillName: skill.name,
-            amount: healed,
-            remainingHealth: target.health,
-          ));
-      }
+    // What each effect means is the resolver's business, not the simulation's.
+    // This loop stays the same length however many kinds of effect exist.
+    final ResolutionContext context = ResolutionContext(
+      caster: unit,
+      skill: skill,
+      random: _random,
+      emit: _emit,
+    );
+    for (final ResolvedEffect resolved in decision.effects) {
+      resolveEffect(resolved.effect, resolved.targets, context);
     }
-  }
-
-  /// Damage and healing land within +/-15% of the authored power, rounded to
-  /// whole numbers so the floating combat text stays readable.
-  double _roll(double power) {
-    final double variance = 0.85 + _random.nextDouble() * 0.3;
-    return (power * variance).roundToDouble();
   }
 
   void _checkForEnd() {

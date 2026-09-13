@@ -4,6 +4,7 @@ import '../../../core/domain/skill_kind.dart';
 import '../../../core/domain/target_priority.dart';
 import '../domain/combatant.dart';
 import '../domain/skill.dart';
+import '../domain/skill_effect.dart';
 
 /// The hand-authored roster the battle mockup fights with.
 ///
@@ -19,94 +20,121 @@ import '../domain/skill.dart';
 const SkillDefinition shieldSlam = SkillDefinition(
   id: 'shield_slam',
   name: 'Shield Slam',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 30,
   cooldown: 6,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 3),
+    ),
+  ],
 );
 
 const SkillDefinition recklessStrike = SkillDefinition(
   id: 'reckless_strike',
   name: 'Reckless Strike',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 62,
   cooldown: 8,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 6.2),
+    ),
+  ],
 );
 
 const SkillDefinition cleave = SkillDefinition(
   id: 'cleave',
   name: 'Cleave',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingColumn,
-  power: 22,
   cooldown: 5,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingColumn,
+      effect: DamageEffect(coefficient: 2.2),
+    ),
+  ],
 );
 
 const SkillDefinition piercingShot = SkillDefinition(
   id: 'piercing_shot',
   name: 'Piercing Shot',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.projectile,
-  targeting: SkillTargeting.opposingPriority,
-  power: 42,
   cooldown: 4,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 4.2),
+    ),
+  ],
 );
 
 const SkillDefinition mend = SkillDefinition(
   id: 'mend',
   name: 'Mend',
-  kind: SkillKind.heal,
   delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.lowestHealthAlly,
-  power: 58,
   cooldown: 4,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.lowestHealthAlly,
+      effect: HealEffect(coefficient: 5.8),
+    ),
+  ],
 );
 
 const SkillDefinition disrupt = SkillDefinition(
   id: 'disrupt',
   name: 'Disrupt',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.opposingPriority,
-  power: 34,
   cooldown: 7,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 3.4),
+    ),
+  ],
 );
 
 const SkillDefinition strike = SkillDefinition(
   id: 'strike',
   name: 'Strike',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 14,
   cooldown: 1,
   isBasic: true,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 1.4),
+    ),
+  ],
 );
 
 const SkillDefinition shot = SkillDefinition(
   id: 'shot',
   name: 'Shot',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.projectile,
-  targeting: SkillTargeting.opposingPriority,
-  power: 13,
   cooldown: 1,
   isBasic: true,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 1.3),
+    ),
+  ],
 );
 
 const SkillDefinition smite = SkillDefinition(
   id: 'smite',
   name: 'Smite',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.opposingPriority,
-  power: 9,
   cooldown: 1,
   isBasic: true,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 0.9),
+    ),
+  ],
 );
 
 // ---------------------------------------------------------------------------
@@ -116,95 +144,122 @@ const SkillDefinition smite = SkillDefinition(
 const SkillDefinition crushingBlow = SkillDefinition(
   id: 'crushing_blow',
   name: 'Crushing Blow',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 32,
   cooldown: 6,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 3.2),
+    ),
+  ],
 );
 
 const SkillDefinition rend = SkillDefinition(
   id: 'rend',
   name: 'Rend',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 36,
   cooldown: 5,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 3.6),
+    ),
+  ],
 );
 
 const SkillDefinition arcBolt = SkillDefinition(
   id: 'arc_bolt',
   name: 'Arc Bolt',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.projectile,
-  targeting: SkillTargeting.opposingPriority,
-  power: 36,
   cooldown: 4,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 3.6),
+    ),
+  ],
 );
 
 const SkillDefinition darkMend = SkillDefinition(
   id: 'dark_mend',
   name: 'Dark Mend',
-  kind: SkillKind.heal,
   delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.lowestHealthAlly,
-  power: 50,
   cooldown: 5,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.lowestHealthAlly,
+      effect: HealEffect(coefficient: 5),
+    ),
+  ],
 );
 
 const SkillDefinition hex = SkillDefinition(
   id: 'hex',
   name: 'Hex',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.opposingPriority,
-  power: 40,
   cooldown: 7,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 4),
+    ),
+  ],
 );
 
 const SkillDefinition claw = SkillDefinition(
   id: 'claw',
   name: 'Claw',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 15,
   cooldown: 1,
   isBasic: true,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 1.5),
+    ),
+  ],
 );
 
 const SkillDefinition bolt = SkillDefinition(
   id: 'bolt',
   name: 'Bolt',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.projectile,
-  targeting: SkillTargeting.opposingPriority,
-  power: 12,
   cooldown: 1,
   isBasic: true,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 1.2),
+    ),
+  ],
 );
 
 const SkillDefinition wither = SkillDefinition(
   id: 'wither',
   name: 'Wither',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.opposingPriority,
-  power: 10,
   cooldown: 1,
   isBasic: true,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 1),
+    ),
+  ],
 );
 
 const SkillDefinition lash = SkillDefinition(
   id: 'lash',
   name: 'Lash',
-  kind: SkillKind.damage,
   delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.opposingPriority,
-  power: 12,
   cooldown: 1,
   isBasic: true,
+  effects: <EffectSpec>[
+    EffectSpec(
+      targeting: SkillTargeting.opposingPriority,
+      effect: DamageEffect(coefficient: 1.2),
+    ),
+  ],
 );
 
 // ---------------------------------------------------------------------------

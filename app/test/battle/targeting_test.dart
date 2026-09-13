@@ -4,6 +4,7 @@ import 'package:guild_overseer/src/core/domain/faction.dart';
 import 'package:guild_overseer/src/core/domain/target_priority.dart';
 import 'package:guild_overseer/src/features/battle/domain/arena_layout.dart';
 import 'package:guild_overseer/src/features/battle/domain/combatant.dart';
+import 'package:guild_overseer/src/features/battle/domain/skill_effect.dart';
 import 'package:guild_overseer/src/features/battle/domain/targeting.dart';
 
 import 'battle_test_fixtures.dart';
@@ -151,7 +152,7 @@ void main() {
 
       final List<Combatant> targets = resolveSkillTargets(
         unit: hero,
-        skill: columnAttack,
+        targeting: SkillTargeting.opposingColumn,
         currentTarget: enemies.first,
         units: <Combatant>[hero, ...enemies],
       );
@@ -169,7 +170,7 @@ void main() {
       expect(
         resolveSkillTargets(
           unit: healer,
-          skill: healSkill,
+          targeting: SkillTargeting.lowestHealthAlly,
           currentTarget: null,
           units: <Combatant>[healer, friend],
         ),
@@ -181,7 +182,7 @@ void main() {
       expect(
         resolveSkillTargets(
           unit: healer,
-          skill: healSkill,
+          targeting: SkillTargeting.lowestHealthAlly,
           currentTarget: null,
           units: <Combatant>[healer, friend],
         ).single.id,
@@ -197,7 +198,7 @@ void main() {
       expect(
         resolveSkillTargets(
           unit: hero,
-          skill: basicAttack,
+          targeting: SkillTargeting.opposingPriority,
           currentTarget: corpse,
           units: <Combatant>[hero, corpse],
         ),

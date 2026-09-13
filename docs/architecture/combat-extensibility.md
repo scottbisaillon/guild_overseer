@@ -498,8 +498,8 @@ dependency, and deliberately front-loaded with the least glamorous work.
 |---|---|---|---|
 | 0 | **Golden test of the current fight** — *done* | A safety net *before* any refactor. `test/battle/golden_fight_test.dart` records every decision the mock-roster fight publishes and compares it against `test/battle/goldens/`. | XS |
 | 1 | **`Stat`, `StatBlock`, `StatModifier`** — *done* | Effects scale off stats; everything downstream needs this. `maxHealth` and `globalCooldown` are now stats read through the pipeline. The golden transcript came out byte-identical, which is the point: no behaviour moved. | M |
-| 2 | **Effect lists** | `kind`+`power` → `List<EffectSpec>`; damage and heal become effects; `power` becomes `coefficient × stat`. Golden test changes once, intentionally, and is re-pinned. | L |
-| 3 | **Composable targeting** | Fold `SkillTargeting` and `TargetPriority` into `TargetSelector`. Pure refactor with a large payoff in authoring freedom. | M |
+| 2 | **Effect lists** — *done* | `kind`+`power` → `List<EffectSpec>`, each with its own targeting; damage and heal are effects resolved by `effect_resolver.dart`; `power` became `coefficient × stat`. The golden was expected to change here and did not: authoring each coefficient against the same base reproduced every number exactly, so the restructure is provably behaviour-preserving. | L |
+| 3 | **Composable targeting** — *next* | Fold `SkillTargeting` and `TargetPriority` into `TargetSelector`. Pure refactor with a large payoff in authoring freedom. `SkillTargeting` already moved onto the effect spec in stage 2, so this is a substitution rather than a restructure. | M |
 | 4 | **Statuses** | First stage that adds *new* mechanics. Ship Rend→bleed and Fortify as proof. | L |
 | 5 | **Presentation registry** | Delete the `SkillDelivery` switches; cue ids in data. Unblocks art without touching rules. | M |
 | 6 | **Equipment** | `ItemDefinition` → modifiers under `ModifierSource.item`; gear slots on the unit. Small, because seam 1 already did the work. | S |
@@ -518,9 +518,9 @@ visible dividends, and is a good checkpoint to reassess before continuing.
   fixed roster and seed. Catches accidental changes to ordering, RNG draw order,
   or resolution. Text rather than a hash so a failure names the beat that moved.
   Guarded by its own determinism, restart, frame-rate and speed tests.
-- **One unit test per effect kind** — resolve it against a hand-built context,
-  assert the numbers. Cheap, and they are the regression net when the resolver
-  grows.
+- **One unit test per effect kind** *(in place)* — resolve it against a
+  hand-built context with a fixed random source, assert the numbers. Cheap, and
+  they are the regression net when the resolver grows.
 - **Selector table test** — a parameterised test over a fixed twelve-unit board
   asserting which units each selector shape returns. This is where off-by-one
   targeting bugs get caught.
