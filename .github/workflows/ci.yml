@@ -1,0 +1,23 @@
+# Checks a change before it lands: the same build the deploy runs, without the
+# deploy. Nothing here needs write access to anything.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  # Run by hand on any branch, which is how a feature branch gets a clean
+  # build without going near the github-pages environment.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Per ref, and cancelled when the branch is pushed again: an in-flight check of
+# a commit nobody is looking at any more is only ever wasted work.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
