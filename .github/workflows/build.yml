@@ -1,0 +1,60 @@
+# Builds the web client, and checks it on the way: analyze, test, then build.
+#
+# Called rather than triggered — `workflow_call` has no events of its own — so
+# there is one definition of what a build is and two workflows that ask for
+# one: `ci.yml` on a pull request, `pages.yml` before a deploy. The Flutter
+# version is pinned here, once.
+name: Build
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.4
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - run: flutter analyze
+
+      - run: flutter test
+
+      # A project page is served from /<repo>/, so the app has to be told what
+      # it is rooted at or every asset request goes to the domain root. A pull
+      # request builds it the same way the deploy does: a build that is not
+      # the one being published is not evidence about the one that is.
+      - name: Build web
+        run: >-
+          flutter build web
+          --release
+          --base-href /${{ github.event.repository.name }}/
+          --no-web-resources-cdn
+
+      # Pages serves 404.html for any path it has no file for. Handing it the
+      # app means a refresh on /battle still boots the app on that route
+      # instead of showing the Pages 404 page.
+      - name: Add SPA fallback
+        run: cp build/web/index.html build/web/404.html
+
+      # Uploaded from every build, deploy or not: a called workflow runs inside
+      # the caller's run, so this is the artifact `pages.yml` deploys, and on a
+      # pull request it is simply the site as that change would publish it.
+      #
+      # Paths here are relative to the workspace, not to the job's
+      # working-directory.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: app/build/web

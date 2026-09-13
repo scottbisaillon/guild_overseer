@@ -8,6 +8,7 @@ import '../../../battle/view/battle_palette.dart';
 import '../../cubit/party_cubit.dart';
 import '../../cubit/party_state.dart';
 import 'blueprint_card.dart';
+import 'skill_picker.dart';
 import 'unit_drag_source.dart';
 
 /// Everybody the player can take, and where a unit goes when it is taken back
@@ -57,7 +58,7 @@ class UnitBench extends StatelessWidget {
                     separatorBuilder: (BuildContext context, int index) =>
                         const SizedBox(height: 8),
                     itemBuilder: (BuildContext context, int index) =>
-                        _benchEntry(cubit, state, units[index]),
+                        _benchEntry(context, cubit, state, units[index]),
                   ),
                 ),
               ],
@@ -70,17 +71,34 @@ class UnitBench extends StatelessWidget {
 
   /// One unit: tappable to pick up, draggable to carry, and the same card
   /// either way.
-  Widget _benchEntry(PartyCubit cubit, PartyState state, UnitBlueprint unit) {
-    final Widget card = BlueprintCard(
-      blueprint: unit,
-      held: state.isHeld(unit.id),
-      placed: state.isPlaced(unit.id),
-      onTap: () => cubit.tapUnit(unit.id),
-    );
+  ///
+  /// The card draws the unit as the player has it — its chosen skills, not the
+  /// authored ones — so the bench says what each unit will actually fight
+  /// with. The card floating under a drag is the same one without the skills
+  /// button: a button that travels with the pointer is not a button.
+  Widget _benchEntry(
+    BuildContext context,
+    PartyCubit cubit,
+    PartyState state,
+    UnitBlueprint authored,
+  ) {
+    final UnitBlueprint unit = unitWithSkills(authored, state.skills);
+    final bool held = state.isHeld(unit.id);
+    final bool placed = state.isPlaced(unit.id);
+
     return UnitDragSource(
       unitId: unit.id,
-      feedback: SizedBox(width: 220, child: card),
-      child: card,
+      feedback: SizedBox(
+        width: 220,
+        child: BlueprintCard(blueprint: unit, held: held, placed: placed),
+      ),
+      child: BlueprintCard(
+        blueprint: unit,
+        held: held,
+        placed: placed,
+        onTap: () => cubit.tapUnit(unit.id),
+        onEditSkills: () => showSkillPicker(context, authored),
+      ),
     );
   }
 

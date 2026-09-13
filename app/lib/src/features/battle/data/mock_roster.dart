@@ -8,6 +8,7 @@ import '../../../core/domain/status.dart';
 import '../../../core/domain/target_priority.dart';
 import '../domain/combatant.dart';
 import '../domain/party_formation.dart';
+import '../domain/party_skills.dart';
 import '../domain/skill.dart';
 import '../domain/unit_blueprint.dart';
 import '../../../core/domain/target_selector.dart';
@@ -156,6 +157,46 @@ const SkillDefinition disrupt = SkillDefinition(
   ],
 );
 
+/// A cut that keeps bleeding. The party's side of the status system: the same
+/// [bleeding] the crypt ghouls apply, in a skill the player can hand out.
+const SkillDefinition lacerate = SkillDefinition(
+  id: 'lacerate',
+  name: 'Lacerate',
+  cooldown: 9,
+  presentation: PresentationSpec(cast: Cue.lunge),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 2.4),
+    ),
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: ApplyStatusEffect(bleeding),
+    ),
+  ],
+);
+
+/// A small heal on everybody who needs one. Weaker per head than [mend] and
+/// slower, so taking both is a decision rather than an upgrade.
+const SkillDefinition rally = SkillDefinition(
+  id: 'rally',
+  name: 'Rally',
+  cooldown: 14,
+  presentation: PresentationSpec(travel: Cue.beam, color: CueColor.heal),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector(
+        side: TargetSide.allies,
+        count: TargetSelector.unlimited,
+        filters: <TargetFilter>[WoundedFilter()],
+        includeSelf: true,
+        tieBreakByDistance: false,
+      ),
+      effect: HealEffect(coefficient: 2.4),
+    ),
+  ],
+);
+
 const SkillDefinition strike = SkillDefinition(
   id: 'strike',
   name: 'Strike',
@@ -197,6 +238,58 @@ const SkillDefinition smite = SkillDefinition(
     ),
   ],
 );
+
+// ---------------------------------------------------------------------------
+// The skill pool
+//
+// What the player may give a unit on the party screen. One pool for everybody,
+// so a tank taking Mend is allowed — the shape a skill tree per class will
+// eventually narrow, and the least interesting thing to get right first.
+//
+// Basic attacks are not in it. A unit keeps its own, because a rotation that
+// can empty itself is a unit standing still.
+// ---------------------------------------------------------------------------
+
+/// Every skill a unit may be given, in the order the picker lists them.
+const List<SkillDefinition> kSkillPool = <SkillDefinition>[
+  shieldSlam,
+  fortify,
+  recklessStrike,
+  cleave,
+  lacerate,
+  piercingShot,
+  disrupt,
+  mend,
+  rally,
+];
+
+/// The pool skill with this id, or null if there is no such skill.
+SkillDefinition? poolSkill(String id) {
+  for (final SkillDefinition skill in kSkillPool) {
+    if (skill.id == id) {
+      return skill;
+    }
+  }
+  return null;
+}
+
+/// [unit] carrying the skills the player picked for it.
+///
+/// A unit nobody customised is handed back untouched, so an empty selection is
+/// the authored roster — the screen opens on one, and a link that carries no
+/// skills fights the fight it always did. Ids naming nothing in the pool are
+/// dropped like a stale unit id in a formation: a smaller rotation beats a
+/// crash, and the basic attack means it is never an empty one.
+UnitBlueprint unitWithSkills(UnitBlueprint unit, PartySkills skills) {
+  final List<String>? chosen = skills.forUnit(unit.id);
+  if (chosen == null) {
+    return unit;
+  }
+  return unit.withSkills(<SkillDefinition>[
+    for (final String id in chosen)
+      if (poolSkill(id) case final SkillDefinition skill) skill,
+  ]);
+}
 
 // ---------------------------------------------------------------------------
 // Enemy skills
@@ -600,21 +693,25 @@ UnitBlueprint? recruitableUnit(String id) {
 /// The golden transcript is recorded from this, so what it builds is fixed.
 List<Combatant> buildMockRoster() => buildRoster(party: kDefaultParty);
 
-/// The party the player composed, against the room.
+/// The party the player composed, with the skills they chose, against the room.
 ///
 /// Placements naming a unit that does not exist are dropped rather than
 /// refused — a stale link is worth a smaller party, not a crash. A party that
 /// ends up empty is nobody's idea of a fight, so it falls back to the authored
 /// one; the party screen will not dispatch an empty party in the first place.
-List<Combatant> buildRoster({required PartyFormation party}) {
+List<Combatant> buildRoster({
+  required PartyFormation party,
+  PartySkills skills = const PartySkills.empty(),
+}) {
   final List<Combatant> allies = _spawn(
     party,
     kRecruitableUnits,
     Faction.ally,
+    skills,
   );
   return <Combatant>[
     ...allies.isEmpty
-        ? _spawn(kDefaultParty, kRecruitableUnits, Faction.ally)
+        ? _spawn(kDefaultParty, kRecruitableUnits, Faction.ally, skills)
         : allies,
     ..._spawn(kDungeonFormation, kDungeonUnits, Faction.enemy),
   ];
@@ -628,13 +725,14 @@ List<Combatant> buildRoster({required PartyFormation party}) {
 List<Combatant> _spawn(
   PartyFormation formation,
   List<UnitBlueprint> catalogue,
-  Faction faction,
-) =>
+  Faction faction, [
+  PartySkills skills = const PartySkills.empty(),
+]) =>
     <Combatant>[
       for (final FormationSlot slot in PartyFormation.slots())
         if (formation.at(slot) case final String id)
           if (_find(catalogue, id) case final UnitBlueprint blueprint)
-            blueprint.spawn(
+            unitWithSkills(blueprint, skills).spawn(
               faction: faction,
               row: slot.row,
               column: slot.column,

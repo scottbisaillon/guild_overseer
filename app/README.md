@@ -158,19 +158,31 @@ JavaScript (`--platform chrome`) and the golden may legitimately differ.
 
 ## Deployment
 
-`.github/workflows/pages.yml` builds the web client and publishes it to GitHub
-Pages. Pages is set to deploy from GitHub Actions.
+Three workflows, because building and publishing are different jobs with
+different rights:
 
-Pushes to `main` build, analyze, test and deploy. Pull requests against `main`
-run the same build without deploying, so a change is checked before it lands.
-`workflow_dispatch` runs it by hand.
+| Workflow | Trigger | What it does |
+|---|---|---|
+| `build.yml` | called by the other two | Analyze, test, build the web client, upload it as the Pages artifact. Pins the Flutter version. |
+| `ci.yml` | pull requests against `main`, manual | Runs that build. Read-only: no Pages permissions, nothing to publish with. |
+| `pages.yml` | pushes to `main`, manual | Runs that build, then deploys the artifact to Pages. |
+
+`build.yml` is a reusable workflow (`on: workflow_call`) rather than a copy in
+each: one definition of what a build is, and one place the Flutter version is
+pinned. A called workflow runs inside the caller's run, so the artifact the
+build uploads is the artifact the deploy job publishes — what goes to Pages is
+the build that passed, not a rebuild of it.
+
+A pull request therefore builds the site exactly as a deploy would, including
+the base href and the SPA fallback, and stops there. Pages is set to deploy
+from GitHub Actions.
 
 Anything that is not a push to `main` stops after the build, because the
 `github-pages` environment only accepts deployments from the default branch. To
 publish from another branch, add it under Settings -> Environments ->
 github-pages -> Deployment branches, and relax the gate on the deploy job.
 
-Two details make a project page work, both handled by the workflow:
+Two details make a project page work, both handled by the build:
 
 - **`--base-href /guild_overseer/`** — a project page is served from a
   subdirectory, and without this every asset request goes to the domain root and

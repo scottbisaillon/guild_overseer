@@ -32,3 +32,18 @@ A Flutter screen. The skill tree node graph is a `CustomPainter` — edges as `P
 The rotation builder is a `ReorderableListView` for the 6 active skill slots — Flutter provides drag-to-reorder natively on both touch and mouse with correct accessibility support. The always-active passive section is a non-reorderable `ListView` below it.
 
 RQS preview calls `rotation_evaluator()` inside `build()` — the function is pure Dart, fast enough to call on every rebuild. The result drives a `LinearProgressIndicator` and a factor breakdown below it. `BlocBuilder` triggers a rebuild on every slot change.
+
+---
+
+## Built so far
+
+None of this screen exists yet. The part of its job that the prototype needed
+first — choosing which skills a unit fights with — is a picker on the
+[[party-composer|party screen]], opened from the unit being placed: a rotation
+in priority order over a general pool, with no tree, no points and no RQS. See
+[[../systems/skills#Built so far]].
+
+That picker is where the rotation builder described above starts. When the tree
+lands, the pool it reads from becomes the tree's unlocked nodes; whether the
+whole editor moves to a screen of its own or stays beside the formation is a
+decision for when there is enough on it to justify the trip.

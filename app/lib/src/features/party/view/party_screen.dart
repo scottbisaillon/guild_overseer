@@ -5,11 +5,13 @@ import 'package:go_router/go_router.dart';
 import '../../battle/data/mock_roster.dart';
 import '../../battle/domain/arena_layout.dart';
 import '../../battle/domain/party_formation.dart';
+import '../../battle/domain/party_skills.dart';
 import '../../battle/view/battle_palette.dart';
 import '../../battle/view/battle_screen.dart';
 import '../cubit/party_cubit.dart';
 import '../cubit/party_state.dart';
 import 'widgets/formation_board.dart';
+import 'widgets/skill_picker.dart';
 import 'widgets/unit_bench.dart';
 
 /// Pick who fights and where they stand, then start the fight.
@@ -20,15 +22,21 @@ import 'widgets/unit_bench.dart';
 /// mouse expects. They are the same two operations on the same formation —
 /// see [PartyCubit] — so neither is a special case of the other.
 ///
-/// Skills are fixed for now. When skill selection lands it belongs here, on
-/// the unit that is being placed, rather than on a screen of its own.
+/// Skills are chosen here too, on the unit being placed rather than on a
+/// screen of its own: what a unit brings is part of deciding whether to take
+/// it, so the two questions are asked in one place. The bolt on a unit opens
+/// the picker; see [SkillPicker].
 class PartyScreen extends StatelessWidget {
-  const PartyScreen({this.initialParty, super.key});
+  const PartyScreen({this.initialParty, this.initialSkills, super.key});
 
   static const String routePath = '/party';
 
   /// A party to open with, from a link that carries one. Null starts empty.
   final PartyFormation? initialParty;
+
+  /// The skills that party is carrying, from the same link. Null leaves every
+  /// unit with the skills it was authored with.
+  final PartySkills? initialSkills;
 
   /// Below this width the bench stops fitting beside the board.
   static const double _wideLayoutBreakpoint = 900;
@@ -38,7 +46,10 @@ class PartyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider<PartyCubit>(
-        create: (BuildContext context) => PartyCubit(formation: initialParty),
+        create: (BuildContext context) => PartyCubit(
+          formation: initialParty,
+          skills: initialSkills,
+        ),
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
@@ -109,7 +120,8 @@ class _Instructions extends StatelessWidget {
         builder: (BuildContext context, PartyState state) {
           final String? held = state.heldUnitId;
           final String message = held == null
-              ? 'Tap a unit to pick it up, then tap a slot — or drag it across.'
+              ? 'Tap a unit to pick it up, then tap a slot — or drag it '
+                  'across. The bolt on a unit chooses its skills.'
               : 'Carrying ${recruitableUnit(held)?.name ?? held}. '
                   'Tap a slot to place, or tap them again to put them down.';
 
@@ -195,7 +207,11 @@ class _DispatchBar extends StatelessWidget {
               children: <Widget>[
                 FilledButton.icon(
                   onPressed: state.canDispatch
-                      ? () => _dispatch(context, state.formation)
+                      ? () => _dispatch(
+                            context,
+                            state.formation,
+                            state.dispatchedSkills,
+                          )
                       : null,
                   icon: const Icon(Icons.play_arrow, size: 16),
                   label: const Text('Begin battle'),
@@ -222,12 +238,21 @@ class _DispatchBar extends StatelessWidget {
       );
 
   /// The party travels in the URL, so a composition is a link you can share or
-  /// reload — the same reason the battle mockup has a path of its own.
-  void _dispatch(BuildContext context, PartyFormation formation) =>
+  /// reload — the same reason the battle mockup has a path of its own. The
+  /// skills travel beside it, because a party is who went and what they
+  /// brought; a link carrying only the first is a different fight.
+  void _dispatch(
+    BuildContext context,
+    PartyFormation formation,
+    PartySkills skills,
+  ) =>
       context.go(
         Uri(
           path: BattleScreen.routePath,
-          queryParameters: <String, String>{'party': formation.encode()},
+          queryParameters: <String, String>{
+            'party': formation.encode(),
+            if (skills.isNotEmpty) 'skills': skills.encode(),
+          },
         ).toString(),
       );
 }

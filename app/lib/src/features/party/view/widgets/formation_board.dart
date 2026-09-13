@@ -4,12 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../battle/data/mock_roster.dart';
 import '../../../battle/domain/arena_layout.dart';
 import '../../../battle/domain/party_formation.dart';
+import '../../../battle/domain/skill.dart';
 import '../../../battle/domain/unit_blueprint.dart';
 import '../../../battle/view/battle_palette.dart';
 import '../../cubit/party_cubit.dart';
 import '../../cubit/party_state.dart';
 import 'blueprint_card.dart';
 import 'role_glyph.dart';
+import 'skill_picker.dart';
 import 'unit_drag_source.dart';
 
 /// The party's half of the arena, as somewhere to put people.
@@ -109,8 +111,12 @@ class _FormationCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final PartyCubit cubit = context.read<PartyCubit>();
     final String? unitId = state.formation.at(slot);
-    final UnitBlueprint? unit =
+    final UnitBlueprint? authored =
         unitId == null ? null : recruitableUnit(unitId);
+    // Drawn as the player has it: a unit standing on the board shows the
+    // skills it is taking, not the ones it came with.
+    final UnitBlueprint? unit =
+        authored == null ? null : unitWithSkills(authored, state.skills);
 
     return DragTarget<String>(
       onAcceptWithDetails: (DragTargetDetails<String> details) =>
@@ -145,11 +151,15 @@ class _FormationCell extends StatelessWidget {
                             : BattlePalette.gridLine,
                   ),
                 ),
-                child: unit == null
+                child: unit == null || authored == null
                     ? _empty(inviting)
+                    // The picker is opened on the unit as authored: what it is
+                    // carrying now comes from the cubit, and resetting has to
+                    // have somewhere to reset to.
                     : _PlacedUnit(
                         blueprint: unit,
                         held: held,
+                        onEditSkills: () => showSkillPicker(context, authored),
                         onRemove: () => cubit.clearSlot(slot),
                       ),
               ),
@@ -172,17 +182,19 @@ class _FormationCell extends StatelessWidget {
       );
 }
 
-/// A unit standing in a cell: who it is, and the two ways back out — drag it
-/// somewhere else, or take it off the board entirely.
+/// A unit standing in a cell: who it is, what it is bringing, and the two ways
+/// back out — drag it somewhere else, or take it off the board entirely.
 class _PlacedUnit extends StatelessWidget {
   const _PlacedUnit({
     required this.blueprint,
     required this.held,
+    required this.onEditSkills,
     required this.onRemove,
   });
 
   final UnitBlueprint blueprint;
   final bool held;
+  final VoidCallback onEditSkills;
   final VoidCallback onRemove;
 
   @override
@@ -217,7 +229,7 @@ class _PlacedUnit extends StatelessWidget {
                     ),
                     Text(
                       '${blueprint.maxHealth.toStringAsFixed(0)} hp  ·  '
-                      '${blueprint.priority.label}',
+                      '${_rotation(blueprint)}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -227,6 +239,13 @@ class _PlacedUnit extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+              IconButton(
+                onPressed: onEditSkills,
+                visualDensity: VisualDensity.compact,
+                iconSize: 16,
+                tooltip: 'Skills for ${blueprint.name}',
+                icon: const Icon(Icons.bolt, color: BattlePalette.textMuted),
               ),
               IconButton(
                 onPressed: onRemove,
@@ -239,4 +258,9 @@ class _PlacedUnit extends StatelessWidget {
           ),
         ),
       );
+
+  /// What this unit will fire, in the order it will try to: the line that makes
+  /// a customised unit readable off the board.
+  String _rotation(UnitBlueprint unit) =>
+      unit.skills.map((SkillDefinition skill) => skill.name).join(', ');
 }

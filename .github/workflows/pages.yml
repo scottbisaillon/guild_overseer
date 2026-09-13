@@ -1,15 +1,15 @@
-# Builds the Flutter web client and publishes it to GitHub Pages.
+# Publishes the web client to GitHub Pages.
 #
 # Pages must be set to deploy from GitHub Actions:
 # Settings -> Pages -> Source: GitHub Actions.
+#
+# The build itself lives in `build.yml` and is shared with `ci.yml`, so what is
+# published is what a pull request was checked against. This workflow is the
+# deploy and the gate in front of it: a build that fails never reaches Pages.
 name: Deploy web client to Pages
 
 on:
   push:
-    branches: [main]
-  # Analyze, test and build a change before it lands. Only the build job runs
-  # here: the deploy job is gated on main, and a pull request's ref never is.
-  pull_request:
     branches: [main]
   workflow_dispatch:
 
@@ -18,55 +18,16 @@ permissions:
   pages: write
   id-token: write
 
-# Grouped per ref rather than globally, so a pull request build cannot sit in
-# the queue ahead of a deploy. Two pushes to main still serialise — one deploy
-# at a time, the newer queueing rather than racing — while a pull request that
-# is pushed again gives up its in-flight run, which is only ever wasted work.
+# One deploy at a time, and never cancelled: a half-finished publish is worse
+# than a queued one. Pull request checks have a queue of their own in `ci.yml`
+# and cannot sit in front of a deploy.
 concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: app
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: 3.47.4
-          channel: stable
-          cache: true
-
-      - run: flutter pub get
-
-      - run: flutter analyze
-
-      - run: flutter test
-
-      # A project page is served from /<repo>/, so the app has to be told what
-      # it is rooted at or every asset request goes to the domain root.
-      - name: Build web
-        run: >-
-          flutter build web
-          --release
-          --base-href /${{ github.event.repository.name }}/
-          --no-web-resources-cdn
-
-      # Pages serves 404.html for any path it has no file for. Handing it the
-      # app means a refresh on /battle still boots the app on that route
-      # instead of showing the Pages 404 page.
-      - name: Add SPA fallback
-        run: cp build/web/index.html build/web/404.html
-
-      # Paths here are relative to the workspace, not to the job's
-      # working-directory.
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: app/build/web
+    uses: ./.github/workflows/build.yml
 
   deploy:
     # Pushes only arrive from main, but workflow_dispatch can be run from any

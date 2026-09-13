@@ -4,7 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guild_overseer/src/app/theme.dart';
 import 'package:guild_overseer/src/features/battle/domain/party_formation.dart';
+import 'package:guild_overseer/src/features/battle/domain/party_skills.dart';
 import 'package:guild_overseer/src/features/party/view/party_screen.dart';
+import 'package:guild_overseer/src/features/party/view/widgets/skill_picker.dart';
 import 'package:guild_overseer/src/features/party/view/widgets/unit_bench.dart';
 import 'package:guild_overseer/src/features/party/view/widgets/unit_drag_source.dart';
 
@@ -22,6 +24,7 @@ void main() {
   /// under test here is what the party screen sends it.
   Widget app({
     PartyFormation? initialParty,
+    PartySkills? initialSkills,
     TargetPlatform platform = TargetPlatform.android,
   }) =>
       MaterialApp.router(
@@ -31,15 +34,24 @@ void main() {
             GoRoute(
               path: '/',
               builder: (BuildContext context, GoRouterState state) =>
-                  PartyScreen(initialParty: initialParty),
+                  PartyScreen(
+                initialParty: initialParty,
+                initialSkills: initialSkills,
+              ),
             ),
             GoRoute(
               path: '/battle',
+              // Both halves of what was dispatched, read back off the link:
+              // who went, and what they took with them.
               builder: (BuildContext context, GoRouterState state) => Scaffold(
                 body: Text(
                   'dispatched '
                   '${PartyFormation.decode(
                     state.uri.queryParameters['party'],
+                  ).encode()}'
+                  ' with '
+                  '${PartySkills.decode(
+                    state.uri.queryParameters['skills'],
                   ).encode()}',
                 ),
               ),
@@ -64,6 +76,7 @@ void main() {
   Future<void> pumpScreen(
     WidgetTester tester, {
     PartyFormation? initialParty,
+    PartySkills? initialSkills,
     TargetPlatform platform = TargetPlatform.android,
   }) async {
     tester.view.physicalSize = const Size(1400, 1000);
@@ -71,7 +84,11 @@ void main() {
     addTearDown(tester.view.reset);
 
     await tester.pumpWidget(
-      app(initialParty: initialParty, platform: platform),
+      app(
+        initialParty: initialParty,
+        initialSkills: initialSkills,
+        platform: platform,
+      ),
     );
     await tester.pumpAndSettle();
   }
@@ -218,7 +235,7 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'Begin battle'));
       await tester.pumpAndSettle();
 
-      expect(find.text('dispatched ally_bramm:0:0'), findsOneWidget);
+      expect(find.text('dispatched ally_bramm:0:0 with '), findsOneWidget);
     });
 
     testWidgets('the default party is one button away',
@@ -241,6 +258,182 @@ void main() {
 
       expect(standingIn(backBottom, fenn), findsOneWidget);
       expect(find.text('1 of 6 slots filled'), findsOneWidget);
+    });
+  });
+
+  /// The other half of composing a party: what each unit brings. The picker
+  /// writes through to the same cubit the board does, so what it changes shows
+  /// up on the card and travels in the dispatch link.
+  group('choosing skills', () {
+    Finder inPicker(Finder finder) =>
+        find.descendant(of: find.byType(SkillPicker), matching: finder);
+
+    Future<void> openPicker(WidgetTester tester, String unitName) async {
+      await tester.tap(find.byTooltip('Skills for $unitName').first);
+      await tester.pumpAndSettle();
+    }
+
+    /// The pool is longer than the dialog, so anything low in it has to be
+    /// scrolled to before it can be tapped — as a player would.
+    Future<void> tapInPicker(WidgetTester tester, Finder finder) async {
+      await tester.ensureVisible(finder);
+      await tester.pumpAndSettle();
+      await tester.tap(finder);
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> dispatch(WidgetTester tester) async {
+      await tester.tap(find.widgetWithText(FilledButton, 'Begin battle'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('the picker shows what a unit brings and what it may take',
+        (WidgetTester tester) async {
+      await pumpScreen(tester);
+
+      await openPicker(tester, bramm);
+
+      expect(find.text('ROTATION'), findsOneWidget);
+      expect(find.text('2/3'), findsOneWidget, reason: 'as authored');
+      // The basic attack is in the rotation and not in the pool: it is the
+      // unit's own, and not the player's to trade away.
+      expect(inPicker(find.text('Strike')), findsOneWidget);
+      expect(inPicker(find.text('Rally')), findsOneWidget);
+    });
+
+    testWidgets('a skill taken from the pool joins the rotation',
+        (WidgetTester tester) async {
+      await pumpScreen(tester);
+
+      await tester.tap(benched(bramm));
+      await tester.pumpAndSettle();
+      await tester.tap(cell(frontTop));
+      await tester.pumpAndSettle();
+
+      await openPicker(tester, bramm);
+      await tapInPicker(tester, inPicker(find.text('Mend')).first);
+      await tapInPicker(tester, find.widgetWithText(FilledButton, 'Done'));
+      await dispatch(tester);
+
+      expect(
+        find.text(
+          'dispatched ally_bramm:0:0 with ally_bramm:fortify.shield_slam.mend',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a rotation only holds what it holds',
+        (WidgetTester tester) async {
+      await pumpScreen(tester);
+
+      await openPicker(tester, bramm);
+      await tapInPicker(tester, inPicker(find.text('Mend')).first);
+      expect(find.text('3/3'), findsOneWidget);
+
+      await tapInPicker(tester, inPicker(find.text('Rally')).first);
+
+      expect(find.text('3/3'), findsOneWidget);
+      expect(inPicker(find.text('Rally')), findsOneWidget, reason: 'unchosen');
+    });
+
+    testWidgets('a dropped skill leaves the rotation',
+        (WidgetTester tester) async {
+      await pumpScreen(tester);
+
+      await tester.tap(benched(bramm));
+      await tester.pumpAndSettle();
+      await tester.tap(cell(frontTop));
+      await tester.pumpAndSettle();
+
+      await openPicker(tester, bramm);
+      await tapInPicker(tester, find.byTooltip('Drop Fortify'));
+      await tapInPicker(tester, find.widgetWithText(FilledButton, 'Done'));
+      await dispatch(tester);
+
+      expect(
+        find.text('dispatched ally_bramm:0:0 with ally_bramm:shield_slam'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('the rotation is reordered into priority order',
+        (WidgetTester tester) async {
+      await pumpScreen(tester);
+
+      await tester.tap(benched(bramm));
+      await tester.pumpAndSettle();
+      await tester.tap(cell(frontTop));
+      await tester.pumpAndSettle();
+
+      await openPicker(tester, bramm);
+      await tapInPicker(tester, find.byTooltip('Move Shield Slam up'));
+      await tapInPicker(tester, find.widgetWithText(FilledButton, 'Done'));
+      await dispatch(tester);
+
+      expect(
+        find.text(
+          'dispatched ally_bramm:0:0 with ally_bramm:shield_slam.fortify',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a reset unit travels with no skills of its own',
+        (WidgetTester tester) async {
+      await pumpScreen(tester);
+
+      await tester.tap(benched(bramm));
+      await tester.pumpAndSettle();
+      await tester.tap(cell(frontTop));
+      await tester.pumpAndSettle();
+
+      await openPicker(tester, bramm);
+      await tapInPicker(tester, inPicker(find.text('Mend')).first);
+      await tapInPicker(
+        tester,
+        find.widgetWithText(TextButton, 'Reset to default'),
+      );
+      await tapInPicker(tester, find.widgetWithText(FilledButton, 'Done'));
+      await dispatch(tester);
+
+      expect(
+        find.text('dispatched ally_bramm:0:0 with '),
+        findsOneWidget,
+        reason: 'a unit fighting as authored adds nothing to the link',
+      );
+    });
+
+    testWidgets('only the units that are going carry their skills along',
+        (WidgetTester tester) async {
+      await pumpScreen(tester);
+
+      await openPicker(tester, fenn);
+      await tapInPicker(tester, inPicker(find.text('Mend')).first);
+      await tapInPicker(tester, find.widgetWithText(FilledButton, 'Done'));
+
+      await tester.tap(benched(bramm));
+      await tester.pumpAndSettle();
+      await tester.tap(cell(frontTop));
+      await tester.pumpAndSettle();
+      await dispatch(tester);
+
+      expect(find.text('dispatched ally_bramm:0:0 with '), findsOneWidget);
+    });
+
+    testWidgets('a link carrying skills opens on them',
+        (WidgetTester tester) async {
+      await pumpScreen(
+        tester,
+        initialParty: PartyFormation.decode('ally_bramm:0:0'),
+        initialSkills: PartySkills.decode('ally_bramm:mend.cleave'),
+      );
+
+      await openPicker(tester, bramm);
+
+      expect(find.text('2/3'), findsOneWidget);
+      expect(find.textContaining('customised'), findsOneWidget);
+      expect(inPicker(find.text('Fortify')), findsOneWidget, reason: 'pool');
     });
   });
 }

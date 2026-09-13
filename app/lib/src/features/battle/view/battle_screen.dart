@@ -11,6 +11,7 @@ import '../bloc/battle_state.dart';
 import '../data/mock_roster.dart';
 import '../domain/battle_simulation.dart';
 import '../domain/party_formation.dart';
+import '../domain/party_skills.dart';
 import '../game/battle_game.dart';
 import 'battle_palette.dart';
 import 'widgets/battle_controls.dart';
@@ -25,7 +26,7 @@ import 'widgets/roster_panel.dart';
 /// `GameWidget` under Flutter HUD widgets, with the simulation's event stream
 /// as the only wire between them.
 class BattleScreen extends StatefulWidget {
-  const BattleScreen({this.party, super.key});
+  const BattleScreen({this.party, this.skills, super.key});
 
   static const String routePath = '/battle';
 
@@ -33,6 +34,9 @@ class BattleScreen extends StatefulWidget {
   /// for the life of the screen: a restart rebuilds the same roster, so the
   /// fight being watched again is the fight that was watched.
   final PartyFormation? party;
+
+  /// The skills that party chose, or null to fight with the authored ones.
+  final PartySkills? skills;
 
   @override
   State<BattleScreen> createState() => _BattleScreenState();
@@ -52,7 +56,10 @@ class _BattleScreenState extends State<BattleScreen> {
   void initState() {
     super.initState();
     _simulation = BattleSimulation(
-      rosterBuilder: () => buildRoster(party: widget.party ?? kDefaultParty),
+      rosterBuilder: () => buildRoster(
+        party: widget.party ?? kDefaultParty,
+        skills: widget.skills ?? const PartySkills.empty(),
+      ),
     );
     _game = BattleGame(simulation: _simulation);
     _bloc = BattleBloc(
@@ -73,7 +80,11 @@ class _BattleScreenState extends State<BattleScreen> {
   String _backDestination() => switch (widget.party) {
         final PartyFormation party => Uri(
             path: PartyScreen.routePath,
-            queryParameters: <String, String>{'party': party.encode()},
+            queryParameters: <String, String>{
+              'party': party.encode(),
+              if (widget.skills case final PartySkills skills)
+                if (skills.isNotEmpty) 'skills': skills.encode(),
+            },
           ).toString(),
         null => '/',
       };
