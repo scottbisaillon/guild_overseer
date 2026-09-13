@@ -4,7 +4,8 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 
-import '../../../core/domain/skill_kind.dart';
+import '../../../core/domain/cue_registry.dart';
+import '../../../core/domain/presentation.dart';
 import '../../../core/events/game_event.dart';
 import '../domain/arena_layout.dart';
 import '../domain/battle_simulation.dart';
@@ -12,9 +13,9 @@ import '../domain/combatant.dart';
 import '../view/battle_palette.dart';
 import 'components/arena_background_component.dart';
 import 'components/floating_text_component.dart';
-import 'components/projectile_component.dart';
 import 'components/target_lines_component.dart';
 import 'components/unit_component.dart';
+import 'cues/battle_cues.dart';
 
 /// The Flame layer: it draws the fight and nothing else.
 ///
@@ -37,6 +38,10 @@ class BattleGame extends FlameGame {
   bool showTargetLines = true;
 
   final Map<String, UnitComponent> _unitComponents = <String, UnitComponent>{};
+
+  /// Cue id -> what draws it. The only thing standing between what content
+  /// asks for and what appears on screen.
+  final CueRegistry<CueContext> _cues = buildBattleCues();
 
   StreamSubscription<GameEvent>? _subscription;
 
@@ -118,6 +123,9 @@ class BattleGame extends FlameGame {
           '+${amount.toStringAsFixed(0)}',
           BattlePalette.heal,
         );
+      case StatusApplied():
+        _onStatusApplied(event);
+      case StatusEnded():
       case UnitDied():
       case BattleStarted():
       case BattlePaused():
@@ -132,7 +140,8 @@ class BattleGame extends FlameGame {
       case RestartBattleRequested():
       case SpeedChangeRequested():
         // Nothing to draw: unit components read death straight off the
-        // combatant, and the rest is HUD-only state.
+        // combatant, a status ending is not worth an effect, and the rest is
+        // HUD-only state.
         break;
     }
   }
@@ -142,30 +151,70 @@ class BattleGame extends FlameGame {
     if (source == null || event.targetIds.isEmpty) {
       return;
     }
+    source.playCast();
+
+    final PresentationSpec spec = event.presentation;
     final Vector2 origin = _positionOf(event.sourceId);
-    source.playCast(event.delivery, _positionOf(event.targetIds.first));
+    final Color color = _colorFor(spec.color, event.sourceId);
 
-    final Color color = event.kind == SkillKind.heal
-        ? BattlePalette.heal
-        : BattlePalette.faction(
-            simulation.unitById(event.sourceId)!.faction,
-          );
-
+    // One cast, then travel and impact once per target. No branch on what kind
+    // of skill this was: the spec names cues and the registry resolves them,
+    // so a new visual never reaches this method.
+    _cues.play(
+      spec.cast,
+      CueContext(
+        world: world,
+        origin: origin,
+        destination: _positionOf(event.targetIds.first),
+        color: color,
+        source: source,
+      ),
+    );
     for (final String targetId in event.targetIds) {
-      final Vector2 target = _positionOf(targetId);
-      switch (event.delivery) {
-        case SkillDelivery.projectile:
-          world.add(
-            ProjectileComponent(from: origin, to: target, color: color),
-          );
-        case SkillDelivery.beam:
-          world.add(BeamComponent(from: origin, to: target, color: color));
-        case SkillDelivery.melee:
-          // The lunge is the effect; a second flourish only adds noise.
-          break;
-      }
+      final CueContext context = CueContext(
+        world: world,
+        origin: origin,
+        destination: _positionOf(targetId),
+        color: color,
+        source: source,
+        target: _unitComponents[targetId],
+      );
+      _cues.play(spec.travel, context);
+      _cues.play(spec.impact, context);
     }
   }
+
+  void _onStatusApplied(StatusApplied event) {
+    final PresentationSpec spec = event.presentation;
+    final Vector2 at = _positionOf(event.targetId);
+    _cues.play(
+      spec.impact,
+      CueContext(
+        world: world,
+        origin: at,
+        destination: at,
+        color: _colorFor(spec.color, event.targetId),
+        target: _unitComponents[event.targetId],
+        label: event.statusName,
+      ),
+    );
+  }
+
+  /// What an authored colour role means in this palette.
+  ///
+  /// Falls back rather than asserting: presentation never gets to be the reason
+  /// a fight stops, so a unit the renderer cannot find is drawn in a neutral
+  /// colour instead of crashing the frame.
+  Color _colorFor(CueColor role, String unitId) => switch (role) {
+        CueColor.source => switch (simulation.unitById(unitId)) {
+            final Combatant unit => BattlePalette.faction(unit.faction),
+            null => BattlePalette.textMuted,
+          },
+        CueColor.heal => BattlePalette.heal,
+        CueColor.damage => BattlePalette.damage,
+        CueColor.buff => BattlePalette.heal,
+        CueColor.debuff => BattlePalette.damage,
+      };
 
   void _spawnFloatingText(String unitId, String text, Color color) {
     final Vector2 position = _positionOf(unitId);

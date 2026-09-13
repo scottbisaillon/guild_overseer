@@ -1,9 +1,15 @@
 import '../../../core/domain/combat_role.dart';
 import '../../../core/domain/faction.dart';
-import '../../../core/domain/skill_kind.dart';
+import '../../../core/domain/item.dart';
+import '../../../core/domain/presentation.dart';
+import '../../../core/domain/stat.dart';
+import '../../../core/domain/stat_modifier.dart';
+import '../../../core/domain/status.dart';
 import '../../../core/domain/target_priority.dart';
 import '../domain/combatant.dart';
 import '../domain/skill.dart';
+import '../../../core/domain/target_selector.dart';
+import '../../../core/domain/skill_effect.dart';
 
 /// The hand-authored roster the battle mockup fights with.
 ///
@@ -13,100 +19,181 @@ import '../domain/skill.dart';
 /// without touching combat code.
 
 // ---------------------------------------------------------------------------
+// Statuses
+//
+// A buff and a damage over time are the same shape — they differ only in what
+// they carry. Neither needed a line of combat code to exist.
+// ---------------------------------------------------------------------------
+
+/// Physical damage over time. Ticks are resolved through the ordinary effect
+/// path, so a bleed rolls, scales and kills exactly as a sword swing does.
+const StatusDefinition bleeding = StatusDefinition(
+  id: 'bleeding',
+  name: 'Bleeding',
+  duration: 6,
+  tickInterval: 2,
+  tags: <StatusTag>{StatusTag.debuff, StatusTag.bleed},
+  maxStacks: 3,
+  policy: StackPolicy.stack,
+  onTick: <SkillEffect>[DamageEffect(coefficient: 1.2)],
+  presentation: PresentationSpec(
+    impact: Cue.debuffMark,
+    color: CueColor.debuff,
+  ),
+);
+
+/// The tank braces. Straight mitigation for a while, granted as a modifier
+/// like anything else and removed with the status.
+const StatusDefinition fortified = StatusDefinition(
+  id: 'fortified',
+  name: 'Fortified',
+  duration: 8,
+  tags: <StatusTag>{StatusTag.buff},
+  modifiers: <StatModifier>[
+    StatModifier.increased(
+      Stat.damageTakenMultiplier,
+      -0.35,
+      source: ModifierSource.status('fortified'),
+    ),
+  ],
+  presentation: PresentationSpec(impact: Cue.buffMark, color: CueColor.buff),
+);
+
+// ---------------------------------------------------------------------------
 // Ally skills
 // ---------------------------------------------------------------------------
 
 const SkillDefinition shieldSlam = SkillDefinition(
   id: 'shield_slam',
   name: 'Shield Slam',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 30,
   cooldown: 6,
+  presentation: PresentationSpec(cast: Cue.lunge),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 3),
+    ),
+  ],
+);
+
+const SkillDefinition fortify = SkillDefinition(
+  id: 'fortify',
+  name: 'Fortify',
+  cooldown: 12,
+  presentation: PresentationSpec(travel: Cue.beam),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.self,
+      effect: ApplyStatusEffect(fortified),
+    ),
+  ],
 );
 
 const SkillDefinition recklessStrike = SkillDefinition(
   id: 'reckless_strike',
   name: 'Reckless Strike',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 62,
   cooldown: 8,
+  presentation: PresentationSpec(cast: Cue.lunge),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 6.2),
+    ),
+  ],
 );
 
 const SkillDefinition cleave = SkillDefinition(
   id: 'cleave',
   name: 'Cleave',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingColumn,
-  power: 22,
   cooldown: 5,
+  presentation: PresentationSpec(cast: Cue.lunge),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemyColumn,
+      effect: DamageEffect(coefficient: 2.2),
+    ),
+  ],
 );
 
 const SkillDefinition piercingShot = SkillDefinition(
   id: 'piercing_shot',
   name: 'Piercing Shot',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.projectile,
-  targeting: SkillTargeting.opposingPriority,
-  power: 42,
   cooldown: 4,
+  presentation: PresentationSpec(travel: Cue.bolt),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 4.2),
+    ),
+  ],
 );
 
 const SkillDefinition mend = SkillDefinition(
   id: 'mend',
   name: 'Mend',
-  kind: SkillKind.heal,
-  delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.lowestHealthAlly,
-  power: 58,
   cooldown: 4,
+  presentation: PresentationSpec(travel: Cue.beam, color: CueColor.heal),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.mostWoundedAlly,
+      effect: HealEffect(coefficient: 5.8),
+    ),
+  ],
 );
 
 const SkillDefinition disrupt = SkillDefinition(
   id: 'disrupt',
   name: 'Disrupt',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.opposingPriority,
-  power: 34,
   cooldown: 7,
+  presentation: PresentationSpec(travel: Cue.beam),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 3.4),
+    ),
+  ],
 );
 
 const SkillDefinition strike = SkillDefinition(
   id: 'strike',
   name: 'Strike',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 14,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(cast: Cue.lunge),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 1.4),
+    ),
+  ],
 );
 
 const SkillDefinition shot = SkillDefinition(
   id: 'shot',
   name: 'Shot',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.projectile,
-  targeting: SkillTargeting.opposingPriority,
-  power: 13,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(travel: Cue.bolt),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 1.3),
+    ),
+  ],
 );
 
 const SkillDefinition smite = SkillDefinition(
   id: 'smite',
   name: 'Smite',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.opposingPriority,
-  power: 9,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(travel: Cue.beam),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 0.9),
+    ),
+  ],
 );
 
 // ---------------------------------------------------------------------------
@@ -116,95 +203,128 @@ const SkillDefinition smite = SkillDefinition(
 const SkillDefinition crushingBlow = SkillDefinition(
   id: 'crushing_blow',
   name: 'Crushing Blow',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 32,
   cooldown: 6,
+  presentation: PresentationSpec(cast: Cue.lunge),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 3.2),
+    ),
+  ],
 );
 
 const SkillDefinition rend = SkillDefinition(
   id: 'rend',
   name: 'Rend',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 36,
   cooldown: 5,
+  presentation: PresentationSpec(cast: Cue.lunge),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 3.6),
+    ),
+    // The cut keeps bleeding. A second effect on the same target, which is
+    // what the effect list was for.
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: ApplyStatusEffect(bleeding),
+    ),
+  ],
 );
 
 const SkillDefinition arcBolt = SkillDefinition(
   id: 'arc_bolt',
   name: 'Arc Bolt',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.projectile,
-  targeting: SkillTargeting.opposingPriority,
-  power: 36,
   cooldown: 4,
+  presentation: PresentationSpec(travel: Cue.bolt),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 3.6),
+    ),
+  ],
 );
 
 const SkillDefinition darkMend = SkillDefinition(
   id: 'dark_mend',
   name: 'Dark Mend',
-  kind: SkillKind.heal,
-  delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.lowestHealthAlly,
-  power: 50,
   cooldown: 5,
+  presentation: PresentationSpec(travel: Cue.beam, color: CueColor.heal),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.mostWoundedAlly,
+      effect: HealEffect(coefficient: 5),
+    ),
+  ],
 );
 
 const SkillDefinition hex = SkillDefinition(
   id: 'hex',
   name: 'Hex',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.opposingPriority,
-  power: 40,
   cooldown: 7,
+  presentation: PresentationSpec(travel: Cue.beam),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 4),
+    ),
+  ],
 );
 
 const SkillDefinition claw = SkillDefinition(
   id: 'claw',
   name: 'Claw',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 15,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(cast: Cue.lunge),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 1.5),
+    ),
+  ],
 );
 
 const SkillDefinition bolt = SkillDefinition(
   id: 'bolt',
   name: 'Bolt',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.projectile,
-  targeting: SkillTargeting.opposingPriority,
-  power: 12,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(travel: Cue.bolt),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 1.2),
+    ),
+  ],
 );
 
 const SkillDefinition wither = SkillDefinition(
   id: 'wither',
   name: 'Wither',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.opposingPriority,
-  power: 10,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(travel: Cue.beam),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 1),
+    ),
+  ],
 );
 
 const SkillDefinition lash = SkillDefinition(
   id: 'lash',
   name: 'Lash',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.opposingPriority,
-  power: 12,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(travel: Cue.beam),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 1.2),
+    ),
+  ],
 );
 
 // ---------------------------------------------------------------------------
@@ -214,6 +334,68 @@ const SkillDefinition lash = SkillDefinition(
 // back line. Both sides use the same shape, mirrored.
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Gear
+//
+// An item states what it changes and nothing else. Because damage is a
+// coefficient on a stat, a sword granting attack power makes every skill that
+// scales off it hit harder — no skill was edited to make that true.
+//
+// The numbers are arbitrary, like everything else in the mockup. They read
+// large because the base stats are small: +2 attack power against a base of 10
+// is a fifth of a unit's output. Real content wants a higher base so a common
+// weapon is a nudge rather than a transformation.
+// ---------------------------------------------------------------------------
+
+const ItemDefinition ironGreatsword = ItemDefinition(
+  id: 'iron_greatsword',
+  name: 'Iron Greatsword',
+  slot: GearSlot.weapon,
+  modifiers: <StatModifier>[
+    StatModifier.flat(Stat.attackPower, 2, source: _item),
+  ],
+);
+
+const ItemDefinition wardensShield = ItemDefinition(
+  id: 'wardens_shield',
+  name: "Warden's Shield",
+  slot: GearSlot.chest,
+  modifiers: <StatModifier>[
+    StatModifier.flat(Stat.maxHealth, 40, source: _item),
+    StatModifier.increased(Stat.damageTakenMultiplier, -0.1, source: _item),
+  ],
+);
+
+const ItemDefinition huntingBow = ItemDefinition(
+  id: 'hunting_bow',
+  name: 'Hunting Bow',
+  slot: GearSlot.weapon,
+  modifiers: <StatModifier>[
+    StatModifier.flat(Stat.attackPower, 2, source: _item),
+  ],
+);
+
+const ItemDefinition acolytesFocus = ItemDefinition(
+  id: 'acolytes_focus',
+  name: "Acolyte's Focus",
+  slot: GearSlot.weapon,
+  modifiers: <StatModifier>[
+    StatModifier.flat(Stat.healPower, 2, source: _item),
+  ],
+);
+
+/// Authored modifiers are rebound to the slot they are worn in, so the source
+/// they are written against never matters.
+const ModifierSource _item = ModifierSource.item('authored');
+
+/// Equips [unit] and hands it back, so a roster reads as one expression.
+Combatant _wearing(Combatant unit, List<ItemDefinition> items) {
+  for (final ItemDefinition item in items) {
+    unit.gear.equip(item);
+  }
+  return unit;
+}
+
 /// Six party members on the left and six dungeon inhabitants on the right.
 List<Combatant> buildMockRoster() => <Combatant>[
       ..._allies(),
@@ -221,27 +403,33 @@ List<Combatant> buildMockRoster() => <Combatant>[
     ];
 
 List<Combatant> _allies() => <Combatant>[
-      Combatant(
-        id: 'ally_bramm',
-        name: 'Bramm Ironvow',
-        faction: Faction.ally,
-        role: CombatRole.tank,
-        row: 0,
-        column: 0,
-        maxHealth: 440,
-        priority: TargetPriority.nearest,
-        skills: const <SkillDefinition>[shieldSlam, strike],
+      _wearing(
+        Combatant(
+          id: 'ally_bramm',
+          name: 'Bramm Ironvow',
+          faction: Faction.ally,
+          role: CombatRole.tank,
+          row: 0,
+          column: 0,
+          maxHealth: 440,
+          priority: TargetPriority.nearest,
+          skills: const <SkillDefinition>[fortify, shieldSlam, strike],
+        ),
+        <ItemDefinition>[ironGreatsword, wardensShield],
       ),
-      Combatant(
-        id: 'ally_kessa',
-        name: 'Kessa Vane',
-        faction: Faction.ally,
-        role: CombatRole.meleeDps,
-        row: 1,
-        column: 0,
-        maxHealth: 260,
-        priority: TargetPriority.nearest,
-        skills: const <SkillDefinition>[recklessStrike, cleave, strike],
+      _wearing(
+        Combatant(
+          id: 'ally_kessa',
+          name: 'Kessa Vane',
+          faction: Faction.ally,
+          role: CombatRole.meleeDps,
+          row: 1,
+          column: 0,
+          maxHealth: 260,
+          priority: TargetPriority.nearest,
+          skills: const <SkillDefinition>[recklessStrike, cleave, strike],
+        ),
+        <ItemDefinition>[ironGreatsword],
       ),
       Combatant(
         id: 'ally_doren',
@@ -254,27 +442,33 @@ List<Combatant> _allies() => <Combatant>[
         priority: TargetPriority.frontline,
         skills: const <SkillDefinition>[cleave, strike],
       ),
-      Combatant(
-        id: 'ally_ysolde',
-        name: 'Ysolde Marrow',
-        faction: Faction.ally,
-        role: CombatRole.healer,
-        row: 0,
-        column: 1,
-        maxHealth: 200,
-        priority: TargetPriority.nearest,
-        skills: const <SkillDefinition>[mend, smite],
+      _wearing(
+        Combatant(
+          id: 'ally_ysolde',
+          name: 'Ysolde Marrow',
+          faction: Faction.ally,
+          role: CombatRole.healer,
+          row: 0,
+          column: 1,
+          maxHealth: 200,
+          priority: TargetPriority.nearest,
+          skills: const <SkillDefinition>[mend, smite],
+        ),
+        <ItemDefinition>[acolytesFocus],
       ),
-      Combatant(
-        id: 'ally_fenn',
-        name: 'Fenn Quill',
-        faction: Faction.ally,
-        role: CombatRole.rangedDps,
-        row: 1,
-        column: 1,
-        maxHealth: 210,
-        priority: TargetPriority.weakest,
-        skills: const <SkillDefinition>[piercingShot, shot],
+      _wearing(
+        Combatant(
+          id: 'ally_fenn',
+          name: 'Fenn Quill',
+          faction: Faction.ally,
+          role: CombatRole.rangedDps,
+          row: 1,
+          column: 1,
+          maxHealth: 210,
+          priority: TargetPriority.weakest,
+          skills: const <SkillDefinition>[piercingShot, shot],
+        ),
+        <ItemDefinition>[huntingBow],
       ),
       Combatant(
         id: 'ally_mira',

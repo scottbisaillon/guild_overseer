@@ -1,54 +1,43 @@
-import 'dart:math' as math;
-
-import '../../../core/domain/skill_kind.dart';
-
-/// Who a skill resolves against once it fires.
-enum SkillTargeting {
-  /// A single opponent — whoever the unit's target priority picked.
-  opposingPriority,
-
-  /// Every living opponent sharing a column with the unit's current target.
-  opposingColumn,
-
-  /// The most wounded living ally, which may be the caster itself. Resolves to
-  /// nothing when the whole side is at full health, so the skill is skipped and
-  /// the rotation falls through to the next one.
-  lowestHealthAlly,
-}
+import '../../../core/domain/game_time.dart';
+import '../../../core/domain/presentation.dart';
+import '../../../core/domain/skill_effect.dart';
 
 /// A skill as authored: static data, never mutated at runtime.
 ///
-/// Skills are first-class data rather than a switch case inside an attack
-/// method — adding one is adding an entry, not editing combat code. These are
-/// declared in Dart for the mockup; they move to a JSON asset read by
-/// `DataRepository` when the data layer lands.
+/// A skill is a list of effects, not a thing that does one thing. That is what
+/// makes "heavy damage to the target, and a tenth of it back to the caster"
+/// two rows rather than a special case — and what stops the combat code
+/// growing a branch every time a piece of content is added. These are declared
+/// in Dart for the mockup; they move to a JSON asset read by `DataRepository`
+/// when the data layer lands.
 class SkillDefinition {
   const SkillDefinition({
     required this.id,
     required this.name,
-    required this.kind,
-    required this.delivery,
-    required this.targeting,
-    required this.power,
+    required this.effects,
     required this.cooldown,
+    this.presentation = PresentationSpec.none,
     this.isBasic = false,
   });
 
   final String id;
   final String name;
-  final SkillKind kind;
-  final SkillDelivery delivery;
-  final SkillTargeting targeting;
 
-  /// Damage or healing before variance.
-  final double power;
+  /// What this skill does, in resolution order. Each carries its own targeting,
+  /// so the parts of a skill need not land on the same people.
+  final List<EffectSpec> effects;
 
   /// Seconds before this skill can fire again.
   final double cooldown;
 
+  /// How this looks when it fires. Ids the renderer resolves, never types it
+  /// branches on.
+  final PresentationSpec presentation;
+
   /// A basic attack shares the global cooldown, so a unit is never left with
   /// nothing to do when its specials are cooling down.
   final bool isBasic;
+
 }
 
 /// One slot of a unit's rotation: a skill plus its live cooldown.
@@ -70,7 +59,7 @@ class SkillSlot {
   /// waiting on a target never costs cooldown progress.
   void tick(double dt) {
     if (_remaining > 0) {
-      _remaining = math.max(0, _remaining - dt);
+      _remaining = GameTime.countDown(_remaining, dt);
     }
   }
 

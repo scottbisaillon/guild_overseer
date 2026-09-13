@@ -25,6 +25,8 @@ class BattleBloc extends Bloc<GameEvent, BattleState> {
     on<DamageDealt>(_onDamageDealt);
     on<HealApplied>(_onHealApplied);
     on<UnitDied>(_onUnitDied);
+    on<StatusApplied>(_onStatusApplied);
+    on<StatusEnded>(_onStatusEnded);
     on<TargetAcquired>(_onTargetAcquired);
     on<SkillFired>((SkillFired event, Emitter<BattleState> emit) {
       // The damage and healing lines carry the skill name already; logging the
@@ -105,6 +107,21 @@ class BattleBloc extends Bloc<GameEvent, BattleState> {
       '${event.sourceName} -> ${event.targetName}  '
       '${event.skillName} +${event.amount.toStringAsFixed(0)}',
       CombatLogKind.heal,
+    ));
+  }
+
+  void _onStatusApplied(StatusApplied event, Emitter<BattleState> emit) {
+    emit(_log(
+      '${event.targetName} gains ${event.statusName}'
+      '${event.stacks > 1 ? ' (x${event.stacks})' : ''}',
+      CombatLogKind.status,
+    ));
+  }
+
+  void _onStatusEnded(StatusEnded event, Emitter<BattleState> emit) {
+    emit(_log(
+      '${event.unitName} loses ${event.statusName}',
+      CombatLogKind.status,
     ));
   }
 

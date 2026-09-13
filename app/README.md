@@ -24,6 +24,7 @@ flutter run                        # any connected device
 flutter test                       # unit + widget tests
 flutter analyze                    # lints
 dart run tool/simulate_battle.dart # the same fight, headless, in the terminal
+dart run tool/record_fight.dart    # re-record the golden fight transcript
 ```
 
 ## The battle mockup
@@ -57,7 +58,7 @@ What the mockup demonstrates:
 ### Deliberately not in the mockup
 
 Movement and steering, threat tables and aggro break, QTEs, traits, buffs and
-debuffs, damage types or armour, finisher sequences, art. Units are coloured
+damage types or armour, finisher sequences, art. Units are coloured
 squares. Skills are authored in Dart rather than loaded from data. Nothing here
 is balanced; the numbers exist to make the rhythm visible.
 
@@ -71,6 +72,17 @@ lib/
     core/
       domain/                    vocabulary shared across features
                                  (faction, role, target priority, snapshots)
+        stat.dart                the stats anything is allowed to change
+        stat_modifier.dart       one change, and what granted it
+        stat_block.dart          the pipeline gear and buffs both feed
+        target_selector.dart     who something lands on, composed
+        skill_effect.dart        what an effect is, as data
+        status.dart              buffs, debuffs and damage over time
+        presentation.dart        cue ids and colour roles
+        cue_registry.dart        id -> whatever draws it
+        game_time.dart           counting simulated time down honestly
+        item.dart                gear: a slot and what it changes
+        loadout.dart             what a unit is wearing
       events/game_event.dart     the sealed GameEvent hierarchy — one bus
     features/
       home/view/                 landing screen
@@ -78,16 +90,21 @@ lib/
         domain/                  the fight, as pure Dart
           arena_layout.dart      where formation slots sit
           skill.dart             skill definitions and live cooldowns
+          effect_resolver.dart   the one place that carries an effect out
           combatant.dart         a unit that fights
-          targeting.dart         who to hit
+          targeting.dart         the one resolver for "who?"
           rotation.dart          what to fire
           battle_simulation.dart the tick loop and the event stream
         data/mock_roster.dart    the twelve units of the mockup
         game/                    Flame: renders the fight, owns no rules
+          cues/battle_cues.dart  the registry of what each cue id draws
         bloc/                    GameEvent stream -> HUD state
         view/                    Flutter HUD over the GameWidget
 tool/simulate_battle.dart        headless runner
+tool/record_fight.dart           re-records the golden transcript
+test/core/                       the stat pipeline and the cue registry
 test/battle/                     targeting, rotation and simulation tests
+test/battle/goldens/             the recorded fight the tests compare against
 ```
 
 ### How the layers fit
@@ -107,17 +124,49 @@ Continuous state (health, cooldowns) arrives on a 10 Hz `BattleSampled` event
 rather than per frame; discrete facts (damage, deaths, re-targeting) arrive as
 they happen and become combat log lines.
 
+### The golden fight
+
+`test/battle/golden_fight_test.dart` runs the mock roster to the end and
+compares every decision the simulation published against a recorded transcript
+in `test/battle/goldens/`. It is the net that makes refactoring safe: change how
+the code is organised and the transcript should not move, so any diff is either
+a bug you just introduced or a change you meant to make.
+
+```bash
+flutter test test/battle/golden_fight_test.dart
+```
+
+When a change is *meant* to alter the fight, re-record it and read the diff
+before committing — the diff is the review:
+
+```bash
+dart run tool/record_fight.dart
+git diff test/battle/goldens/
+```
+
+The transcript is plain text rather than a hash so that a failure says which
+beat of the fight moved, not merely that something did. It holds because the
+fight is a pure function of its roster and its seed: the same roster resolves
+identically twice in a row, after a restart, at any frame rate, and at any speed
+setting. Those four properties are themselves tested alongside the golden — if
+one breaks, the golden stops being evidence of anything, so it is worth knowing
+first.
+
+One caveat: the guarantee is a Dart VM one. `flutter test` runs on the VM, which
+is where `dart:math`'s seeded `Random` is stable. Run the suite compiled to
+JavaScript (`--platform chrome`) and the golden may legitimately differ.
+
 ## Deployment
 
 `.github/workflows/pages.yml` builds the web client and publishes it to GitHub
 Pages. Pages is set to deploy from GitHub Actions.
 
-Pushes to `main` build and deploy. Pushes to `impl/flutter` build, analyze and
-test, then stop: the `github-pages` environment only accepts deployments from
-the default branch, so the deploy job is gated on `main` rather than attempting
-a publish that GitHub will reject. To publish from another branch, add it under
-Settings -> Environments -> github-pages -> Deployment branches, and relax that
-gate.
+Pushes to `main` build, analyze, test and deploy. Nothing else triggers it
+automatically; `workflow_dispatch` runs it by hand, and a run from a branch
+other than `main` stops after the build, because the `github-pages` environment
+only accepts deployments from the default branch. To publish from another
+branch, add it under Settings -> Environments -> github-pages -> Deployment
+branches, and relax the gate on the deploy job.
 
 Two details make a project page work, both handled by the workflow:
 

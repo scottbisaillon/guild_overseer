@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import '../domain/combat_snapshot.dart';
 import '../domain/faction.dart';
-import '../domain/skill_kind.dart';
+import '../domain/presentation.dart';
 
 /// Everything that happens in the game, as data.
 ///
@@ -77,8 +77,7 @@ final class SkillFired extends GameEvent {
     required this.targetIds,
     required this.skillId,
     required this.skillName,
-    required this.kind,
-    required this.delivery,
+    required this.presentation,
   });
 
   final String sourceId;
@@ -88,8 +87,9 @@ final class SkillFired extends GameEvent {
   final List<String> targetIds;
   final String skillId;
   final String skillName;
-  final SkillKind kind;
-  final SkillDelivery delivery;
+
+  /// How to draw it. The renderer needs nothing else from the skill.
+  final PresentationSpec presentation;
 
   @override
   List<Object?> get props => <Object?>[
@@ -98,8 +98,7 @@ final class SkillFired extends GameEvent {
         targetIds,
         skillId,
         skillName,
-        kind,
-        delivery,
+        presentation,
       ];
 }
 
@@ -163,6 +162,71 @@ final class HealApplied extends GameEvent {
         amount,
         remainingHealth,
       ];
+}
+
+final class StatusApplied extends GameEvent {
+  const StatusApplied({
+    required this.sourceId,
+    required this.sourceName,
+    required this.targetId,
+    required this.targetName,
+    required this.statusId,
+    required this.statusName,
+    required this.stacks,
+    required this.duration,
+    required this.presentation,
+  });
+
+  final String sourceId;
+  final String sourceName;
+  final String targetId;
+  final String targetName;
+  final String statusId;
+  final String statusName;
+
+  /// Stacks now on the target, not stacks added.
+  final int stacks;
+
+  /// Seconds the status will run for from now.
+  final double duration;
+
+  /// How the status reads when it lands.
+  final PresentationSpec presentation;
+
+  @override
+  List<Object?> get props => <Object?>[
+        sourceId,
+        sourceName,
+        targetId,
+        targetName,
+        statusId,
+        statusName,
+        stacks,
+        duration,
+        presentation,
+      ];
+}
+
+final class StatusEnded extends GameEvent {
+  const StatusEnded({
+    required this.unitId,
+    required this.unitName,
+    required this.statusId,
+    required this.statusName,
+    required this.expired,
+  });
+
+  final String unitId;
+  final String unitName;
+  final String statusId;
+  final String statusName;
+
+  /// Whether it ran out on its own, as opposed to being cleansed off.
+  final bool expired;
+
+  @override
+  List<Object?> get props =>
+      <Object?>[unitId, unitName, statusId, statusName, expired];
 }
 
 final class UnitDied extends GameEvent {

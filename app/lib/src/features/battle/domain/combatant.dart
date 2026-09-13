@@ -3,6 +3,11 @@ import 'dart:math' as math;
 import '../../../core/domain/combat_role.dart';
 import '../../../core/domain/combat_snapshot.dart';
 import '../../../core/domain/faction.dart';
+import '../../../core/domain/game_time.dart';
+import '../../../core/domain/loadout.dart';
+import '../../../core/domain/stat.dart';
+import '../../../core/domain/stat_block.dart';
+import '../../../core/domain/status.dart';
 import '../../../core/domain/target_priority.dart';
 import 'arena_layout.dart';
 import 'skill.dart';
@@ -19,12 +24,20 @@ class Combatant {
     required this.role,
     required this.row,
     required this.column,
-    required this.maxHealth,
+    required double maxHealth,
     required this.priority,
     required List<SkillDefinition> skills,
-    this.globalCooldown = 1.0,
-  })  : health = maxHealth,
-        rotation = skills.map(SkillSlot.new).toList(growable: false);
+    double globalCooldown = 1.0,
+  })  : stats = StatBlock(<Stat, double>{
+          Stat.maxHealth: maxHealth,
+          Stat.globalCooldown: globalCooldown,
+        }),
+        health = maxHealth,
+        _knownMaxHealth = maxHealth,
+        rotation = skills.map(SkillSlot.new).toList(growable: false) {
+    statuses = StatusContainer(stats: stats, onChanged: refreshStats);
+    gear = Loadout(stats: stats, onChanged: refreshStats);
+  }
 
   final String id;
   final String name;
@@ -38,7 +51,24 @@ class Combatant {
   final int row;
   final int column;
 
-  final double maxHealth;
+  /// Every number about this unit, and everything currently changing them.
+  ///
+  /// Gear, buffs, auras and traits all grant modifiers here rather than
+  /// reaching into fields, so none of them needs to know about the others.
+  /// Call [refreshStats] after changing what this block holds.
+  final StatBlock stats;
+
+  /// The buffs, debuffs and damage over time currently on this unit.
+  ///
+  /// Statuses reach the unit's numbers through [stats] like anything else, so
+  /// nothing here needs to know a buff from a breastplate.
+  late final StatusContainer statuses;
+
+  /// What this unit is wearing.
+  ///
+  /// Gear reaches the unit's numbers the same way a buff does, so nothing in
+  /// the fight can tell a breastplate from a blessing.
+  late final Loadout gear;
 
   /// How this unit picks an opponent.
   final TargetPriority priority;
@@ -46,17 +76,24 @@ class Combatant {
   /// Skills in priority order: the first ready one fires.
   final List<SkillSlot> rotation;
 
-  /// Seconds between actions. Every unit acts on this rhythm, so a fight has a
-  /// readable beat instead of a flurry of independent timers.
-  final double globalCooldown;
-
   double health;
+
+  /// The max health this unit was last reconciled against, so [refreshStats]
+  /// can tell how far it moved.
+  double _knownMaxHealth;
 
   /// The unit this one is attacking, held until it becomes invalid rather than
   /// re-picked every frame.
   String? targetId;
 
   double _globalCooldownRemaining = 0;
+
+  /// This unit's health ceiling, after gear and buffs.
+  double get maxHealth => stats.value(Stat.maxHealth);
+
+  /// Seconds between actions. Every unit acts on this rhythm, so a fight has a
+  /// readable beat instead of a flurry of independent timers.
+  double get globalCooldown => stats.value(Stat.globalCooldown);
 
   bool get isAlive => health > 0;
 
@@ -77,7 +114,7 @@ class Combatant {
   /// every living unit, whether or not it has a target.
   void tickCooldowns(double dt) {
     if (_globalCooldownRemaining > 0) {
-      _globalCooldownRemaining = math.max(0, _globalCooldownRemaining - dt);
+      _globalCooldownRemaining = GameTime.countDown(_globalCooldownRemaining, dt);
     }
     for (final SkillSlot slot in rotation) {
       slot.tick(dt);
@@ -86,6 +123,21 @@ class Combatant {
 
   /// Called when a skill fires: the unit is busy until the next beat.
   void startGlobalCooldown() => _globalCooldownRemaining = globalCooldown;
+
+  /// Reconciles the unit with its stats after modifiers were added or removed.
+  ///
+  /// Health is carried across as a *fraction*, so swapping a helm or losing a
+  /// buff cannot heal or kill: a unit at half health stays at half health. The
+  /// dead stay dead, because a fraction of zero is zero.
+  void refreshStats() {
+    final double next = maxHealth;
+    if (next == _knownMaxHealth) {
+      return;
+    }
+    final double fraction = _knownMaxHealth <= 0 ? 0 : health / _knownMaxHealth;
+    _knownMaxHealth = next;
+    health = (next * fraction).clamp(0, next);
+  }
 
   /// Returns the damage actually taken, which is capped by remaining health.
   double applyDamage(double amount) {

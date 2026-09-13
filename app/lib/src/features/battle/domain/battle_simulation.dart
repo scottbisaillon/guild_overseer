@@ -3,10 +3,12 @@ import 'dart:math' as math;
 
 import '../../../core/domain/combat_snapshot.dart';
 import '../../../core/domain/faction.dart';
-import '../../../core/domain/skill_kind.dart';
+import '../../../core/domain/skill_effect.dart';
+import '../../../core/domain/status.dart';
 import '../../../core/events/game_event.dart';
 import 'arena_layout.dart';
 import 'combatant.dart';
+import 'effect_resolver.dart';
 import 'rotation.dart';
 import 'skill.dart';
 import 'targeting.dart';
@@ -56,6 +58,9 @@ class BattleSimulation {
   double _speed = 1;
   double _elapsed = 0;
   double _sampleAccumulator = 0;
+
+  /// Simulated time banked by [update] but not yet spent on a whole step.
+  double _stepAccumulator = 0;
 
   /// The one channel out of the simulation. The Flame layer listens to spawn
   /// effects; the Bloc listens to build HUD state.
@@ -120,6 +125,7 @@ class BattleSimulation {
     _winner = null;
     _elapsed = 0;
     _sampleAccumulator = 0;
+    _stepAccumulator = 0;
     _emit(const BattleReset());
     _emit(const BattleStarted());
     _emitSample();
@@ -131,22 +137,31 @@ class BattleSimulation {
   }
 
   /// Advances the fight by [dt] seconds of real time, scaled by [speed].
+  ///
+  /// The fight only ever moves in whole [maxStep] slices. Time left over at the
+  /// end of a frame is banked and spent on the next one, so the outcome depends
+  /// on how much time has passed and not on how it was delivered: 60Hz, 120Hz,
+  /// a stuttering frame and the test harness all resolve the same fight. Paying
+  /// out the remainder as a short ragged step instead would move every cooldown
+  /// boundary by a sliver and quietly make the rendered fight a different fight
+  /// from the recorded one.
   void update(double dt) {
     if (_status != BattleStatus.running || dt <= 0) {
       return;
     }
     // A long frame (first frame, a resize, a backgrounded app) must not fast
     // forward the fight, so the raw delta is capped before scaling.
-    double remaining = math.min(dt, 0.25) * _speed;
-    while (remaining > 0 && _status == BattleStatus.running) {
-      final double step = math.min(remaining, maxStep);
-      _step(step);
-      remaining -= step;
+    _stepAccumulator += math.min(dt, 0.25) * _speed;
+    while (_stepAccumulator >= maxStep && _status == BattleStatus.running) {
+      _step(maxStep);
+      _stepAccumulator -= maxStep;
     }
   }
 
   void _step(double dt) {
     _elapsed += dt;
+
+    _tickStatuses(dt);
 
     for (final Combatant unit in _units) {
       if (unit.isAlive) {
@@ -162,6 +177,56 @@ class BattleSimulation {
     if (_sampleAccumulator >= sampleInterval) {
       _sampleAccumulator = 0;
       _emitSample();
+    }
+  }
+
+  /// Advances everything that is on a unit, before anybody acts.
+  ///
+  /// Statuses run first so a bleed that finishes somebody off does it before
+  /// they get another beat — the same order a player would expect from
+  /// watching the numbers.
+  void _tickStatuses(double dt) {
+    for (final Combatant unit in _units) {
+      if (!unit.isAlive || unit.statuses.isEmpty) {
+        continue;
+      }
+      unit.statuses.advance(
+        dt,
+        onTick: (ActiveStatus status) => _tickStatus(unit, status),
+        onExpire: (ActiveStatus status) => _emit(StatusEnded(
+          unitId: unit.id,
+          unitName: unit.name,
+          statusId: status.id,
+          statusName: status.definition.name,
+          expired: true,
+        )),
+      );
+    }
+  }
+
+  /// One tick of one status, resolved through the ordinary effect path.
+  ///
+  /// The tick is attributed to whoever applied it, and sized by what they were
+  /// worth at the time — so a bleed keeps biting after its author is dead, for
+  /// exactly as much as it did while they lived.
+  void _tickStatus(Combatant unit, ActiveStatus status) {
+    if (!unit.isAlive) {
+      return;
+    }
+    final Combatant source = unitById(status.sourceId) ?? unit;
+    final ResolutionContext context = ResolutionContext(
+      caster: source,
+      label: status.definition.name,
+      random: _random,
+      emit: _emit,
+      statSnapshot: status.statSnapshot,
+    );
+    final List<Combatant> carrier = <Combatant>[unit];
+    for (final SkillEffect effect in status.definition.onTick) {
+      // Once per stack, so two bleeds bite twice.
+      for (int i = 0; i < status.stacks; i++) {
+        resolveEffect(effect, carrier, context);
+      }
     }
   }
 
@@ -203,6 +268,7 @@ class BattleSimulation {
         unit: unit,
         currentTarget: unitById(unit.targetId),
         units: _units,
+        layout: layout,
       );
       if (decision == null) {
         continue;
@@ -223,51 +289,20 @@ class BattleSimulation {
           decision.targets.map((Combatant c) => c.id).toList(growable: false),
       skillId: skill.id,
       skillName: skill.name,
-      kind: skill.kind,
-      delivery: skill.delivery,
+      presentation: skill.presentation,
     ));
 
-    for (final Combatant target in decision.targets) {
-      final double amount = _roll(skill.power);
-      switch (skill.kind) {
-        case SkillKind.damage:
-          final double dealt = target.applyDamage(amount);
-          _emit(DamageDealt(
-            sourceId: unit.id,
-            sourceName: unit.name,
-            targetId: target.id,
-            targetName: target.name,
-            skillName: skill.name,
-            amount: dealt,
-            remainingHealth: target.health,
-          ));
-          if (!target.isAlive) {
-            _emit(UnitDied(
-              unitId: target.id,
-              unitName: target.name,
-              faction: target.faction,
-            ));
-          }
-        case SkillKind.heal:
-          final double healed = target.applyHeal(amount);
-          _emit(HealApplied(
-            sourceId: unit.id,
-            sourceName: unit.name,
-            targetId: target.id,
-            targetName: target.name,
-            skillName: skill.name,
-            amount: healed,
-            remainingHealth: target.health,
-          ));
-      }
+    // What each effect means is the resolver's business, not the simulation's.
+    // This loop stays the same length however many kinds of effect exist.
+    final ResolutionContext context = ResolutionContext(
+      caster: unit,
+      label: skill.name,
+      random: _random,
+      emit: _emit,
+    );
+    for (final ResolvedEffect resolved in decision.effects) {
+      resolveEffect(resolved.effect, resolved.targets, context);
     }
-  }
-
-  /// Damage and healing land within +/-15% of the authored power, rounded to
-  /// whole numbers so the floating combat text stays readable.
-  double _roll(double power) {
-    final double variance = 0.85 + _random.nextDouble() * 0.3;
-    return (power * variance).roundToDouble();
   }
 
   void _checkForEnd() {

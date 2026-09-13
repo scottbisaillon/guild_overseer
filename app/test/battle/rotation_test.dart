@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:guild_overseer/src/core/domain/combat_role.dart';
 import 'package:guild_overseer/src/core/domain/faction.dart';
 import 'package:guild_overseer/src/features/battle/domain/combatant.dart';
+import 'package:guild_overseer/src/features/battle/domain/arena_layout.dart';
 import 'package:guild_overseer/src/features/battle/domain/rotation.dart';
 import 'package:guild_overseer/src/features/battle/domain/skill.dart';
 
@@ -21,6 +22,7 @@ void main() {
           unit: hero,
           currentTarget: target,
           units: <Combatant>[hero, target],
+          layout: kArenaLayout,
         ),
         isNull,
       );
@@ -37,6 +39,7 @@ void main() {
         unit: hero,
         currentTarget: target,
         units: <Combatant>[hero, target],
+        layout: kArenaLayout,
       );
 
       expect(decision?.skill.id, 'heavy');
@@ -51,7 +54,12 @@ void main() {
       final List<Combatant> units = <Combatant>[hero, target];
 
       // Beat one: the heavy attack fires and both cooldowns start.
-      selectSkill(unit: hero, currentTarget: target, units: units)!
+      selectSkill(
+          unit: hero,
+          currentTarget: target,
+          units: units,
+          layout: kArenaLayout,
+        )!
           .slot
           .trigger();
       hero.startGlobalCooldown();
@@ -61,7 +69,12 @@ void main() {
       hero.tickCooldowns(1.0);
 
       expect(
-        selectSkill(unit: hero, currentTarget: target, units: units)?.skill.id,
+        selectSkill(
+          unit: hero,
+          currentTarget: target,
+          units: units,
+          layout: kArenaLayout,
+        )?.skill.id,
         'basic',
       );
 
@@ -69,7 +82,12 @@ void main() {
       hero.tickCooldowns(1.0);
 
       expect(
-        selectSkill(unit: hero, currentTarget: target, units: units)?.skill.id,
+        selectSkill(
+          unit: hero,
+          currentTarget: target,
+          units: units,
+          layout: kArenaLayout,
+        )?.skill.id,
         'heavy',
       );
     });
@@ -85,7 +103,12 @@ void main() {
       final List<Combatant> units = <Combatant>[healer, friend, target];
 
       expect(
-        selectSkill(unit: healer, currentTarget: target, units: units)
+        selectSkill(
+          unit: healer,
+          currentTarget: target,
+          units: units,
+          layout: kArenaLayout,
+        )
             ?.skill
             .id,
         'basic',
@@ -95,7 +118,12 @@ void main() {
       friend.applyDamage(50);
 
       expect(
-        selectSkill(unit: healer, currentTarget: target, units: units)
+        selectSkill(
+          unit: healer,
+          currentTarget: target,
+          units: units,
+          layout: kArenaLayout,
+        )
             ?.skill
             .id,
         'heal',
@@ -111,6 +139,7 @@ void main() {
           unit: hero,
           currentTarget: target,
           units: <Combatant>[hero, target],
+          layout: kArenaLayout,
         ),
         isNull,
       );

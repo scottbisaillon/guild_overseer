@@ -1,53 +1,67 @@
 import 'package:guild_overseer/src/core/domain/combat_role.dart';
 import 'package:guild_overseer/src/core/domain/faction.dart';
-import 'package:guild_overseer/src/core/domain/skill_kind.dart';
+import 'package:guild_overseer/src/core/domain/presentation.dart';
 import 'package:guild_overseer/src/core/domain/target_priority.dart';
 import 'package:guild_overseer/src/features/battle/domain/combatant.dart';
 import 'package:guild_overseer/src/features/battle/domain/skill.dart';
+import 'package:guild_overseer/src/core/domain/target_selector.dart';
+import 'package:guild_overseer/src/core/domain/skill_effect.dart';
 
 /// A 1s basic attack, the filler every unit falls back on.
 const SkillDefinition basicAttack = SkillDefinition(
   id: 'basic',
   name: 'Basic',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 10,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(cast: Cue.lunge),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 1),
+    ),
+  ],
 );
 
 /// A 2s hard hitter that sits above the basic attack in a rotation.
 const SkillDefinition heavyAttack = SkillDefinition(
   id: 'heavy',
   name: 'Heavy',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingPriority,
-  power: 40,
   cooldown: 2,
+  presentation: PresentationSpec(cast: Cue.lunge),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: DamageEffect(coefficient: 4),
+    ),
+  ],
 );
 
 /// Hits everyone sharing a column with the current target.
 const SkillDefinition columnAttack = SkillDefinition(
   id: 'column',
   name: 'Column',
-  kind: SkillKind.damage,
-  delivery: SkillDelivery.melee,
-  targeting: SkillTargeting.opposingColumn,
-  power: 20,
   cooldown: 3,
+  presentation: PresentationSpec(cast: Cue.lunge),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemyColumn,
+      effect: DamageEffect(coefficient: 2),
+    ),
+  ],
 );
 
 /// Only fires when somebody on the caster's side is hurt.
 const SkillDefinition healSkill = SkillDefinition(
   id: 'heal',
   name: 'Heal',
-  kind: SkillKind.heal,
-  delivery: SkillDelivery.beam,
-  targeting: SkillTargeting.lowestHealthAlly,
-  power: 30,
   cooldown: 2,
+  presentation: PresentationSpec(travel: Cue.beam, color: CueColor.heal),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.mostWoundedAlly,
+      effect: HealEffect(coefficient: 3),
+    ),
+  ],
 );
 
 Combatant unit({

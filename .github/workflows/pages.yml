@@ -6,9 +6,7 @@ name: Deploy web client to Pages
 
 on:
   push:
-    # impl/flutter builds and tests as ordinary CI while the scaffold is in
-    # flight; only main publishes (see the deploy job).
-    branches: [main, impl/flutter]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -64,10 +62,11 @@ jobs:
           path: app/build/web
 
   deploy:
-    # The github-pages environment refuses deployments from anything but the
-    # default branch unless its branch policy is widened in
-    # Settings -> Environments -> github-pages. Stopping here keeps a push to a
-    # feature branch as a clean build instead of a rejected deploy.
+    # Pushes only arrive from main, but workflow_dispatch can be run from any
+    # branch, and the github-pages environment refuses deployments from
+    # anything but the default branch unless its policy is widened in
+    # Settings -> Environments -> github-pages. Stopping here keeps a manual
+    # run off a feature branch as a clean build instead of a rejected deploy.
     if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
