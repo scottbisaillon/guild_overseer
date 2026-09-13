@@ -7,6 +7,10 @@ name: Deploy web client to Pages
 on:
   push:
     branches: [main]
+  # Analyze, test and build a change before it lands. Only the build job runs
+  # here: the deploy job is gated on main, and a pull request's ref never is.
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -14,10 +18,13 @@ permissions:
   pages: write
   id-token: write
 
-# One deploy at a time. A newer run queues rather than racing an in-flight one.
+# Grouped per ref rather than globally, so a pull request build cannot sit in
+# the queue ahead of a deploy. Two pushes to main still serialise — one deploy
+# at a time, the newer queueing rather than racing — while a pull request that
+# is pushed again gives up its in-flight run, which is only ever wasted work.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: pages-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
