@@ -147,9 +147,7 @@ class ActiveStatus {
 /// unit's [StatBlock] under `status:<id>`, and ending the status removes that
 /// source. Nothing has to remember which numbers a buff touched.
 class StatusContainer {
-  StatusContainer({required StatBlock stats, required void Function() onChanged})
-      : _stats = stats,
-        _onChanged = onChanged;
+  StatusContainer(this._stats, this._onChanged);
 
   final StatBlock _stats;
 
