@@ -8,9 +8,7 @@ import 'stat_block.dart';
 /// that source. Nothing has to remember which numbers a breastplate touched, and
 /// the combat maths never learns that gear exists.
 class Loadout {
-  Loadout({required StatBlock stats, required void Function() onChanged})
-      : _stats = stats,
-        _onChanged = onChanged;
+  Loadout(this._stats, this._onChanged);
 
   final StatBlock _stats;
 

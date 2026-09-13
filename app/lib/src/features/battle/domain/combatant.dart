@@ -35,8 +35,8 @@ class Combatant {
         health = maxHealth,
         _knownMaxHealth = maxHealth,
         rotation = skills.map(SkillSlot.new).toList(growable: false) {
-    statuses = StatusContainer(stats: stats, onChanged: refreshStats);
-    gear = Loadout(stats: stats, onChanged: refreshStats);
+    statuses = StatusContainer(stats, refreshStats);
+    gear = Loadout(stats, refreshStats);
   }
 
   final String id;
