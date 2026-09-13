@@ -1,5 +1,6 @@
-import '../../../core/domain/stat.dart';
-import '../../../core/domain/target_selector.dart';
+import 'stat.dart';
+import 'status.dart';
+import 'target_selector.dart';
 
 /// What one effect of a skill does when it lands.
 ///
@@ -13,6 +14,11 @@ import '../../../core/domain/target_selector.dart';
 /// end up spread across a file per effect instead of one readable one.
 sealed class SkillEffect {
   const SkillEffect();
+}
+
+/// An effect with a size, measured against a stat of whoever caused it.
+sealed class MagnitudeEffect extends SkillEffect {
+  const MagnitudeEffect();
 
   /// The stat this effect's magnitude is measured against.
   Stat get scalesWith;
@@ -29,7 +35,7 @@ sealed class SkillEffect {
 }
 
 /// Reduces the target's health.
-final class DamageEffect extends SkillEffect {
+final class DamageEffect extends MagnitudeEffect {
   const DamageEffect({
     required this.coefficient,
     this.scalesWith = Stat.attackPower,
@@ -47,7 +53,7 @@ final class DamageEffect extends SkillEffect {
 }
 
 /// Restores the target's health, never above its maximum.
-final class HealEffect extends SkillEffect {
+final class HealEffect extends MagnitudeEffect {
   const HealEffect({
     required this.coefficient,
     this.scalesWith = Stat.healPower,
@@ -62,6 +68,30 @@ final class HealEffect extends SkillEffect {
 
   @override
   final double variance;
+}
+
+/// Puts a status on the target — a buff, a debuff, or a damage over time.
+///
+/// The status carries its own modifiers and ticks, so this effect stays the
+/// same however elaborate the thing it applies becomes.
+final class ApplyStatusEffect extends SkillEffect {
+  const ApplyStatusEffect(this.status, {this.stacks = 1});
+
+  final StatusDefinition status;
+
+  /// How many stacks one application is worth, for a stacking status.
+  final int stacks;
+}
+
+/// Strips statuses matching any of [tags] from the target.
+///
+/// A cleanse names a kind, never a list, so it covers debuffs written after
+/// it. Removing nothing is a normal outcome, not a failure.
+final class RemoveStatusEffect extends SkillEffect {
+  const RemoveStatusEffect({required this.tags, this.count = 1});
+
+  final Set<StatusTag> tags;
+  final int count;
 }
 
 /// One effect of a skill, and who it lands on.

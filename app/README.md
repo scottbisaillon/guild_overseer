@@ -58,7 +58,7 @@ What the mockup demonstrates:
 ### Deliberately not in the mockup
 
 Movement and steering, threat tables and aggro break, QTEs, traits, buffs and
-debuffs, damage types or armour, finisher sequences, art. Units are coloured
+damage types or armour, finisher sequences, art. Units are coloured
 squares. Skills are authored in Dart rather than loaded from data. Nothing here
 is balanced; the numbers exist to make the rhythm visible.
 
@@ -76,6 +76,8 @@ lib/
         stat_modifier.dart       one change, and what granted it
         stat_block.dart          the pipeline gear and buffs both feed
         target_selector.dart     who something lands on, composed
+        skill_effect.dart        what an effect is, as data
+        status.dart              buffs, debuffs and damage over time
       events/game_event.dart     the sealed GameEvent hierarchy — one bus
     features/
       home/view/                 landing screen
@@ -83,7 +85,6 @@ lib/
         domain/                  the fight, as pure Dart
           arena_layout.dart      where formation slots sit
           skill.dart             skill definitions and live cooldowns
-          skill_effect.dart      what a skill does, as data
           effect_resolver.dart   the one place that carries an effect out
           combatant.dart         a unit that fights
           targeting.dart         the one resolver for "who?"

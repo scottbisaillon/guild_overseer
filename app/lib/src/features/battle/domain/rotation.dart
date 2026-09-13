@@ -1,7 +1,7 @@
 import 'arena_layout.dart';
 import 'combatant.dart';
 import 'skill.dart';
-import 'skill_effect.dart';
+import '../../../core/domain/skill_effect.dart';
 import 'targeting.dart';
 
 /// One effect of a skill, paired with everyone it landed on.

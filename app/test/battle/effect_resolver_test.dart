@@ -12,7 +12,7 @@ import 'package:guild_overseer/src/features/battle/domain/combatant.dart';
 import 'package:guild_overseer/src/features/battle/domain/effect_resolver.dart';
 import 'package:guild_overseer/src/features/battle/domain/rotation.dart';
 import 'package:guild_overseer/src/features/battle/domain/skill.dart';
-import 'package:guild_overseer/src/features/battle/domain/skill_effect.dart';
+import 'package:guild_overseer/src/core/domain/skill_effect.dart';
 
 import 'battle_test_fixtures.dart';
 
@@ -29,11 +29,11 @@ void main() {
     Combatant caster, {
     required List<GameEvent> log,
     math.Random? random,
-    SkillDefinition? skill,
+    String label = 'Basic',
   }) =>
       ResolutionContext(
         caster: caster,
-        skill: skill ?? basicAttack,
+        label: label,
         random: random ?? noVariance,
         emit: log.add,
       );

@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import '../../../core/domain/skill_kind.dart';
-import 'skill_effect.dart';
+import '../../../core/domain/skill_effect.dart';
 
 /// A skill as authored: static data, never mutated at runtime.
 ///

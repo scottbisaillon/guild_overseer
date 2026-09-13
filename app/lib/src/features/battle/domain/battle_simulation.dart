@@ -3,6 +3,8 @@ import 'dart:math' as math;
 
 import '../../../core/domain/combat_snapshot.dart';
 import '../../../core/domain/faction.dart';
+import '../../../core/domain/skill_effect.dart';
+import '../../../core/domain/status.dart';
 import '../../../core/events/game_event.dart';
 import 'arena_layout.dart';
 import 'combatant.dart';
@@ -159,6 +161,8 @@ class BattleSimulation {
   void _step(double dt) {
     _elapsed += dt;
 
+    _tickStatuses(dt);
+
     for (final Combatant unit in _units) {
       if (unit.isAlive) {
         unit.tickCooldowns(dt);
@@ -173,6 +177,56 @@ class BattleSimulation {
     if (_sampleAccumulator >= sampleInterval) {
       _sampleAccumulator = 0;
       _emitSample();
+    }
+  }
+
+  /// Advances everything that is on a unit, before anybody acts.
+  ///
+  /// Statuses run first so a bleed that finishes somebody off does it before
+  /// they get another beat — the same order a player would expect from
+  /// watching the numbers.
+  void _tickStatuses(double dt) {
+    for (final Combatant unit in _units) {
+      if (!unit.isAlive || unit.statuses.isEmpty) {
+        continue;
+      }
+      unit.statuses.advance(
+        dt,
+        onTick: (ActiveStatus status) => _tickStatus(unit, status),
+        onExpire: (ActiveStatus status) => _emit(StatusEnded(
+          unitId: unit.id,
+          unitName: unit.name,
+          statusId: status.id,
+          statusName: status.definition.name,
+          expired: true,
+        )),
+      );
+    }
+  }
+
+  /// One tick of one status, resolved through the ordinary effect path.
+  ///
+  /// The tick is attributed to whoever applied it, and sized by what they were
+  /// worth at the time — so a bleed keeps biting after its author is dead, for
+  /// exactly as much as it did while they lived.
+  void _tickStatus(Combatant unit, ActiveStatus status) {
+    if (!unit.isAlive) {
+      return;
+    }
+    final Combatant source = unitById(status.sourceId) ?? unit;
+    final ResolutionContext context = ResolutionContext(
+      caster: source,
+      label: status.definition.name,
+      random: _random,
+      emit: _emit,
+      statSnapshot: status.statSnapshot,
+    );
+    final List<Combatant> carrier = <Combatant>[unit];
+    for (final SkillEffect effect in status.definition.onTick) {
+      // Once per stack, so two bleeds bite twice.
+      for (int i = 0; i < status.stacks; i++) {
+        resolveEffect(effect, carrier, context);
+      }
     }
   }
 
@@ -243,7 +297,7 @@ class BattleSimulation {
     // This loop stays the same length however many kinds of effect exist.
     final ResolutionContext context = ResolutionContext(
       caster: unit,
-      skill: skill,
+      label: skill.name,
       random: _random,
       emit: _emit,
     );

@@ -56,6 +56,7 @@ Future<String> transcribeFight(
   int casts = 0;
   int deaths = 0;
   int samples = 0;
+  int statusesApplied = 0;
   double damageTotal = 0;
   double healingTotal = 0;
 
@@ -102,6 +103,20 @@ Future<String> transcribeFight(
           '$sourceName -> $targetName  $skillName  +${_amount(amount)} '
               '(${_amount(remainingHealth)} left)',
         );
+      case StatusApplied(
+          :final sourceName,
+          :final targetName,
+          :final statusName,
+          :final stacks,
+        ):
+        statusesApplied++;
+        write(
+          'status',
+          '$sourceName -> $targetName  $statusName'
+              '${stacks > 1 ? ' x$stacks' : ''}',
+        );
+      case StatusEnded(:final unitName, :final statusName, :final expired):
+        write('status', '$unitName  $statusName ${expired ? 'ends' : 'cleansed'}');
       case UnitDied(:final unitName, :final faction):
         deaths++;
         write('death', '$unitName (${faction.name})');
@@ -167,7 +182,8 @@ Future<String> transcribeFight(
     )
     ..writeln(
       'casts $casts  damage ${_amount(damageTotal)}  '
-      'healing ${_amount(healingTotal)}  deaths $deaths  samples $samples',
+      'healing ${_amount(healingTotal)}  statuses $statusesApplied  '
+      'deaths $deaths  samples $samples',
     )
     ..writeln('');
 

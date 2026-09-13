@@ -99,6 +99,7 @@ class _LogLine extends StatelessWidget {
   static Color _colorFor(CombatLogKind kind) => switch (kind) {
         CombatLogKind.damage => BattlePalette.textPrimary,
         CombatLogKind.heal => BattlePalette.heal,
+        CombatLogKind.status => BattlePalette.enemy,
         CombatLogKind.death => BattlePalette.damage,
         CombatLogKind.targeting => BattlePalette.textMuted,
         CombatLogKind.system => BattlePalette.ally,

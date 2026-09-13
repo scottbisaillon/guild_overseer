@@ -1,11 +1,14 @@
 import '../../../core/domain/combat_role.dart';
 import '../../../core/domain/faction.dart';
 import '../../../core/domain/skill_kind.dart';
+import '../../../core/domain/stat.dart';
+import '../../../core/domain/stat_modifier.dart';
+import '../../../core/domain/status.dart';
 import '../../../core/domain/target_priority.dart';
 import '../domain/combatant.dart';
 import '../domain/skill.dart';
 import '../../../core/domain/target_selector.dart';
-import '../domain/skill_effect.dart';
+import '../../../core/domain/skill_effect.dart';
 
 /// The hand-authored roster the battle mockup fights with.
 ///
@@ -13,6 +16,42 @@ import '../domain/skill_effect.dart';
 /// come from the roster the player composed, enemies from the dungeon room
 /// definition. Keeping it in one file means the whole mockup can be re-tuned
 /// without touching combat code.
+
+// ---------------------------------------------------------------------------
+// Statuses
+//
+// A buff and a damage over time are the same shape — they differ only in what
+// they carry. Neither needed a line of combat code to exist.
+// ---------------------------------------------------------------------------
+
+/// Physical damage over time. Ticks are resolved through the ordinary effect
+/// path, so a bleed rolls, scales and kills exactly as a sword swing does.
+const StatusDefinition bleeding = StatusDefinition(
+  id: 'bleeding',
+  name: 'Bleeding',
+  duration: 6,
+  tickInterval: 2,
+  tags: <StatusTag>{StatusTag.debuff, StatusTag.bleed},
+  maxStacks: 3,
+  policy: StackPolicy.stack,
+  onTick: <SkillEffect>[DamageEffect(coefficient: 1.2)],
+);
+
+/// The tank braces. Straight mitigation for a while, granted as a modifier
+/// like anything else and removed with the status.
+const StatusDefinition fortified = StatusDefinition(
+  id: 'fortified',
+  name: 'Fortified',
+  duration: 8,
+  tags: <StatusTag>{StatusTag.buff},
+  modifiers: <StatModifier>[
+    StatModifier.increased(
+      Stat.damageTakenMultiplier,
+      -0.35,
+      source: ModifierSource.status('fortified'),
+    ),
+  ],
+);
 
 // ---------------------------------------------------------------------------
 // Ally skills
@@ -27,6 +66,19 @@ const SkillDefinition shieldSlam = SkillDefinition(
     EffectSpec(
       selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 3),
+    ),
+  ],
+);
+
+const SkillDefinition fortify = SkillDefinition(
+  id: 'fortify',
+  name: 'Fortify',
+  delivery: SkillDelivery.beam,
+  cooldown: 12,
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.self,
+      effect: ApplyStatusEffect(fortified),
     ),
   ],
 );
@@ -165,6 +217,12 @@ const SkillDefinition rend = SkillDefinition(
       selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 3.6),
     ),
+    // The cut keeps bleeding. A second effect on the same target, which is
+    // what the effect list was for.
+    EffectSpec(
+      selector: TargetSelector.currentEnemy,
+      effect: ApplyStatusEffect(bleeding),
+    ),
   ],
 );
 
@@ -286,7 +344,7 @@ List<Combatant> _allies() => <Combatant>[
         column: 0,
         maxHealth: 440,
         priority: TargetPriority.nearest,
-        skills: const <SkillDefinition>[shieldSlam, strike],
+        skills: const <SkillDefinition>[fortify, shieldSlam, strike],
       ),
       Combatant(
         id: 'ally_kessa',

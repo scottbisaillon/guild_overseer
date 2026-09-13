@@ -4,7 +4,7 @@ import '../../../core/domain/combat_snapshot.dart';
 import '../../../core/domain/faction.dart';
 
 /// What a combat log line is about, which decides how it is coloured.
-enum CombatLogKind { damage, heal, death, targeting, system }
+enum CombatLogKind { damage, heal, status, death, targeting, system }
 
 /// One line in the combat log.
 class CombatLogEntry extends Equatable {

@@ -118,6 +118,8 @@ class BattleGame extends FlameGame {
           '+${amount.toStringAsFixed(0)}',
           BattlePalette.heal,
         );
+      case StatusApplied():
+      case StatusEnded():
       case UnitDied():
       case BattleStarted():
       case BattlePaused():
@@ -132,7 +134,8 @@ class BattleGame extends FlameGame {
       case RestartBattleRequested():
       case SpeedChangeRequested():
         // Nothing to draw: unit components read death straight off the
-        // combatant, and the rest is HUD-only state.
+        // combatant, statuses have no art until presentation moves to
+        // authored cues, and the rest is HUD-only state.
         break;
     }
   }

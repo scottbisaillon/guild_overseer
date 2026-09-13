@@ -5,7 +5,7 @@ import 'package:guild_overseer/src/core/domain/target_priority.dart';
 import 'package:guild_overseer/src/features/battle/domain/combatant.dart';
 import 'package:guild_overseer/src/features/battle/domain/skill.dart';
 import 'package:guild_overseer/src/core/domain/target_selector.dart';
-import 'package:guild_overseer/src/features/battle/domain/skill_effect.dart';
+import 'package:guild_overseer/src/core/domain/skill_effect.dart';
 
 /// A 1s basic attack, the filler every unit falls back on.
 const SkillDefinition basicAttack = SkillDefinition(

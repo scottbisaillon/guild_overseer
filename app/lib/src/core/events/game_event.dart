@@ -165,6 +165,66 @@ final class HealApplied extends GameEvent {
       ];
 }
 
+final class StatusApplied extends GameEvent {
+  const StatusApplied({
+    required this.sourceId,
+    required this.sourceName,
+    required this.targetId,
+    required this.targetName,
+    required this.statusId,
+    required this.statusName,
+    required this.stacks,
+    required this.duration,
+  });
+
+  final String sourceId;
+  final String sourceName;
+  final String targetId;
+  final String targetName;
+  final String statusId;
+  final String statusName;
+
+  /// Stacks now on the target, not stacks added.
+  final int stacks;
+
+  /// Seconds the status will run for from now.
+  final double duration;
+
+  @override
+  List<Object?> get props => <Object?>[
+        sourceId,
+        sourceName,
+        targetId,
+        targetName,
+        statusId,
+        statusName,
+        stacks,
+        duration,
+      ];
+}
+
+final class StatusEnded extends GameEvent {
+  const StatusEnded({
+    required this.unitId,
+    required this.unitName,
+    required this.statusId,
+    required this.statusName,
+    required this.expired,
+  });
+
+  final String unitId;
+  final String unitName;
+  final String statusId;
+  final String statusName;
+
+  /// Whether it ran out on its own, as opposed to being cleansed off.
+  final bool expired;
+
+  @override
+  List<Object?> get props =>
+      <Object?>[unitId, unitName, statusId, statusName, expired];
+}
+
 final class UnitDied extends GameEvent {
   const UnitDied({
     required this.unitId,

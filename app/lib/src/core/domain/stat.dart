@@ -21,7 +21,15 @@ enum Stat {
   healPower(defaultValue: 10, minimum: 0),
 
   /// Flat physical mitigation. Not read yet — see [attackPower].
-  armour(defaultValue: 0, minimum: 0);
+  armour(defaultValue: 0, minimum: 0),
+
+  /// Scales every point of damage this unit receives. Live: applied by the
+  /// effect resolver. A modifier of -0.15 makes the unit take 15% less.
+  ///
+  /// Untyped for now — mitigating physical damage specifically needs damage
+  /// types and modifiers that can be conditioned on a tag, neither of which
+  /// exists yet.
+  damageTakenMultiplier(defaultValue: 1, minimum: 0);
 
   const Stat({required this.defaultValue, this.minimum = 0});
 

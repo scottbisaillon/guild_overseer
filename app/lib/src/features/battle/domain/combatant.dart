@@ -5,6 +5,7 @@ import '../../../core/domain/combat_snapshot.dart';
 import '../../../core/domain/faction.dart';
 import '../../../core/domain/stat.dart';
 import '../../../core/domain/stat_block.dart';
+import '../../../core/domain/status.dart';
 import '../../../core/domain/target_priority.dart';
 import 'arena_layout.dart';
 import 'skill.dart';
@@ -31,7 +32,9 @@ class Combatant {
         }),
         health = maxHealth,
         _knownMaxHealth = maxHealth,
-        rotation = skills.map(SkillSlot.new).toList(growable: false);
+        rotation = skills.map(SkillSlot.new).toList(growable: false) {
+    statuses = StatusContainer(stats: stats, onChanged: refreshStats);
+  }
 
   final String id;
   final String name;
@@ -51,6 +54,12 @@ class Combatant {
   /// reaching into fields, so none of them needs to know about the others.
   /// Call [refreshStats] after changing what this block holds.
   final StatBlock stats;
+
+  /// The buffs, debuffs and damage over time currently on this unit.
+  ///
+  /// Statuses reach the unit's numbers through [stats] like anything else, so
+  /// nothing here needs to know a buff from a breastplate.
+  late final StatusContainer statuses;
 
   /// How this unit picks an opponent.
   final TargetPriority priority;
