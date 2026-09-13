@@ -289,8 +289,7 @@ class BattleSimulation {
           decision.targets.map((Combatant c) => c.id).toList(growable: false),
       skillId: skill.id,
       skillName: skill.name,
-      kind: skill.kind,
-      delivery: skill.delivery,
+      presentation: skill.presentation,
     ));
 
     // What each effect means is the resolver's business, not the simulation's.

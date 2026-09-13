@@ -1,6 +1,6 @@
 import '../../../core/domain/combat_role.dart';
 import '../../../core/domain/faction.dart';
-import '../../../core/domain/skill_kind.dart';
+import '../../../core/domain/presentation.dart';
 import '../../../core/domain/stat.dart';
 import '../../../core/domain/stat_modifier.dart';
 import '../../../core/domain/status.dart';
@@ -35,6 +35,10 @@ const StatusDefinition bleeding = StatusDefinition(
   maxStacks: 3,
   policy: StackPolicy.stack,
   onTick: <SkillEffect>[DamageEffect(coefficient: 1.2)],
+  presentation: PresentationSpec(
+    impact: Cue.debuffMark,
+    color: CueColor.debuff,
+  ),
 );
 
 /// The tank braces. Straight mitigation for a while, granted as a modifier
@@ -51,6 +55,7 @@ const StatusDefinition fortified = StatusDefinition(
       source: ModifierSource.status('fortified'),
     ),
   ],
+  presentation: PresentationSpec(impact: Cue.buffMark, color: CueColor.buff),
 );
 
 // ---------------------------------------------------------------------------
@@ -60,8 +65,8 @@ const StatusDefinition fortified = StatusDefinition(
 const SkillDefinition shieldSlam = SkillDefinition(
   id: 'shield_slam',
   name: 'Shield Slam',
-  delivery: SkillDelivery.melee,
   cooldown: 6,
+  presentation: PresentationSpec(cast: Cue.lunge),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -73,8 +78,8 @@ const SkillDefinition shieldSlam = SkillDefinition(
 const SkillDefinition fortify = SkillDefinition(
   id: 'fortify',
   name: 'Fortify',
-  delivery: SkillDelivery.beam,
   cooldown: 12,
+  presentation: PresentationSpec(travel: Cue.beam),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.self,
@@ -86,8 +91,8 @@ const SkillDefinition fortify = SkillDefinition(
 const SkillDefinition recklessStrike = SkillDefinition(
   id: 'reckless_strike',
   name: 'Reckless Strike',
-  delivery: SkillDelivery.melee,
   cooldown: 8,
+  presentation: PresentationSpec(cast: Cue.lunge),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -99,8 +104,8 @@ const SkillDefinition recklessStrike = SkillDefinition(
 const SkillDefinition cleave = SkillDefinition(
   id: 'cleave',
   name: 'Cleave',
-  delivery: SkillDelivery.melee,
   cooldown: 5,
+  presentation: PresentationSpec(cast: Cue.lunge),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemyColumn,
@@ -112,8 +117,8 @@ const SkillDefinition cleave = SkillDefinition(
 const SkillDefinition piercingShot = SkillDefinition(
   id: 'piercing_shot',
   name: 'Piercing Shot',
-  delivery: SkillDelivery.projectile,
   cooldown: 4,
+  presentation: PresentationSpec(travel: Cue.bolt),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -125,8 +130,8 @@ const SkillDefinition piercingShot = SkillDefinition(
 const SkillDefinition mend = SkillDefinition(
   id: 'mend',
   name: 'Mend',
-  delivery: SkillDelivery.beam,
   cooldown: 4,
+  presentation: PresentationSpec(travel: Cue.beam, color: CueColor.heal),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.mostWoundedAlly,
@@ -138,8 +143,8 @@ const SkillDefinition mend = SkillDefinition(
 const SkillDefinition disrupt = SkillDefinition(
   id: 'disrupt',
   name: 'Disrupt',
-  delivery: SkillDelivery.beam,
   cooldown: 7,
+  presentation: PresentationSpec(travel: Cue.beam),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -151,9 +156,9 @@ const SkillDefinition disrupt = SkillDefinition(
 const SkillDefinition strike = SkillDefinition(
   id: 'strike',
   name: 'Strike',
-  delivery: SkillDelivery.melee,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(cast: Cue.lunge),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -165,9 +170,9 @@ const SkillDefinition strike = SkillDefinition(
 const SkillDefinition shot = SkillDefinition(
   id: 'shot',
   name: 'Shot',
-  delivery: SkillDelivery.projectile,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(travel: Cue.bolt),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -179,9 +184,9 @@ const SkillDefinition shot = SkillDefinition(
 const SkillDefinition smite = SkillDefinition(
   id: 'smite',
   name: 'Smite',
-  delivery: SkillDelivery.beam,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(travel: Cue.beam),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -197,8 +202,8 @@ const SkillDefinition smite = SkillDefinition(
 const SkillDefinition crushingBlow = SkillDefinition(
   id: 'crushing_blow',
   name: 'Crushing Blow',
-  delivery: SkillDelivery.melee,
   cooldown: 6,
+  presentation: PresentationSpec(cast: Cue.lunge),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -210,8 +215,8 @@ const SkillDefinition crushingBlow = SkillDefinition(
 const SkillDefinition rend = SkillDefinition(
   id: 'rend',
   name: 'Rend',
-  delivery: SkillDelivery.melee,
   cooldown: 5,
+  presentation: PresentationSpec(cast: Cue.lunge),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -229,8 +234,8 @@ const SkillDefinition rend = SkillDefinition(
 const SkillDefinition arcBolt = SkillDefinition(
   id: 'arc_bolt',
   name: 'Arc Bolt',
-  delivery: SkillDelivery.projectile,
   cooldown: 4,
+  presentation: PresentationSpec(travel: Cue.bolt),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -242,8 +247,8 @@ const SkillDefinition arcBolt = SkillDefinition(
 const SkillDefinition darkMend = SkillDefinition(
   id: 'dark_mend',
   name: 'Dark Mend',
-  delivery: SkillDelivery.beam,
   cooldown: 5,
+  presentation: PresentationSpec(travel: Cue.beam, color: CueColor.heal),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.mostWoundedAlly,
@@ -255,8 +260,8 @@ const SkillDefinition darkMend = SkillDefinition(
 const SkillDefinition hex = SkillDefinition(
   id: 'hex',
   name: 'Hex',
-  delivery: SkillDelivery.beam,
   cooldown: 7,
+  presentation: PresentationSpec(travel: Cue.beam),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -268,9 +273,9 @@ const SkillDefinition hex = SkillDefinition(
 const SkillDefinition claw = SkillDefinition(
   id: 'claw',
   name: 'Claw',
-  delivery: SkillDelivery.melee,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(cast: Cue.lunge),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -282,9 +287,9 @@ const SkillDefinition claw = SkillDefinition(
 const SkillDefinition bolt = SkillDefinition(
   id: 'bolt',
   name: 'Bolt',
-  delivery: SkillDelivery.projectile,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(travel: Cue.bolt),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -296,9 +301,9 @@ const SkillDefinition bolt = SkillDefinition(
 const SkillDefinition wither = SkillDefinition(
   id: 'wither',
   name: 'Wither',
-  delivery: SkillDelivery.beam,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(travel: Cue.beam),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -310,9 +315,9 @@ const SkillDefinition wither = SkillDefinition(
 const SkillDefinition lash = SkillDefinition(
   id: 'lash',
   name: 'Lash',
-  delivery: SkillDelivery.beam,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(travel: Cue.beam),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,

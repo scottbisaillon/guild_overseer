@@ -78,6 +78,8 @@ lib/
         target_selector.dart     who something lands on, composed
         skill_effect.dart        what an effect is, as data
         status.dart              buffs, debuffs and damage over time
+        presentation.dart        cue ids and colour roles
+        cue_registry.dart        id -> whatever draws it
       events/game_event.dart     the sealed GameEvent hierarchy — one bus
     features/
       home/view/                 landing screen
@@ -92,11 +94,12 @@ lib/
           battle_simulation.dart the tick loop and the event stream
         data/mock_roster.dart    the twelve units of the mockup
         game/                    Flame: renders the fight, owns no rules
+          cues/battle_cues.dart  the registry of what each cue id draws
         bloc/                    GameEvent stream -> HUD state
         view/                    Flutter HUD over the GameWidget
 tool/simulate_battle.dart        headless runner
 tool/record_fight.dart           re-records the golden transcript
-test/core/                       the stat modifier pipeline
+test/core/                       the stat pipeline and the cue registry
 test/battle/                     targeting, rotation and simulation tests
 test/battle/goldens/             the recorded fight the tests compare against
 ```

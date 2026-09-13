@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart' show FontWeight, TextStyle;
 
-import '../../../../core/domain/skill_kind.dart';
 import '../../domain/arena_layout.dart';
 import '../../domain/combatant.dart';
 import '../../view/battle_palette.dart';
@@ -67,16 +66,18 @@ class UnitComponent extends PositionComponent {
     ),
   );
 
-  /// Called when this unit fires a skill.
-  void playCast(SkillDelivery delivery, Vector2 targetPosition) {
-    _castFlash = _castDuration;
-    if (delivery == SkillDelivery.melee) {
-      final Vector2 toTarget = targetPosition - _slot;
-      if (!toTarget.isZero()) {
-        _lungeDirection = toTarget.normalized();
-        _lungeTimer = _lungeDuration;
-      }
+  /// Called when this unit fires anything at all.
+  void playCast() => _castFlash = _castDuration;
+
+  /// Throws the unit at [targetPosition] and back. Driven by a cue, so what
+  /// counts as a lunge is decided by content rather than by this component.
+  void lungeToward(Vector2 targetPosition) {
+    final Vector2 toTarget = targetPosition - _slot;
+    if (toTarget.isZero()) {
+      return;
     }
+    _lungeDirection = toTarget.normalized();
+    _lungeTimer = _lungeDuration;
   }
 
   /// Called when this unit takes a hit.

@@ -156,6 +156,7 @@ void _resolveApplyStatus(
     statusName: status.definition.name,
     stacks: status.stacks,
     duration: status.remaining,
+    presentation: effect.status.presentation,
   ));
 }
 

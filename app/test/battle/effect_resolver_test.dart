@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:guild_overseer/src/core/domain/faction.dart';
-import 'package:guild_overseer/src/core/domain/skill_kind.dart';
 import 'package:guild_overseer/src/core/domain/stat.dart';
 import 'package:guild_overseer/src/core/domain/stat_modifier.dart';
 import 'package:guild_overseer/src/core/events/game_event.dart';
@@ -166,7 +165,6 @@ void main() {
     const SkillDefinition recklessStrike = SkillDefinition(
       id: 'reckless',
       name: 'Reckless Strike',
-      delivery: SkillDelivery.melee,
       cooldown: 2,
       effects: <EffectSpec>[
         EffectSpec(
@@ -228,8 +226,7 @@ void main() {
       const SkillDefinition doubleHit = SkillDefinition(
         id: 'double',
         name: 'Double',
-        delivery: SkillDelivery.melee,
-        cooldown: 1,
+          cooldown: 1,
         effects: <EffectSpec>[
           EffectSpec(
             selector: TargetSelector.currentEnemy,
@@ -256,10 +253,6 @@ void main() {
       expect(decision.targets, hasLength(1));
     });
 
-    test('kind is derived from the effects, not authored beside them', () {
-      expect(healSkill.kind, SkillKind.heal);
-      expect(basicAttack.kind, SkillKind.damage);
-    });
   });
 }
 

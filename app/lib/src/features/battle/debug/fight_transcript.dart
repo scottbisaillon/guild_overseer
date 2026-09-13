@@ -74,9 +74,9 @@ Future<String> transcribeFight(
         write('end', '${winner.label} win');
       case TargetAcquired(:final unitName, :final targetName):
         write('target', '$unitName -> $targetName');
-      case SkillFired(:final sourceName, :final skillName, :final kind, :final delivery):
+      case SkillFired(:final sourceName, :final skillName):
         casts++;
-        write('cast', '$sourceName  $skillName [${kind.name}/${delivery.name}]');
+        write('cast', '$sourceName  $skillName');
       case DamageDealt(
           :final sourceName,
           :final targetName,

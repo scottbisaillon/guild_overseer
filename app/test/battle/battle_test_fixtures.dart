@@ -1,6 +1,6 @@
 import 'package:guild_overseer/src/core/domain/combat_role.dart';
 import 'package:guild_overseer/src/core/domain/faction.dart';
-import 'package:guild_overseer/src/core/domain/skill_kind.dart';
+import 'package:guild_overseer/src/core/domain/presentation.dart';
 import 'package:guild_overseer/src/core/domain/target_priority.dart';
 import 'package:guild_overseer/src/features/battle/domain/combatant.dart';
 import 'package:guild_overseer/src/features/battle/domain/skill.dart';
@@ -11,9 +11,9 @@ import 'package:guild_overseer/src/core/domain/skill_effect.dart';
 const SkillDefinition basicAttack = SkillDefinition(
   id: 'basic',
   name: 'Basic',
-  delivery: SkillDelivery.melee,
   cooldown: 1,
   isBasic: true,
+  presentation: PresentationSpec(cast: Cue.lunge),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -26,8 +26,8 @@ const SkillDefinition basicAttack = SkillDefinition(
 const SkillDefinition heavyAttack = SkillDefinition(
   id: 'heavy',
   name: 'Heavy',
-  delivery: SkillDelivery.melee,
   cooldown: 2,
+  presentation: PresentationSpec(cast: Cue.lunge),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemy,
@@ -40,8 +40,8 @@ const SkillDefinition heavyAttack = SkillDefinition(
 const SkillDefinition columnAttack = SkillDefinition(
   id: 'column',
   name: 'Column',
-  delivery: SkillDelivery.melee,
   cooldown: 3,
+  presentation: PresentationSpec(cast: Cue.lunge),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemyColumn,
@@ -54,8 +54,8 @@ const SkillDefinition columnAttack = SkillDefinition(
 const SkillDefinition healSkill = SkillDefinition(
   id: 'heal',
   name: 'Heal',
-  delivery: SkillDelivery.beam,
   cooldown: 2,
+  presentation: PresentationSpec(travel: Cue.beam, color: CueColor.heal),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.mostWoundedAlly,

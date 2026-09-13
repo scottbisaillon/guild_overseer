@@ -20,182 +20,182 @@
    0.017  target  Plague Acolyte -> Bramm Ironvow
    0.017  target  Ranged Construct -> Kessa Vane
    0.017  target  Hexweaver -> Ysolde Marrow
-   0.017  cast    Bramm Ironvow  Fortify [damage/beam]
+   0.017  cast    Bramm Ironvow  Fortify
    0.017  status  Bramm Ironvow -> Bramm Ironvow  Fortified
-   0.017  cast    Kessa Vane  Reckless Strike [damage/melee]
+   0.017  cast    Kessa Vane  Reckless Strike
    0.017  damage  Kessa Vane -> Crypt Ghoul  Reckless Strike  58 (207 left)
-   0.017  cast    Doren Hale  Cleave [damage/melee]
+   0.017  cast    Doren Hale  Cleave
    0.017  damage  Doren Hale -> Bone Warden  Cleave  25 (445 left)
    0.017  damage  Doren Hale -> Crypt Ghoul  Cleave  25 (182 left)
    0.017  damage  Doren Hale -> Grave Ghoul  Cleave  23 (242 left)
-   0.017  cast    Ysolde Marrow  Smite [damage/beam]
+   0.017  cast    Ysolde Marrow  Smite
    0.017  damage  Ysolde Marrow -> Bone Warden  Smite  8 (437 left)
-   0.017  cast    Fenn Quill  Piercing Shot [damage/projectile]
+   0.017  cast    Fenn Quill  Piercing Shot
    0.017  damage  Fenn Quill -> Crypt Ghoul  Piercing Shot  45 (137 left)
-   0.017  cast    Mira Sol  Disrupt [damage/beam]
+   0.017  cast    Mira Sol  Disrupt
    0.017  damage  Mira Sol -> Hexweaver  Disrupt  32 (183 left)
-   0.017  cast    Bone Warden  Crushing Blow [damage/melee]
+   0.017  cast    Bone Warden  Crushing Blow
    0.017  damage  Bone Warden -> Bramm Ironvow  Crushing Blow  21 (419 left)
-   0.017  cast    Crypt Ghoul  Rend [damage/melee]
+   0.017  cast    Crypt Ghoul  Rend
    0.017  damage  Crypt Ghoul -> Kessa Vane  Rend  35 (225 left)
    0.017  status  Crypt Ghoul -> Kessa Vane  Bleeding
-   0.017  cast    Grave Ghoul  Rend [damage/melee]
+   0.017  cast    Grave Ghoul  Rend
    0.017  damage  Grave Ghoul -> Doren Hale  Rend  40 (210 left)
    0.017  status  Grave Ghoul -> Doren Hale  Bleeding
-   0.017  cast    Plague Acolyte  Dark Mend [heal/beam]
+   0.017  cast    Plague Acolyte  Dark Mend
    0.017  heal    Plague Acolyte -> Crypt Ghoul  Dark Mend  +45 (182 left)
-   0.017  cast    Ranged Construct  Arc Bolt [damage/projectile]
+   0.017  cast    Ranged Construct  Arc Bolt
    0.017  damage  Ranged Construct -> Kessa Vane  Arc Bolt  37 (188 left)
-   0.017  cast    Hexweaver  Hex [damage/beam]
+   0.017  cast    Hexweaver  Hex
    0.017  damage  Hexweaver -> Ysolde Marrow  Hex  42 (158 left)
-   1.017  cast    Bramm Ironvow  Shield Slam [damage/melee]
+   1.017  cast    Bramm Ironvow  Shield Slam
    1.017  damage  Bramm Ironvow -> Bone Warden  Shield Slam  28 (409 left)
-   1.017  cast    Kessa Vane  Cleave [damage/melee]
+   1.017  cast    Kessa Vane  Cleave
    1.017  damage  Kessa Vane -> Bone Warden  Cleave  23 (386 left)
    1.017  damage  Kessa Vane -> Crypt Ghoul  Cleave  23 (159 left)
    1.017  damage  Kessa Vane -> Grave Ghoul  Cleave  25 (217 left)
-   1.017  cast    Doren Hale  Strike [damage/melee]
+   1.017  cast    Doren Hale  Strike
    1.017  damage  Doren Hale -> Grave Ghoul  Strike  14 (203 left)
-   1.017  cast    Ysolde Marrow  Mend [heal/beam]
+   1.017  cast    Ysolde Marrow  Mend
    1.017  heal    Ysolde Marrow -> Kessa Vane  Mend  +57 (245 left)
-   1.017  cast    Fenn Quill  Shot [damage/projectile]
+   1.017  cast    Fenn Quill  Shot
    1.017  damage  Fenn Quill -> Crypt Ghoul  Shot  13 (146 left)
-   1.017  cast    Mira Sol  Smite [damage/beam]
+   1.017  cast    Mira Sol  Smite
    1.017  damage  Mira Sol -> Hexweaver  Smite  9 (174 left)
-   1.017  cast    Bone Warden  Claw [damage/melee]
+   1.017  cast    Bone Warden  Claw
    1.017  damage  Bone Warden -> Bramm Ironvow  Claw  8 (411 left)
-   1.017  cast    Crypt Ghoul  Claw [damage/melee]
+   1.017  cast    Crypt Ghoul  Claw
    1.017  damage  Crypt Ghoul -> Kessa Vane  Claw  17 (228 left)
-   1.017  cast    Grave Ghoul  Claw [damage/melee]
+   1.017  cast    Grave Ghoul  Claw
    1.017  damage  Grave Ghoul -> Doren Hale  Claw  14 (196 left)
-   1.017  cast    Plague Acolyte  Wither [damage/beam]
+   1.017  cast    Plague Acolyte  Wither
    1.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  7 (404 left)
-   1.017  cast    Ranged Construct  Bolt [damage/projectile]
+   1.017  cast    Ranged Construct  Bolt
    1.017  damage  Ranged Construct -> Kessa Vane  Bolt  11 (217 left)
-   1.017  cast    Hexweaver  Lash [damage/beam]
+   1.017  cast    Hexweaver  Lash
    1.017  damage  Hexweaver -> Ysolde Marrow  Lash  13 (145 left)
-   2.017  cast    Bramm Ironvow  Strike [damage/melee]
+   2.017  cast    Bramm Ironvow  Strike
    2.017  damage  Bramm Ironvow -> Bone Warden  Strike  12 (374 left)
-   2.017  cast    Kessa Vane  Strike [damage/melee]
+   2.017  cast    Kessa Vane  Strike
    2.017  damage  Kessa Vane -> Crypt Ghoul  Strike  15 (131 left)
-   2.017  cast    Doren Hale  Strike [damage/melee]
+   2.017  cast    Doren Hale  Strike
    2.017  damage  Doren Hale -> Grave Ghoul  Strike  16 (187 left)
-   2.017  cast    Ysolde Marrow  Smite [damage/beam]
+   2.017  cast    Ysolde Marrow  Smite
    2.017  damage  Ysolde Marrow -> Bone Warden  Smite  9 (365 left)
-   2.017  cast    Fenn Quill  Shot [damage/projectile]
+   2.017  cast    Fenn Quill  Shot
    2.017  damage  Fenn Quill -> Crypt Ghoul  Shot  11 (120 left)
-   2.017  cast    Mira Sol  Smite [damage/beam]
+   2.017  cast    Mira Sol  Smite
    2.017  damage  Mira Sol -> Hexweaver  Smite  8 (166 left)
-   2.017  cast    Bone Warden  Claw [damage/melee]
+   2.017  cast    Bone Warden  Claw
    2.017  damage  Bone Warden -> Bramm Ironvow  Claw  10 (394 left)
-   2.017  cast    Crypt Ghoul  Claw [damage/melee]
+   2.017  cast    Crypt Ghoul  Claw
    2.017  damage  Crypt Ghoul -> Kessa Vane  Claw  17 (200 left)
-   2.017  cast    Grave Ghoul  Claw [damage/melee]
+   2.017  cast    Grave Ghoul  Claw
    2.017  damage  Grave Ghoul -> Doren Hale  Claw  14 (182 left)
-   2.017  cast    Plague Acolyte  Wither [damage/beam]
+   2.017  cast    Plague Acolyte  Wither
    2.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  7 (387 left)
-   2.017  cast    Ranged Construct  Bolt [damage/projectile]
+   2.017  cast    Ranged Construct  Bolt
    2.017  damage  Ranged Construct -> Kessa Vane  Bolt  13 (187 left)
-   2.017  cast    Hexweaver  Lash [damage/beam]
+   2.017  cast    Hexweaver  Lash
    2.017  damage  Hexweaver -> Ysolde Marrow  Lash  13 (132 left)
    2.033  damage  Crypt Ghoul -> Kessa Vane  Bleeding  11 (176 left)
    2.033  damage  Grave Ghoul -> Doren Hale  Bleeding  12 (170 left)
-   3.017  cast    Bramm Ironvow  Strike [damage/melee]
+   3.017  cast    Bramm Ironvow  Strike
    3.017  damage  Bramm Ironvow -> Bone Warden  Strike  15 (350 left)
-   3.017  cast    Kessa Vane  Strike [damage/melee]
+   3.017  cast    Kessa Vane  Strike
    3.017  damage  Kessa Vane -> Crypt Ghoul  Strike  15 (105 left)
-   3.017  cast    Doren Hale  Strike [damage/melee]
+   3.017  cast    Doren Hale  Strike
    3.017  damage  Doren Hale -> Grave Ghoul  Strike  15 (172 left)
-   3.017  cast    Ysolde Marrow  Smite [damage/beam]
+   3.017  cast    Ysolde Marrow  Smite
    3.017  damage  Ysolde Marrow -> Bone Warden  Smite  9 (341 left)
-   3.017  cast    Fenn Quill  Shot [damage/projectile]
+   3.017  cast    Fenn Quill  Shot
    3.017  damage  Fenn Quill -> Crypt Ghoul  Shot  11 (94 left)
-   3.017  cast    Mira Sol  Smite [damage/beam]
+   3.017  cast    Mira Sol  Smite
    3.017  damage  Mira Sol -> Hexweaver  Smite  10 (156 left)
-   3.017  cast    Bone Warden  Claw [damage/melee]
+   3.017  cast    Bone Warden  Claw
    3.017  damage  Bone Warden -> Bramm Ironvow  Claw  11 (376 left)
-   3.017  cast    Crypt Ghoul  Claw [damage/melee]
+   3.017  cast    Crypt Ghoul  Claw
    3.017  damage  Crypt Ghoul -> Kessa Vane  Claw  14 (162 left)
-   3.017  cast    Grave Ghoul  Claw [damage/melee]
+   3.017  cast    Grave Ghoul  Claw
    3.017  damage  Grave Ghoul -> Doren Hale  Claw  15 (155 left)
-   3.017  cast    Plague Acolyte  Wither [damage/beam]
+   3.017  cast    Plague Acolyte  Wither
    3.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  6 (370 left)
-   3.017  cast    Ranged Construct  Bolt [damage/projectile]
+   3.017  cast    Ranged Construct  Bolt
    3.017  damage  Ranged Construct -> Kessa Vane  Bolt  11 (151 left)
-   3.017  cast    Hexweaver  Lash [damage/beam]
+   3.017  cast    Hexweaver  Lash
    3.017  damage  Hexweaver -> Ysolde Marrow  Lash  11 (121 left)
-   4.017  cast    Bramm Ironvow  Strike [damage/melee]
+   4.017  cast    Bramm Ironvow  Strike
    4.017  damage  Bramm Ironvow -> Bone Warden  Strike  15 (326 left)
-   4.017  cast    Kessa Vane  Strike [damage/melee]
+   4.017  cast    Kessa Vane  Strike
    4.017  damage  Kessa Vane -> Crypt Ghoul  Strike  15 (79 left)
-   4.017  cast    Doren Hale  Strike [damage/melee]
+   4.017  cast    Doren Hale  Strike
    4.017  damage  Doren Hale -> Grave Ghoul  Strike  13 (159 left)
-   4.017  cast    Ysolde Marrow  Smite [damage/beam]
+   4.017  cast    Ysolde Marrow  Smite
    4.017  damage  Ysolde Marrow -> Bone Warden  Smite  9 (317 left)
-   4.017  cast    Fenn Quill  Shot [damage/projectile]
+   4.017  cast    Fenn Quill  Shot
    4.017  damage  Fenn Quill -> Crypt Ghoul  Shot  12 (67 left)
-   4.017  cast    Mira Sol  Smite [damage/beam]
+   4.017  cast    Mira Sol  Smite
    4.017  damage  Mira Sol -> Hexweaver  Smite  10 (146 left)
-   4.017  cast    Bone Warden  Claw [damage/melee]
+   4.017  cast    Bone Warden  Claw
    4.017  damage  Bone Warden -> Bramm Ironvow  Claw  11 (359 left)
-   4.017  cast    Crypt Ghoul  Claw [damage/melee]
+   4.017  cast    Crypt Ghoul  Claw
    4.017  damage  Crypt Ghoul -> Kessa Vane  Claw  16 (135 left)
-   4.017  cast    Grave Ghoul  Claw [damage/melee]
+   4.017  cast    Grave Ghoul  Claw
    4.017  damage  Grave Ghoul -> Doren Hale  Claw  16 (139 left)
-   4.017  cast    Plague Acolyte  Wither [damage/beam]
+   4.017  cast    Plague Acolyte  Wither
    4.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  7 (352 left)
-   4.017  cast    Ranged Construct  Bolt [damage/projectile]
+   4.017  cast    Ranged Construct  Bolt
    4.017  damage  Ranged Construct -> Kessa Vane  Bolt  14 (121 left)
-   4.017  cast    Hexweaver  Lash [damage/beam]
+   4.017  cast    Hexweaver  Lash
    4.017  damage  Hexweaver -> Ysolde Marrow  Lash  12 (109 left)
    4.033  damage  Crypt Ghoul -> Kessa Vane  Bleeding  10 (111 left)
    4.033  damage  Grave Ghoul -> Doren Hale  Bleeding  13 (126 left)
-   5.017  cast    Bramm Ironvow  Strike [damage/melee]
+   5.017  cast    Bramm Ironvow  Strike
    5.017  damage  Bramm Ironvow -> Bone Warden  Strike  16 (301 left)
-   5.017  cast    Kessa Vane  Strike [damage/melee]
+   5.017  cast    Kessa Vane  Strike
    5.017  damage  Kessa Vane -> Crypt Ghoul  Strike  15 (52 left)
-   5.017  cast    Doren Hale  Strike [damage/melee]
+   5.017  cast    Doren Hale  Strike
    5.017  damage  Doren Hale -> Grave Ghoul  Strike  12 (147 left)
-   5.017  cast    Ysolde Marrow  Smite [damage/beam]
+   5.017  cast    Ysolde Marrow  Smite
    5.017  damage  Ysolde Marrow -> Bone Warden  Smite  9 (292 left)
-   5.017  cast    Fenn Quill  Piercing Shot [damage/projectile]
+   5.017  cast    Fenn Quill  Piercing Shot
    5.017  damage  Fenn Quill -> Crypt Ghoul  Piercing Shot  46 (6 left)
-   5.017  cast    Mira Sol  Smite [damage/beam]
+   5.017  cast    Mira Sol  Smite
    5.017  damage  Mira Sol -> Hexweaver  Smite  9 (137 left)
-   5.017  cast    Bone Warden  Claw [damage/melee]
+   5.017  cast    Bone Warden  Claw
    5.017  damage  Bone Warden -> Bramm Ironvow  Claw  9 (343 left)
-   5.017  cast    Crypt Ghoul  Claw [damage/melee]
+   5.017  cast    Crypt Ghoul  Claw
    5.017  damage  Crypt Ghoul -> Kessa Vane  Claw  16 (95 left)
-   5.017  cast    Grave Ghoul  Claw [damage/melee]
+   5.017  cast    Grave Ghoul  Claw
    5.017  damage  Grave Ghoul -> Doren Hale  Claw  13 (113 left)
-   5.017  cast    Plague Acolyte  Wither [damage/beam]
+   5.017  cast    Plague Acolyte  Wither
    5.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  7 (336 left)
-   5.017  cast    Ranged Construct  Arc Bolt [damage/projectile]
+   5.017  cast    Ranged Construct  Arc Bolt
    5.017  damage  Ranged Construct -> Kessa Vane  Arc Bolt  39 (56 left)
-   5.017  cast    Hexweaver  Lash [damage/beam]
+   5.017  cast    Hexweaver  Lash
    5.017  damage  Hexweaver -> Ysolde Marrow  Lash  11 (98 left)
-   6.017  cast    Bramm Ironvow  Strike [damage/melee]
+   6.017  cast    Bramm Ironvow  Strike
    6.017  damage  Bramm Ironvow -> Bone Warden  Strike  14 (278 left)
-   6.017  cast    Kessa Vane  Strike [damage/melee]
+   6.017  cast    Kessa Vane  Strike
    6.017  damage  Kessa Vane -> Crypt Ghoul  Strike  6 (0 left)
    6.017  death   Crypt Ghoul (enemy)
-   6.017  cast    Doren Hale  Cleave [damage/melee]
+   6.017  cast    Doren Hale  Cleave
    6.017  damage  Doren Hale -> Bone Warden  Cleave  25 (253 left)
    6.017  damage  Doren Hale -> Grave Ghoul  Cleave  23 (124 left)
-   6.017  cast    Ysolde Marrow  Mend [heal/beam]
+   6.017  cast    Ysolde Marrow  Mend
    6.017  heal    Ysolde Marrow -> Kessa Vane  Mend  +66 (122 left)
-   6.017  cast    Mira Sol  Smite [damage/beam]
+   6.017  cast    Mira Sol  Smite
    6.017  damage  Mira Sol -> Hexweaver  Smite  10 (127 left)
-   6.017  cast    Bone Warden  Claw [damage/melee]
+   6.017  cast    Bone Warden  Claw
    6.017  damage  Bone Warden -> Bramm Ironvow  Claw  10 (326 left)
-   6.017  cast    Grave Ghoul  Rend [damage/melee]
+   6.017  cast    Grave Ghoul  Rend
    6.017  damage  Grave Ghoul -> Doren Hale  Rend  38 (75 left)
    6.017  status  Grave Ghoul -> Doren Hale  Bleeding x2
-   6.017  cast    Plague Acolyte  Dark Mend [heal/beam]
+   6.017  cast    Plague Acolyte  Dark Mend
    6.017  heal    Plague Acolyte -> Grave Ghoul  Dark Mend  +46 (170 left)
-   6.017  cast    Ranged Construct  Bolt [damage/projectile]
+   6.017  cast    Ranged Construct  Bolt
    6.017  damage  Ranged Construct -> Kessa Vane  Bolt  10 (112 left)
-   6.017  cast    Hexweaver  Lash [damage/beam]
+   6.017  cast    Hexweaver  Lash
    6.017  damage  Hexweaver -> Ysolde Marrow  Lash  13 (85 left)
    6.033  damage  Crypt Ghoul -> Kessa Vane  Bleeding  12 (100 left)
    6.033  status  Kessa Vane  Bleeding ends
@@ -203,312 +203,312 @@
    6.033  damage  Grave Ghoul -> Doren Hale  Bleeding  12 (51 left)
    6.033  target  Kessa Vane -> Bone Warden
    6.033  target  Fenn Quill -> Bone Warden
-   6.033  cast    Fenn Quill  Shot [damage/projectile]
+   6.033  cast    Fenn Quill  Shot
    6.033  damage  Fenn Quill -> Bone Warden  Shot  12 (241 left)
-   7.017  cast    Bramm Ironvow  Strike [damage/melee]
+   7.017  cast    Bramm Ironvow  Strike
    7.017  damage  Bramm Ironvow -> Bone Warden  Strike  14 (227 left)
-   7.017  cast    Kessa Vane  Cleave [damage/melee]
+   7.017  cast    Kessa Vane  Cleave
    7.017  damage  Kessa Vane -> Bone Warden  Cleave  22 (205 left)
    7.017  damage  Kessa Vane -> Grave Ghoul  Cleave  20 (150 left)
-   7.017  cast    Doren Hale  Strike [damage/melee]
+   7.017  cast    Doren Hale  Strike
    7.017  damage  Doren Hale -> Grave Ghoul  Strike  16 (134 left)
-   7.017  cast    Ysolde Marrow  Smite [damage/beam]
+   7.017  cast    Ysolde Marrow  Smite
    7.017  damage  Ysolde Marrow -> Bone Warden  Smite  9 (196 left)
-   7.017  cast    Mira Sol  Smite [damage/beam]
+   7.017  cast    Mira Sol  Smite
    7.017  damage  Mira Sol -> Hexweaver  Smite  10 (117 left)
-   7.017  cast    Bone Warden  Crushing Blow [damage/melee]
+   7.017  cast    Bone Warden  Crushing Blow
    7.017  damage  Bone Warden -> Bramm Ironvow  Crushing Blow  23 (303 left)
-   7.017  cast    Grave Ghoul  Claw [damage/melee]
+   7.017  cast    Grave Ghoul  Claw
    7.017  damage  Grave Ghoul -> Doren Hale  Claw  17 (34 left)
-   7.017  cast    Plague Acolyte  Wither [damage/beam]
+   7.017  cast    Plague Acolyte  Wither
    7.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  6 (297 left)
-   7.017  cast    Ranged Construct  Bolt [damage/projectile]
+   7.017  cast    Ranged Construct  Bolt
    7.017  damage  Ranged Construct -> Kessa Vane  Bolt  11 (89 left)
-   7.017  cast    Hexweaver  Lash [damage/beam]
+   7.017  cast    Hexweaver  Lash
    7.017  damage  Hexweaver -> Ysolde Marrow  Lash  11 (74 left)
-   7.033  cast    Fenn Quill  Shot [damage/projectile]
+   7.033  cast    Fenn Quill  Shot
    7.033  damage  Fenn Quill -> Bone Warden  Shot  15 (181 left)
-   8.017  cast    Bramm Ironvow  Shield Slam [damage/melee]
+   8.017  cast    Bramm Ironvow  Shield Slam
    8.017  damage  Bramm Ironvow -> Bone Warden  Shield Slam  27 (154 left)
-   8.017  cast    Kessa Vane  Strike [damage/melee]
+   8.017  cast    Kessa Vane  Strike
    8.017  damage  Kessa Vane -> Bone Warden  Strike  15 (139 left)
-   8.017  cast    Doren Hale  Strike [damage/melee]
+   8.017  cast    Doren Hale  Strike
    8.017  damage  Doren Hale -> Grave Ghoul  Strike  14 (120 left)
-   8.017  cast    Ysolde Marrow  Smite [damage/beam]
+   8.017  cast    Ysolde Marrow  Smite
    8.017  damage  Ysolde Marrow -> Bone Warden  Smite  9 (130 left)
-   8.017  cast    Mira Sol  Disrupt [damage/beam]
+   8.017  cast    Mira Sol  Disrupt
    8.017  damage  Mira Sol -> Hexweaver  Disrupt  31 (86 left)
-   8.017  cast    Bone Warden  Claw [damage/melee]
+   8.017  cast    Bone Warden  Claw
    8.017  damage  Bone Warden -> Bramm Ironvow  Claw  11 (286 left)
-   8.017  cast    Grave Ghoul  Claw [damage/melee]
+   8.017  cast    Grave Ghoul  Claw
    8.017  damage  Grave Ghoul -> Doren Hale  Claw  14 (20 left)
-   8.017  cast    Plague Acolyte  Wither [damage/beam]
+   8.017  cast    Plague Acolyte  Wither
    8.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  7 (279 left)
-   8.017  cast    Ranged Construct  Bolt [damage/projectile]
+   8.017  cast    Ranged Construct  Bolt
    8.017  damage  Ranged Construct -> Kessa Vane  Bolt  13 (76 left)
-   8.017  cast    Hexweaver  Hex [damage/beam]
+   8.017  cast    Hexweaver  Hex
    8.017  damage  Hexweaver -> Ysolde Marrow  Hex  42 (32 left)
    8.033  status  Bramm Ironvow  Fortified ends
    8.033  damage  Grave Ghoul -> Doren Hale  Bleeding  13 (7 left)
    8.033  damage  Grave Ghoul -> Doren Hale  Bleeding  7 (0 left)
    8.033  death   Doren Hale (ally)
    8.033  target  Grave Ghoul -> Kessa Vane
-   8.033  cast    Fenn Quill  Shot [damage/projectile]
+   8.033  cast    Fenn Quill  Shot
    8.033  damage  Fenn Quill -> Bone Warden  Shot  14 (116 left)
-   9.017  cast    Bramm Ironvow  Strike [damage/melee]
+   9.017  cast    Bramm Ironvow  Strike
    9.017  damage  Bramm Ironvow -> Bone Warden  Strike  12 (104 left)
-   9.017  cast    Kessa Vane  Reckless Strike [damage/melee]
+   9.017  cast    Kessa Vane  Reckless Strike
    9.017  damage  Kessa Vane -> Bone Warden  Reckless Strike  54 (50 left)
-   9.017  cast    Ysolde Marrow  Smite [damage/beam]
+   9.017  cast    Ysolde Marrow  Smite
    9.017  damage  Ysolde Marrow -> Bone Warden  Smite  10 (40 left)
-   9.017  cast    Mira Sol  Smite [damage/beam]
+   9.017  cast    Mira Sol  Smite
    9.017  damage  Mira Sol -> Hexweaver  Smite  8 (78 left)
-   9.017  cast    Bone Warden  Claw [damage/melee]
+   9.017  cast    Bone Warden  Claw
    9.017  damage  Bone Warden -> Bramm Ironvow  Claw  13 (266 left)
-   9.017  cast    Grave Ghoul  Claw [damage/melee]
+   9.017  cast    Grave Ghoul  Claw
    9.017  damage  Grave Ghoul -> Kessa Vane  Claw  17 (59 left)
-   9.017  cast    Plague Acolyte  Wither [damage/beam]
+   9.017  cast    Plague Acolyte  Wither
    9.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  9 (257 left)
-   9.017  cast    Ranged Construct  Bolt [damage/projectile]
+   9.017  cast    Ranged Construct  Bolt
    9.017  damage  Ranged Construct -> Kessa Vane  Bolt  12 (47 left)
-   9.017  cast    Hexweaver  Lash [damage/beam]
+   9.017  cast    Hexweaver  Lash
    9.017  damage  Hexweaver -> Ysolde Marrow  Lash  14 (18 left)
-   9.033  cast    Fenn Quill  Piercing Shot [damage/projectile]
+   9.033  cast    Fenn Quill  Piercing Shot
    9.033  damage  Fenn Quill -> Bone Warden  Piercing Shot  40 (0 left)
    9.033  death   Bone Warden (enemy)
    9.050  target  Bramm Ironvow -> Grave Ghoul
    9.050  target  Kessa Vane -> Grave Ghoul
    9.050  target  Ysolde Marrow -> Grave Ghoul
    9.050  target  Fenn Quill -> Hexweaver
-  10.017  cast    Bramm Ironvow  Strike [damage/melee]
+  10.017  cast    Bramm Ironvow  Strike
   10.017  damage  Bramm Ironvow -> Grave Ghoul  Strike  14 (106 left)
-  10.017  cast    Kessa Vane  Strike [damage/melee]
+  10.017  cast    Kessa Vane  Strike
   10.017  damage  Kessa Vane -> Grave Ghoul  Strike  12 (94 left)
-  10.017  cast    Ysolde Marrow  Smite [damage/beam]
+  10.017  cast    Ysolde Marrow  Smite
   10.017  damage  Ysolde Marrow -> Grave Ghoul  Smite  8 (86 left)
-  10.017  cast    Mira Sol  Smite [damage/beam]
+  10.017  cast    Mira Sol  Smite
   10.017  damage  Mira Sol -> Hexweaver  Smite  10 (68 left)
-  10.017  cast    Grave Ghoul  Claw [damage/melee]
+  10.017  cast    Grave Ghoul  Claw
   10.017  damage  Grave Ghoul -> Kessa Vane  Claw  15 (32 left)
-  10.017  cast    Plague Acolyte  Wither [damage/beam]
+  10.017  cast    Plague Acolyte  Wither
   10.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  11 (246 left)
-  10.017  cast    Ranged Construct  Arc Bolt [damage/projectile]
+  10.017  cast    Ranged Construct  Arc Bolt
   10.017  damage  Ranged Construct -> Kessa Vane  Arc Bolt  32 (0 left)
   10.017  death   Kessa Vane (ally)
-  10.017  cast    Hexweaver  Lash [damage/beam]
+  10.017  cast    Hexweaver  Lash
   10.017  damage  Hexweaver -> Ysolde Marrow  Lash  12 (6 left)
   10.033  target  Grave Ghoul -> Bramm Ironvow
   10.033  target  Ranged Construct -> Ysolde Marrow
-  10.033  cast    Fenn Quill  Shot [damage/projectile]
+  10.033  cast    Fenn Quill  Shot
   10.033  damage  Fenn Quill -> Hexweaver  Shot  14 (54 left)
-  11.017  cast    Bramm Ironvow  Strike [damage/melee]
+  11.017  cast    Bramm Ironvow  Strike
   11.017  damage  Bramm Ironvow -> Grave Ghoul  Strike  12 (74 left)
-  11.017  cast    Ysolde Marrow  Mend [heal/beam]
+  11.017  cast    Ysolde Marrow  Mend
   11.017  heal    Ysolde Marrow -> Ysolde Marrow  Mend  +52 (58 left)
-  11.017  cast    Mira Sol  Smite [damage/beam]
+  11.017  cast    Mira Sol  Smite
   11.017  damage  Mira Sol -> Hexweaver  Smite  9 (45 left)
-  11.017  cast    Grave Ghoul  Claw [damage/melee]
+  11.017  cast    Grave Ghoul  Claw
   11.017  damage  Grave Ghoul -> Bramm Ironvow  Claw  14 (232 left)
-  11.017  cast    Plague Acolyte  Wither [damage/beam]
+  11.017  cast    Plague Acolyte  Wither
   11.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  9 (223 left)
-  11.017  cast    Ranged Construct  Bolt [damage/projectile]
+  11.017  cast    Ranged Construct  Bolt
   11.017  damage  Ranged Construct -> Ysolde Marrow  Bolt  12 (46 left)
-  11.017  cast    Hexweaver  Lash [damage/beam]
+  11.017  cast    Hexweaver  Lash
   11.017  damage  Hexweaver -> Ysolde Marrow  Lash  12 (34 left)
-  11.033  cast    Fenn Quill  Shot [damage/projectile]
+  11.033  cast    Fenn Quill  Shot
   11.033  damage  Fenn Quill -> Hexweaver  Shot  15 (30 left)
-  12.017  cast    Bramm Ironvow  Fortify [damage/beam]
+  12.017  cast    Bramm Ironvow  Fortify
   12.017  status  Bramm Ironvow -> Bramm Ironvow  Fortified
-  12.017  cast    Ysolde Marrow  Smite [damage/beam]
+  12.017  cast    Ysolde Marrow  Smite
   12.017  damage  Ysolde Marrow -> Grave Ghoul  Smite  8 (66 left)
-  12.017  cast    Mira Sol  Smite [damage/beam]
+  12.017  cast    Mira Sol  Smite
   12.017  damage  Mira Sol -> Hexweaver  Smite  9 (21 left)
-  12.017  cast    Grave Ghoul  Rend [damage/melee]
+  12.017  cast    Grave Ghoul  Rend
   12.017  damage  Grave Ghoul -> Bramm Ironvow  Rend  21 (202 left)
   12.017  status  Grave Ghoul -> Bramm Ironvow  Bleeding
-  12.017  cast    Plague Acolyte  Dark Mend [heal/beam]
+  12.017  cast    Plague Acolyte  Dark Mend
   12.017  heal    Plague Acolyte -> Hexweaver  Dark Mend  +47 (68 left)
-  12.017  cast    Ranged Construct  Bolt [damage/projectile]
+  12.017  cast    Ranged Construct  Bolt
   12.017  damage  Ranged Construct -> Ysolde Marrow  Bolt  13 (21 left)
-  12.017  cast    Hexweaver  Lash [damage/beam]
+  12.017  cast    Hexweaver  Lash
   12.017  damage  Hexweaver -> Ysolde Marrow  Lash  13 (8 left)
-  12.033  cast    Fenn Quill  Shot [damage/projectile]
+  12.033  cast    Fenn Quill  Shot
   12.033  damage  Fenn Quill -> Hexweaver  Shot  13 (55 left)
-  13.017  cast    Bramm Ironvow  Strike [damage/melee]
+  13.017  cast    Bramm Ironvow  Strike
   13.017  damage  Bramm Ironvow -> Grave Ghoul  Strike  12 (54 left)
-  13.017  cast    Ysolde Marrow  Smite [damage/beam]
+  13.017  cast    Ysolde Marrow  Smite
   13.017  damage  Ysolde Marrow -> Grave Ghoul  Smite  9 (45 left)
-  13.017  cast    Mira Sol  Smite [damage/beam]
+  13.017  cast    Mira Sol  Smite
   13.017  damage  Mira Sol -> Hexweaver  Smite  9 (46 left)
-  13.017  cast    Grave Ghoul  Claw [damage/melee]
+  13.017  cast    Grave Ghoul  Claw
   13.017  damage  Grave Ghoul -> Bramm Ironvow  Claw  11 (191 left)
-  13.017  cast    Plague Acolyte  Wither [damage/beam]
+  13.017  cast    Plague Acolyte  Wither
   13.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  7 (184 left)
-  13.017  cast    Ranged Construct  Bolt [damage/projectile]
+  13.017  cast    Ranged Construct  Bolt
   13.017  damage  Ranged Construct -> Ysolde Marrow  Bolt  8 (0 left)
   13.017  death   Ysolde Marrow (ally)
   13.033  target  Ranged Construct -> Bramm Ironvow
   13.033  target  Hexweaver -> Bramm Ironvow
-  13.033  cast    Fenn Quill  Shot [damage/projectile]
+  13.033  cast    Fenn Quill  Shot
   13.033  damage  Fenn Quill -> Hexweaver  Shot  12 (34 left)
-  13.033  cast    Hexweaver  Lash [damage/beam]
+  13.033  cast    Hexweaver  Lash
   13.033  damage  Hexweaver -> Bramm Ironvow  Lash  9 (175 left)
-  14.017  cast    Bramm Ironvow  Strike [damage/melee]
+  14.017  cast    Bramm Ironvow  Strike
   14.017  damage  Bramm Ironvow -> Grave Ghoul  Strike  16 (29 left)
-  14.017  cast    Mira Sol  Smite [damage/beam]
+  14.017  cast    Mira Sol  Smite
   14.017  damage  Mira Sol -> Hexweaver  Smite  8 (26 left)
-  14.017  cast    Grave Ghoul  Claw [damage/melee]
+  14.017  cast    Grave Ghoul  Claw
   14.017  damage  Grave Ghoul -> Bramm Ironvow  Claw  10 (165 left)
-  14.017  cast    Plague Acolyte  Wither [damage/beam]
+  14.017  cast    Plague Acolyte  Wither
   14.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  7 (158 left)
-  14.017  cast    Ranged Construct  Bolt [damage/projectile]
+  14.017  cast    Ranged Construct  Bolt
   14.017  damage  Ranged Construct -> Bramm Ironvow  Bolt  7 (151 left)
   14.033  damage  Grave Ghoul -> Bramm Ironvow  Bleeding  7 (144 left)
-  14.033  cast    Fenn Quill  Piercing Shot [damage/projectile]
+  14.033  cast    Fenn Quill  Piercing Shot
   14.033  damage  Fenn Quill -> Hexweaver  Piercing Shot  26 (0 left)
   14.033  death   Hexweaver (enemy)
   14.050  target  Fenn Quill -> Grave Ghoul
   14.050  target  Mira Sol -> Ranged Construct
-  15.017  cast    Bramm Ironvow  Shield Slam [damage/melee]
+  15.017  cast    Bramm Ironvow  Shield Slam
   15.017  damage  Bramm Ironvow -> Grave Ghoul  Shield Slam  29 (0 left)
   15.017  death   Grave Ghoul (enemy)
-  15.017  cast    Mira Sol  Smite [damage/beam]
+  15.017  cast    Mira Sol  Smite
   15.017  damage  Mira Sol -> Ranged Construct  Smite  8 (257 left)
-  15.017  cast    Plague Acolyte  Wither [damage/beam]
+  15.017  cast    Plague Acolyte  Wither
   15.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  7 (137 left)
-  15.017  cast    Ranged Construct  Arc Bolt [damage/projectile]
+  15.017  cast    Ranged Construct  Arc Bolt
   15.017  damage  Ranged Construct -> Bramm Ironvow  Arc Bolt  22 (115 left)
   15.033  target  Bramm Ironvow -> Plague Acolyte
   15.033  target  Fenn Quill -> Ranged Construct
-  15.033  cast    Fenn Quill  Shot [damage/projectile]
+  15.033  cast    Fenn Quill  Shot
   15.033  damage  Fenn Quill -> Ranged Construct  Shot  13 (244 left)
-  16.017  cast    Bramm Ironvow  Strike [damage/melee]
+  16.017  cast    Bramm Ironvow  Strike
   16.017  damage  Bramm Ironvow -> Plague Acolyte  Strike  14 (186 left)
-  16.017  cast    Mira Sol  Disrupt [damage/beam]
+  16.017  cast    Mira Sol  Disrupt
   16.017  damage  Mira Sol -> Ranged Construct  Disrupt  31 (213 left)
-  16.017  cast    Plague Acolyte  Wither [damage/beam]
+  16.017  cast    Plague Acolyte  Wither
   16.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  7 (108 left)
-  16.017  cast    Ranged Construct  Bolt [damage/projectile]
+  16.017  cast    Ranged Construct  Bolt
   16.017  damage  Ranged Construct -> Bramm Ironvow  Bolt  8 (100 left)
   16.033  damage  Grave Ghoul -> Bramm Ironvow  Bleeding  8 (92 left)
-  16.033  cast    Fenn Quill  Shot [damage/projectile]
+  16.033  cast    Fenn Quill  Shot
   16.033  damage  Fenn Quill -> Ranged Construct  Shot  11 (202 left)
-  17.017  cast    Bramm Ironvow  Strike [damage/melee]
+  17.017  cast    Bramm Ironvow  Strike
   17.017  damage  Bramm Ironvow -> Plague Acolyte  Strike  13 (173 left)
-  17.017  cast    Mira Sol  Smite [damage/beam]
+  17.017  cast    Mira Sol  Smite
   17.017  damage  Mira Sol -> Ranged Construct  Smite  8 (194 left)
-  17.017  cast    Plague Acolyte  Wither [damage/beam]
+  17.017  cast    Plague Acolyte  Wither
   17.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  6 (86 left)
-  17.017  cast    Ranged Construct  Bolt [damage/projectile]
+  17.017  cast    Ranged Construct  Bolt
   17.017  damage  Ranged Construct -> Bramm Ironvow  Bolt  8 (78 left)
-  17.033  cast    Fenn Quill  Shot [damage/projectile]
+  17.033  cast    Fenn Quill  Shot
   17.033  damage  Fenn Quill -> Ranged Construct  Shot  14 (180 left)
-  18.017  cast    Bramm Ironvow  Strike [damage/melee]
+  18.017  cast    Bramm Ironvow  Strike
   18.017  damage  Bramm Ironvow -> Plague Acolyte  Strike  14 (159 left)
-  18.017  cast    Mira Sol  Smite [damage/beam]
+  18.017  cast    Mira Sol  Smite
   18.017  damage  Mira Sol -> Ranged Construct  Smite  9 (171 left)
-  18.017  cast    Plague Acolyte  Dark Mend [heal/beam]
+  18.017  cast    Plague Acolyte  Dark Mend
   18.017  heal    Plague Acolyte -> Ranged Construct  Dark Mend  +44 (215 left)
-  18.017  cast    Ranged Construct  Bolt [damage/projectile]
+  18.017  cast    Ranged Construct  Bolt
   18.017  damage  Ranged Construct -> Bramm Ironvow  Bolt  8 (70 left)
   18.033  damage  Grave Ghoul -> Bramm Ironvow  Bleeding  9 (61 left)
   18.033  status  Bramm Ironvow  Bleeding ends
-  18.033  cast    Fenn Quill  Shot [damage/projectile]
+  18.033  cast    Fenn Quill  Shot
   18.033  damage  Fenn Quill -> Ranged Construct  Shot  15 (200 left)
-  19.017  cast    Bramm Ironvow  Strike [damage/melee]
+  19.017  cast    Bramm Ironvow  Strike
   19.017  damage  Bramm Ironvow -> Plague Acolyte  Strike  15 (144 left)
-  19.017  cast    Mira Sol  Smite [damage/beam]
+  19.017  cast    Mira Sol  Smite
   19.017  damage  Mira Sol -> Ranged Construct  Smite  10 (190 left)
-  19.017  cast    Plague Acolyte  Wither [damage/beam]
+  19.017  cast    Plague Acolyte  Wither
   19.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  7 (54 left)
-  19.017  cast    Ranged Construct  Bolt [damage/projectile]
+  19.017  cast    Ranged Construct  Bolt
   19.017  damage  Ranged Construct -> Bramm Ironvow  Bolt  7 (47 left)
-  19.033  cast    Fenn Quill  Piercing Shot [damage/projectile]
+  19.033  cast    Fenn Quill  Piercing Shot
   19.033  damage  Fenn Quill -> Ranged Construct  Piercing Shot  43 (147 left)
-  20.017  cast    Bramm Ironvow  Strike [damage/melee]
+  20.017  cast    Bramm Ironvow  Strike
   20.017  damage  Bramm Ironvow -> Plague Acolyte  Strike  13 (131 left)
-  20.017  cast    Mira Sol  Smite [damage/beam]
+  20.017  cast    Mira Sol  Smite
   20.017  damage  Mira Sol -> Ranged Construct  Smite  9 (138 left)
-  20.017  cast    Plague Acolyte  Wither [damage/beam]
+  20.017  cast    Plague Acolyte  Wither
   20.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  6 (41 left)
-  20.017  cast    Ranged Construct  Arc Bolt [damage/projectile]
+  20.017  cast    Ranged Construct  Arc Bolt
   20.017  damage  Ranged Construct -> Bramm Ironvow  Arc Bolt  21 (20 left)
   20.033  status  Bramm Ironvow  Fortified ends
-  20.033  cast    Fenn Quill  Shot [damage/projectile]
+  20.033  cast    Fenn Quill  Shot
   20.033  damage  Fenn Quill -> Ranged Construct  Shot  14 (124 left)
-  21.017  cast    Bramm Ironvow  Strike [damage/melee]
+  21.017  cast    Bramm Ironvow  Strike
   21.017  damage  Bramm Ironvow -> Plague Acolyte  Strike  12 (119 left)
-  21.017  cast    Mira Sol  Smite [damage/beam]
+  21.017  cast    Mira Sol  Smite
   21.017  damage  Mira Sol -> Ranged Construct  Smite  8 (116 left)
-  21.017  cast    Plague Acolyte  Wither [damage/beam]
+  21.017  cast    Plague Acolyte  Wither
   21.017  damage  Plague Acolyte -> Bramm Ironvow  Wither  11 (9 left)
-  21.017  cast    Ranged Construct  Bolt [damage/projectile]
+  21.017  cast    Ranged Construct  Bolt
   21.017  damage  Ranged Construct -> Bramm Ironvow  Bolt  9 (0 left)
   21.017  death   Bramm Ironvow (ally)
   21.033  target  Plague Acolyte -> Fenn Quill
   21.033  target  Ranged Construct -> Fenn Quill
-  21.033  cast    Fenn Quill  Shot [damage/projectile]
+  21.033  cast    Fenn Quill  Shot
   21.033  damage  Fenn Quill -> Ranged Construct  Shot  11 (105 left)
-  22.017  cast    Mira Sol  Smite [damage/beam]
+  22.017  cast    Mira Sol  Smite
   22.017  damage  Mira Sol -> Ranged Construct  Smite  10 (95 left)
-  22.017  cast    Plague Acolyte  Wither [damage/beam]
+  22.017  cast    Plague Acolyte  Wither
   22.017  damage  Plague Acolyte -> Fenn Quill  Wither  11 (199 left)
-  22.017  cast    Ranged Construct  Bolt [damage/projectile]
+  22.017  cast    Ranged Construct  Bolt
   22.017  damage  Ranged Construct -> Fenn Quill  Bolt  13 (186 left)
-  22.033  cast    Fenn Quill  Shot [damage/projectile]
+  22.033  cast    Fenn Quill  Shot
   22.033  damage  Fenn Quill -> Ranged Construct  Shot  12 (83 left)
-  23.017  cast    Mira Sol  Smite [damage/beam]
+  23.017  cast    Mira Sol  Smite
   23.017  damage  Mira Sol -> Ranged Construct  Smite  8 (75 left)
-  23.017  cast    Plague Acolyte  Wither [damage/beam]
+  23.017  cast    Plague Acolyte  Wither
   23.017  damage  Plague Acolyte -> Fenn Quill  Wither  11 (175 left)
-  23.017  cast    Ranged Construct  Bolt [damage/projectile]
+  23.017  cast    Ranged Construct  Bolt
   23.017  damage  Ranged Construct -> Fenn Quill  Bolt  10 (165 left)
-  23.033  cast    Fenn Quill  Shot [damage/projectile]
+  23.033  cast    Fenn Quill  Shot
   23.033  damage  Fenn Quill -> Ranged Construct  Shot  14 (61 left)
-  24.017  cast    Mira Sol  Disrupt [damage/beam]
+  24.017  cast    Mira Sol  Disrupt
   24.017  damage  Mira Sol -> Ranged Construct  Disrupt  36 (25 left)
-  24.017  cast    Plague Acolyte  Dark Mend [heal/beam]
+  24.017  cast    Plague Acolyte  Dark Mend
   24.017  heal    Plague Acolyte -> Ranged Construct  Dark Mend  +47 (72 left)
-  24.017  cast    Ranged Construct  Bolt [damage/projectile]
+  24.017  cast    Ranged Construct  Bolt
   24.017  damage  Ranged Construct -> Fenn Quill  Bolt  12 (153 left)
-  24.033  cast    Fenn Quill  Piercing Shot [damage/projectile]
+  24.033  cast    Fenn Quill  Piercing Shot
   24.033  damage  Fenn Quill -> Ranged Construct  Piercing Shot  44 (28 left)
-  25.017  cast    Mira Sol  Smite [damage/beam]
+  25.017  cast    Mira Sol  Smite
   25.017  damage  Mira Sol -> Ranged Construct  Smite  9 (19 left)
-  25.017  cast    Plague Acolyte  Wither [damage/beam]
+  25.017  cast    Plague Acolyte  Wither
   25.017  damage  Plague Acolyte -> Fenn Quill  Wither  10 (143 left)
-  25.017  cast    Ranged Construct  Arc Bolt [damage/projectile]
+  25.017  cast    Ranged Construct  Arc Bolt
   25.017  damage  Ranged Construct -> Fenn Quill  Arc Bolt  37 (106 left)
-  25.033  cast    Fenn Quill  Shot [damage/projectile]
+  25.033  cast    Fenn Quill  Shot
   25.033  damage  Fenn Quill -> Ranged Construct  Shot  13 (6 left)
-  26.017  cast    Mira Sol  Smite [damage/beam]
+  26.017  cast    Mira Sol  Smite
   26.017  damage  Mira Sol -> Ranged Construct  Smite  6 (0 left)
   26.017  death   Ranged Construct (enemy)
-  26.017  cast    Plague Acolyte  Wither [damage/beam]
+  26.017  cast    Plague Acolyte  Wither
   26.017  damage  Plague Acolyte -> Fenn Quill  Wither  10 (96 left)
   26.033  target  Fenn Quill -> Plague Acolyte
   26.033  target  Mira Sol -> Plague Acolyte
-  26.033  cast    Fenn Quill  Shot [damage/projectile]
+  26.033  cast    Fenn Quill  Shot
   26.033  damage  Fenn Quill -> Plague Acolyte  Shot  11 (108 left)
-  27.017  cast    Mira Sol  Smite [damage/beam]
+  27.017  cast    Mira Sol  Smite
   27.017  damage  Mira Sol -> Plague Acolyte  Smite  8 (100 left)
-  27.017  cast    Plague Acolyte  Wither [damage/beam]
+  27.017  cast    Plague Acolyte  Wither
   27.017  damage  Plague Acolyte -> Fenn Quill  Wither  9 (87 left)
-  27.033  cast    Fenn Quill  Shot [damage/projectile]
+  27.033  cast    Fenn Quill  Shot
   27.033  damage  Fenn Quill -> Plague Acolyte  Shot  13 (87 left)
-  28.017  cast    Mira Sol  Smite [damage/beam]
+  28.017  cast    Mira Sol  Smite
   28.017  damage  Mira Sol -> Plague Acolyte  Smite  8 (79 left)
-  28.017  cast    Plague Acolyte  Wither [damage/beam]
+  28.017  cast    Plague Acolyte  Wither
   28.017  damage  Plague Acolyte -> Fenn Quill  Wither  10 (77 left)
-  28.033  cast    Fenn Quill  Shot [damage/projectile]
+  28.033  cast    Fenn Quill  Shot
   28.033  damage  Fenn Quill -> Plague Acolyte  Shot  13 (66 left)
-  29.017  cast    Mira Sol  Smite [damage/beam]
+  29.017  cast    Mira Sol  Smite
   29.017  damage  Mira Sol -> Plague Acolyte  Smite  10 (56 left)
-  29.017  cast    Plague Acolyte  Wither [damage/beam]
+  29.017  cast    Plague Acolyte  Wither
   29.017  damage  Plague Acolyte -> Fenn Quill  Wither  11 (66 left)
-  29.033  cast    Fenn Quill  Piercing Shot [damage/projectile]
+  29.033  cast    Fenn Quill  Piercing Shot
   29.033  damage  Fenn Quill -> Plague Acolyte  Piercing Shot  48 (8 left)
-  30.017  cast    Mira Sol  Smite [damage/beam]
+  30.017  cast    Mira Sol  Smite
   30.017  damage  Mira Sol -> Plague Acolyte  Smite  8 (0 left)
   30.017  death   Plague Acolyte (enemy)
   30.017  end     Allies win

@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import '../../../core/domain/skill_kind.dart';
+import '../../../core/domain/presentation.dart';
 import '../../../core/domain/skill_effect.dart';
 
 /// A skill as authored: static data, never mutated at runtime.
@@ -15,15 +15,14 @@ class SkillDefinition {
   const SkillDefinition({
     required this.id,
     required this.name,
-    required this.delivery,
     required this.effects,
     required this.cooldown,
+    this.presentation = PresentationSpec.none,
     this.isBasic = false,
   });
 
   final String id;
   final String name;
-  final SkillDelivery delivery;
 
   /// What this skill does, in resolution order. Each carries its own targeting,
   /// so the parts of a skill need not land on the same people.
@@ -32,19 +31,14 @@ class SkillDefinition {
   /// Seconds before this skill can fire again.
   final double cooldown;
 
+  /// How this looks when it fires. Ids the renderer resolves, never types it
+  /// branches on.
+  final PresentationSpec presentation;
+
   /// A basic attack shares the global cooldown, so a unit is never left with
   /// nothing to do when its specials are cooling down.
   final bool isBasic;
 
-  /// How the renderer colours this skill.
-  ///
-  /// Derived rather than authored, so it cannot drift from what the skill
-  /// actually does. It is a lossy summary — a skill that both harms and heals
-  /// reads as a heal — and it exists only until presentation moves to authored
-  /// cue ids, at which point it goes away entirely.
-  SkillKind get kind => effects.any((EffectSpec s) => s.effect is HealEffect)
-      ? SkillKind.heal
-      : SkillKind.damage;
 }
 
 /// One slot of a unit's rotation: a skill plus its live cooldown.

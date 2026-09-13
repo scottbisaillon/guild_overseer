@@ -1,3 +1,4 @@
+import 'presentation.dart';
 import 'skill_effect.dart';
 import 'stat.dart';
 import 'stat_block.dart';
@@ -49,6 +50,7 @@ class StatusDefinition {
     this.tickInterval = 0,
     this.maxStacks = 1,
     this.policy = StackPolicy.refresh,
+    this.presentation = PresentationSpec.none,
   });
 
   final String id;
@@ -81,6 +83,9 @@ class StatusDefinition {
 
   final int maxStacks;
   final StackPolicy policy;
+
+  /// How this reads when it lands.
+  final PresentationSpec presentation;
 
   bool get ticks => tickInterval > 0 && onTick.isNotEmpty;
 
