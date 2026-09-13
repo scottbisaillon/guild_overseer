@@ -161,12 +161,12 @@ JavaScript (`--platform chrome`) and the golden may legitimately differ.
 `.github/workflows/pages.yml` builds the web client and publishes it to GitHub
 Pages. Pages is set to deploy from GitHub Actions.
 
-Pushes to `main` build and deploy. Pushes to `impl/flutter` build, analyze and
-test, then stop: the `github-pages` environment only accepts deployments from
-the default branch, so the deploy job is gated on `main` rather than attempting
-a publish that GitHub will reject. To publish from another branch, add it under
-Settings -> Environments -> github-pages -> Deployment branches, and relax that
-gate.
+Pushes to `main` build, analyze, test and deploy. Nothing else triggers it
+automatically; `workflow_dispatch` runs it by hand, and a run from a branch
+other than `main` stops after the build, because the `github-pages` environment
+only accepts deployments from the default branch. To publish from another
+branch, add it under Settings -> Environments -> github-pages -> Deployment
+branches, and relax the gate on the deploy job.
 
 Two details make a project page work, both handled by the workflow:
 
