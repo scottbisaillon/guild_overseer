@@ -502,8 +502,8 @@ dependency, and deliberately front-loaded with the least glamorous work.
 | 3 | **Composable targeting** — *done* | `SkillTargeting` and `TargetPriority` both fold into `TargetSelector`; one resolver now answers "who?" for a unit picking an opponent and for every effect alike. Golden unchanged again, and six targeting behaviours the game has never had (execute thresholds, N-nearest, same-rank, party-wide) are covered by tests without a line of resolver code. | M |
 | 4 | **Statuses** — *done* | Buffs, debuffs and damage over time are one shape. Ticks re-enter the effect resolver, so a bleed scales, rolls, reports and kills exactly as a swing does. Rend→bleed and Fortify shipped as proof; the golden moved for the first time, deliberately. | L |
 | 5 | **Presentation registry** — *done* | `SkillKind` and `SkillDelivery` are gone; skills and statuses carry a `PresentationSpec` of cue ids, and a `CueRegistry` resolves them. No layer switches on what kind of thing a skill was. Golden diff was the transcript dropping an annotation and nothing else. | M |
-| 6 | **Equipment** — *next* | `ItemDefinition` → modifiers under `ModifierSource.item`; gear slots on the unit. Small, because seam 1 already did the work. | S |
-| 7 | **Reactions** | Depends on statuses, effects and the event bus being settled. Traits, Reactive skills and Finishers all land here together. | L |
+| 6 | **Equipment** — *done* | `ItemDefinition` is a slot and a list of modifiers; `Loadout` grants them under the slot and takes them back by source. Small exactly as predicted: no new mechanism, because seam 1 was the mechanism. A sword granting attack power makes every skill that scales off it hit harder, with nothing edited to make that true. | S |
+| 7 | **Reactions** — *next* | Depends on statuses, effects and the event bus being settled. Traits, Reactive skills and Finishers all land here together. The most dangerous seam: queue, depth cap and dedupe are not optional. | L |
 | 8 | **Content to JSON + validation** | Last, so the schema is written against a shape that has stopped moving. | M |
 
 Stages 1–3 are refactors of existing behaviour and should be verifiable by the

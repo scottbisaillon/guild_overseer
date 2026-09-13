@@ -4,6 +4,7 @@ import '../../../core/domain/combat_role.dart';
 import '../../../core/domain/combat_snapshot.dart';
 import '../../../core/domain/faction.dart';
 import '../../../core/domain/game_time.dart';
+import '../../../core/domain/loadout.dart';
 import '../../../core/domain/stat.dart';
 import '../../../core/domain/stat_block.dart';
 import '../../../core/domain/status.dart';
@@ -35,6 +36,7 @@ class Combatant {
         _knownMaxHealth = maxHealth,
         rotation = skills.map(SkillSlot.new).toList(growable: false) {
     statuses = StatusContainer(stats: stats, onChanged: refreshStats);
+    gear = Loadout(stats: stats, onChanged: refreshStats);
   }
 
   final String id;
@@ -61,6 +63,12 @@ class Combatant {
   /// Statuses reach the unit's numbers through [stats] like anything else, so
   /// nothing here needs to know a buff from a breastplate.
   late final StatusContainer statuses;
+
+  /// What this unit is wearing.
+  ///
+  /// Gear reaches the unit's numbers the same way a buff does, so nothing in
+  /// the fight can tell a breastplate from a blessing.
+  late final Loadout gear;
 
   /// How this unit picks an opponent.
   final TargetPriority priority;

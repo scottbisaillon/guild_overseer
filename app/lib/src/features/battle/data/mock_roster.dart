@@ -1,5 +1,6 @@
 import '../../../core/domain/combat_role.dart';
 import '../../../core/domain/faction.dart';
+import '../../../core/domain/item.dart';
 import '../../../core/domain/presentation.dart';
 import '../../../core/domain/stat.dart';
 import '../../../core/domain/stat_modifier.dart';
@@ -333,6 +334,68 @@ const SkillDefinition lash = SkillDefinition(
 // back line. Both sides use the same shape, mirrored.
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Gear
+//
+// An item states what it changes and nothing else. Because damage is a
+// coefficient on a stat, a sword granting attack power makes every skill that
+// scales off it hit harder — no skill was edited to make that true.
+//
+// The numbers are arbitrary, like everything else in the mockup. They read
+// large because the base stats are small: +2 attack power against a base of 10
+// is a fifth of a unit's output. Real content wants a higher base so a common
+// weapon is a nudge rather than a transformation.
+// ---------------------------------------------------------------------------
+
+const ItemDefinition ironGreatsword = ItemDefinition(
+  id: 'iron_greatsword',
+  name: 'Iron Greatsword',
+  slot: GearSlot.weapon,
+  modifiers: <StatModifier>[
+    StatModifier.flat(Stat.attackPower, 2, source: _item),
+  ],
+);
+
+const ItemDefinition wardensShield = ItemDefinition(
+  id: 'wardens_shield',
+  name: "Warden's Shield",
+  slot: GearSlot.chest,
+  modifiers: <StatModifier>[
+    StatModifier.flat(Stat.maxHealth, 40, source: _item),
+    StatModifier.increased(Stat.damageTakenMultiplier, -0.1, source: _item),
+  ],
+);
+
+const ItemDefinition huntingBow = ItemDefinition(
+  id: 'hunting_bow',
+  name: 'Hunting Bow',
+  slot: GearSlot.weapon,
+  modifiers: <StatModifier>[
+    StatModifier.flat(Stat.attackPower, 2, source: _item),
+  ],
+);
+
+const ItemDefinition acolytesFocus = ItemDefinition(
+  id: 'acolytes_focus',
+  name: "Acolyte's Focus",
+  slot: GearSlot.weapon,
+  modifiers: <StatModifier>[
+    StatModifier.flat(Stat.healPower, 2, source: _item),
+  ],
+);
+
+/// Authored modifiers are rebound to the slot they are worn in, so the source
+/// they are written against never matters.
+const ModifierSource _item = ModifierSource.item('authored');
+
+/// Equips [unit] and hands it back, so a roster reads as one expression.
+Combatant _wearing(Combatant unit, List<ItemDefinition> items) {
+  for (final ItemDefinition item in items) {
+    unit.gear.equip(item);
+  }
+  return unit;
+}
+
 /// Six party members on the left and six dungeon inhabitants on the right.
 List<Combatant> buildMockRoster() => <Combatant>[
       ..._allies(),
@@ -340,27 +403,33 @@ List<Combatant> buildMockRoster() => <Combatant>[
     ];
 
 List<Combatant> _allies() => <Combatant>[
-      Combatant(
-        id: 'ally_bramm',
-        name: 'Bramm Ironvow',
-        faction: Faction.ally,
-        role: CombatRole.tank,
-        row: 0,
-        column: 0,
-        maxHealth: 440,
-        priority: TargetPriority.nearest,
-        skills: const <SkillDefinition>[fortify, shieldSlam, strike],
+      _wearing(
+        Combatant(
+          id: 'ally_bramm',
+          name: 'Bramm Ironvow',
+          faction: Faction.ally,
+          role: CombatRole.tank,
+          row: 0,
+          column: 0,
+          maxHealth: 440,
+          priority: TargetPriority.nearest,
+          skills: const <SkillDefinition>[fortify, shieldSlam, strike],
+        ),
+        <ItemDefinition>[ironGreatsword, wardensShield],
       ),
-      Combatant(
-        id: 'ally_kessa',
-        name: 'Kessa Vane',
-        faction: Faction.ally,
-        role: CombatRole.meleeDps,
-        row: 1,
-        column: 0,
-        maxHealth: 260,
-        priority: TargetPriority.nearest,
-        skills: const <SkillDefinition>[recklessStrike, cleave, strike],
+      _wearing(
+        Combatant(
+          id: 'ally_kessa',
+          name: 'Kessa Vane',
+          faction: Faction.ally,
+          role: CombatRole.meleeDps,
+          row: 1,
+          column: 0,
+          maxHealth: 260,
+          priority: TargetPriority.nearest,
+          skills: const <SkillDefinition>[recklessStrike, cleave, strike],
+        ),
+        <ItemDefinition>[ironGreatsword],
       ),
       Combatant(
         id: 'ally_doren',
@@ -373,27 +442,33 @@ List<Combatant> _allies() => <Combatant>[
         priority: TargetPriority.frontline,
         skills: const <SkillDefinition>[cleave, strike],
       ),
-      Combatant(
-        id: 'ally_ysolde',
-        name: 'Ysolde Marrow',
-        faction: Faction.ally,
-        role: CombatRole.healer,
-        row: 0,
-        column: 1,
-        maxHealth: 200,
-        priority: TargetPriority.nearest,
-        skills: const <SkillDefinition>[mend, smite],
+      _wearing(
+        Combatant(
+          id: 'ally_ysolde',
+          name: 'Ysolde Marrow',
+          faction: Faction.ally,
+          role: CombatRole.healer,
+          row: 0,
+          column: 1,
+          maxHealth: 200,
+          priority: TargetPriority.nearest,
+          skills: const <SkillDefinition>[mend, smite],
+        ),
+        <ItemDefinition>[acolytesFocus],
       ),
-      Combatant(
-        id: 'ally_fenn',
-        name: 'Fenn Quill',
-        faction: Faction.ally,
-        role: CombatRole.rangedDps,
-        row: 1,
-        column: 1,
-        maxHealth: 210,
-        priority: TargetPriority.weakest,
-        skills: const <SkillDefinition>[piercingShot, shot],
+      _wearing(
+        Combatant(
+          id: 'ally_fenn',
+          name: 'Fenn Quill',
+          faction: Faction.ally,
+          role: CombatRole.rangedDps,
+          row: 1,
+          column: 1,
+          maxHealth: 210,
+          priority: TargetPriority.weakest,
+          skills: const <SkillDefinition>[piercingShot, shot],
+        ),
+        <ItemDefinition>[huntingBow],
       ),
       Combatant(
         id: 'ally_mira',
