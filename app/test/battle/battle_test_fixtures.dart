@@ -4,6 +4,7 @@ import 'package:guild_overseer/src/core/domain/skill_kind.dart';
 import 'package:guild_overseer/src/core/domain/target_priority.dart';
 import 'package:guild_overseer/src/features/battle/domain/combatant.dart';
 import 'package:guild_overseer/src/features/battle/domain/skill.dart';
+import 'package:guild_overseer/src/core/domain/target_selector.dart';
 import 'package:guild_overseer/src/features/battle/domain/skill_effect.dart';
 
 /// A 1s basic attack, the filler every unit falls back on.
@@ -15,7 +16,7 @@ const SkillDefinition basicAttack = SkillDefinition(
   isBasic: true,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 1),
     ),
   ],
@@ -29,7 +30,7 @@ const SkillDefinition heavyAttack = SkillDefinition(
   cooldown: 2,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 4),
     ),
   ],
@@ -43,7 +44,7 @@ const SkillDefinition columnAttack = SkillDefinition(
   cooldown: 3,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingColumn,
+      selector: TargetSelector.currentEnemyColumn,
       effect: DamageEffect(coefficient: 2),
     ),
   ],
@@ -57,7 +58,7 @@ const SkillDefinition healSkill = SkillDefinition(
   cooldown: 2,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.lowestHealthAlly,
+      selector: TargetSelector.mostWoundedAlly,
       effect: HealEffect(coefficient: 3),
     ),
   ],

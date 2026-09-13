@@ -4,6 +4,7 @@ import '../../../core/domain/skill_kind.dart';
 import '../../../core/domain/target_priority.dart';
 import '../domain/combatant.dart';
 import '../domain/skill.dart';
+import '../../../core/domain/target_selector.dart';
 import '../domain/skill_effect.dart';
 
 /// The hand-authored roster the battle mockup fights with.
@@ -24,7 +25,7 @@ const SkillDefinition shieldSlam = SkillDefinition(
   cooldown: 6,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 3),
     ),
   ],
@@ -37,7 +38,7 @@ const SkillDefinition recklessStrike = SkillDefinition(
   cooldown: 8,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 6.2),
     ),
   ],
@@ -50,7 +51,7 @@ const SkillDefinition cleave = SkillDefinition(
   cooldown: 5,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingColumn,
+      selector: TargetSelector.currentEnemyColumn,
       effect: DamageEffect(coefficient: 2.2),
     ),
   ],
@@ -63,7 +64,7 @@ const SkillDefinition piercingShot = SkillDefinition(
   cooldown: 4,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 4.2),
     ),
   ],
@@ -76,7 +77,7 @@ const SkillDefinition mend = SkillDefinition(
   cooldown: 4,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.lowestHealthAlly,
+      selector: TargetSelector.mostWoundedAlly,
       effect: HealEffect(coefficient: 5.8),
     ),
   ],
@@ -89,7 +90,7 @@ const SkillDefinition disrupt = SkillDefinition(
   cooldown: 7,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 3.4),
     ),
   ],
@@ -103,7 +104,7 @@ const SkillDefinition strike = SkillDefinition(
   isBasic: true,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 1.4),
     ),
   ],
@@ -117,7 +118,7 @@ const SkillDefinition shot = SkillDefinition(
   isBasic: true,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 1.3),
     ),
   ],
@@ -131,7 +132,7 @@ const SkillDefinition smite = SkillDefinition(
   isBasic: true,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 0.9),
     ),
   ],
@@ -148,7 +149,7 @@ const SkillDefinition crushingBlow = SkillDefinition(
   cooldown: 6,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 3.2),
     ),
   ],
@@ -161,7 +162,7 @@ const SkillDefinition rend = SkillDefinition(
   cooldown: 5,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 3.6),
     ),
   ],
@@ -174,7 +175,7 @@ const SkillDefinition arcBolt = SkillDefinition(
   cooldown: 4,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 3.6),
     ),
   ],
@@ -187,7 +188,7 @@ const SkillDefinition darkMend = SkillDefinition(
   cooldown: 5,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.lowestHealthAlly,
+      selector: TargetSelector.mostWoundedAlly,
       effect: HealEffect(coefficient: 5),
     ),
   ],
@@ -200,7 +201,7 @@ const SkillDefinition hex = SkillDefinition(
   cooldown: 7,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 4),
     ),
   ],
@@ -214,7 +215,7 @@ const SkillDefinition claw = SkillDefinition(
   isBasic: true,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 1.5),
     ),
   ],
@@ -228,7 +229,7 @@ const SkillDefinition bolt = SkillDefinition(
   isBasic: true,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 1.2),
     ),
   ],
@@ -242,7 +243,7 @@ const SkillDefinition wither = SkillDefinition(
   isBasic: true,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 1),
     ),
   ],
@@ -256,7 +257,7 @@ const SkillDefinition lash = SkillDefinition(
   isBasic: true,
   effects: <EffectSpec>[
     EffectSpec(
-      targeting: SkillTargeting.opposingPriority,
+      selector: TargetSelector.currentEnemy,
       effect: DamageEffect(coefficient: 1.2),
     ),
   ],

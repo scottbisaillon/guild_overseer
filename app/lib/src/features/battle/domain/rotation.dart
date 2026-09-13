@@ -1,3 +1,4 @@
+import 'arena_layout.dart';
 import 'combatant.dart';
 import 'skill.dart';
 import 'skill_effect.dart';
@@ -52,6 +53,7 @@ RotationDecision? selectSkill({
   required Combatant unit,
   required Combatant? currentTarget,
   required List<Combatant> units,
+  required ArenaLayout layout,
 }) {
   if (!unit.isAlive || !unit.canAct) {
     return null;
@@ -63,11 +65,12 @@ RotationDecision? selectSkill({
     }
     final List<ResolvedEffect> resolved = <ResolvedEffect>[];
     for (final EffectSpec spec in slot.definition.effects) {
-      final List<Combatant> targets = resolveSkillTargets(
-        unit: unit,
-        targeting: spec.targeting,
+      final List<Combatant> targets = resolveTargets(
+        selector: spec.selector,
+        caster: unit,
         currentTarget: currentTarget,
         units: units,
+        layout: layout,
       );
       if (targets.isEmpty) {
         continue;

@@ -75,6 +75,7 @@ lib/
         stat.dart                the stats anything is allowed to change
         stat_modifier.dart       one change, and what granted it
         stat_block.dart          the pipeline gear and buffs both feed
+        target_selector.dart     who something lands on, composed
       events/game_event.dart     the sealed GameEvent hierarchy — one bus
     features/
       home/view/                 landing screen
@@ -85,7 +86,7 @@ lib/
           skill_effect.dart      what a skill does, as data
           effect_resolver.dart   the one place that carries an effect out
           combatant.dart         a unit that fights
-          targeting.dart         who to hit
+          targeting.dart         the one resolver for "who?"
           rotation.dart          what to fire
           battle_simulation.dart the tick loop and the event stream
         data/mock_roster.dart    the twelve units of the mockup

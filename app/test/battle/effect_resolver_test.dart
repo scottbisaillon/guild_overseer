@@ -6,6 +6,8 @@ import 'package:guild_overseer/src/core/domain/skill_kind.dart';
 import 'package:guild_overseer/src/core/domain/stat.dart';
 import 'package:guild_overseer/src/core/domain/stat_modifier.dart';
 import 'package:guild_overseer/src/core/events/game_event.dart';
+import 'package:guild_overseer/src/core/domain/target_selector.dart';
+import 'package:guild_overseer/src/features/battle/domain/arena_layout.dart';
 import 'package:guild_overseer/src/features/battle/domain/combatant.dart';
 import 'package:guild_overseer/src/features/battle/domain/effect_resolver.dart';
 import 'package:guild_overseer/src/features/battle/domain/rotation.dart';
@@ -168,12 +170,12 @@ void main() {
       cooldown: 2,
       effects: <EffectSpec>[
         EffectSpec(
-          targeting: SkillTargeting.opposingPriority,
+          selector: TargetSelector.currentEnemy,
           effect: DamageEffect(coefficient: 6),
         ),
         // The recoil: the caster is the most wounded ally the moment it lands.
         EffectSpec(
-          targeting: SkillTargeting.lowestHealthAlly,
+          selector: TargetSelector.mostWoundedAlly,
           effect: DamageEffect(coefficient: 1),
         ),
       ],
@@ -192,6 +194,7 @@ void main() {
         unit: hero,
         currentTarget: villain,
         units: units,
+        layout: kArenaLayout,
       )!;
 
       expect(decision.effects, hasLength(2));
@@ -214,6 +217,7 @@ void main() {
         unit: hero,
         currentTarget: villain,
         units: <Combatant>[hero, villain],
+        layout: kArenaLayout,
       )!;
 
       expect(decision.effects, hasLength(1));
@@ -228,11 +232,11 @@ void main() {
         cooldown: 1,
         effects: <EffectSpec>[
           EffectSpec(
-            targeting: SkillTargeting.opposingPriority,
+            selector: TargetSelector.currentEnemy,
             effect: DamageEffect(coefficient: 1),
           ),
           EffectSpec(
-            targeting: SkillTargeting.opposingPriority,
+            selector: TargetSelector.currentEnemy,
             effect: DamageEffect(coefficient: 1),
           ),
         ],
@@ -245,6 +249,7 @@ void main() {
         unit: hero,
         currentTarget: villain,
         units: <Combatant>[hero, villain],
+        layout: kArenaLayout,
       )!;
 
       expect(decision.effects, hasLength(2));

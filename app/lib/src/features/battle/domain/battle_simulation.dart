@@ -214,6 +214,7 @@ class BattleSimulation {
         unit: unit,
         currentTarget: unitById(unit.targetId),
         units: _units,
+        layout: layout,
       );
       if (decision == null) {
         continue;

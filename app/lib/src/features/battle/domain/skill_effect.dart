@@ -1,23 +1,5 @@
 import '../../../core/domain/stat.dart';
-
-/// Who one effect of a skill resolves against.
-///
-/// This sits on the *effect* rather than the skill, which is what lets one
-/// skill damage the enemy in front of it and shield its caster in the same
-/// breath. Stage 3 of the extensibility plan replaces this enum with a
-/// selector composed from side, anchor, shape and ordering; until then the
-/// three shapes the mockup needs are enumerated.
-enum SkillTargeting {
-  /// A single opponent — whoever the unit's target priority picked.
-  opposingPriority,
-
-  /// Every living opponent sharing a column with the unit's current target.
-  opposingColumn,
-
-  /// The most wounded living ally, which may be the caster itself. Resolves to
-  /// nothing when the whole side is at full health, so the effect is skipped.
-  lowestHealthAlly,
-}
+import '../../../core/domain/target_selector.dart';
 
 /// What one effect of a skill does when it lands.
 ///
@@ -92,8 +74,11 @@ final class HealEffect extends SkillEffect {
 /// const constructor cannot build another object out of its own parameters, so
 /// shorthands here would cost every skill in the game its const-ness.
 class EffectSpec {
-  const EffectSpec({required this.targeting, required this.effect});
+  const EffectSpec({required this.selector, required this.effect});
 
-  final SkillTargeting targeting;
+  /// Who this part of the skill lands on. Composed, so the parts of one
+  /// skill need not agree about who they are for.
+  final TargetSelector selector;
+
   final SkillEffect effect;
 }

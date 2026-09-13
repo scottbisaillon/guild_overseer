@@ -4,7 +4,7 @@ import 'package:guild_overseer/src/core/domain/faction.dart';
 import 'package:guild_overseer/src/core/domain/target_priority.dart';
 import 'package:guild_overseer/src/features/battle/domain/arena_layout.dart';
 import 'package:guild_overseer/src/features/battle/domain/combatant.dart';
-import 'package:guild_overseer/src/features/battle/domain/skill_effect.dart';
+import 'package:guild_overseer/src/core/domain/target_selector.dart';
 import 'package:guild_overseer/src/features/battle/domain/targeting.dart';
 
 import 'battle_test_fixtures.dart';
@@ -141,7 +141,7 @@ void main() {
     });
   });
 
-  group('resolveSkillTargets', () {
+  group('resolveTargets', () {
     test('a column skill hits every living unit in the target column', () {
       final Combatant hero = unit(id: 'hero');
       final List<Combatant> enemies = <Combatant>[
@@ -150,11 +150,12 @@ void main() {
         unit(id: 'e2', faction: Faction.enemy, row: 2, column: 1),
       ];
 
-      final List<Combatant> targets = resolveSkillTargets(
-        unit: hero,
-        targeting: SkillTargeting.opposingColumn,
+      final List<Combatant> targets = resolveTargets(
+        selector: TargetSelector.currentEnemyColumn,
+        caster: hero,
         currentTarget: enemies.first,
         units: <Combatant>[hero, ...enemies],
+        layout: kArenaLayout,
       );
 
       expect(
@@ -168,11 +169,12 @@ void main() {
       final Combatant friend = unit(id: 'friend', row: 1);
 
       expect(
-        resolveSkillTargets(
-          unit: healer,
-          targeting: SkillTargeting.lowestHealthAlly,
+        resolveTargets(
+          selector: TargetSelector.mostWoundedAlly,
+          caster: healer,
           currentTarget: null,
           units: <Combatant>[healer, friend],
+          layout: kArenaLayout,
         ),
         isEmpty,
       );
@@ -180,11 +182,12 @@ void main() {
       friend.applyDamage(40);
 
       expect(
-        resolveSkillTargets(
-          unit: healer,
-          targeting: SkillTargeting.lowestHealthAlly,
+        resolveTargets(
+          selector: TargetSelector.mostWoundedAlly,
+          caster: healer,
           currentTarget: null,
           units: <Combatant>[healer, friend],
+          layout: kArenaLayout,
         ).single.id,
         'friend',
       );
@@ -196,11 +199,12 @@ void main() {
         ..applyDamage(999);
 
       expect(
-        resolveSkillTargets(
-          unit: hero,
-          targeting: SkillTargeting.opposingPriority,
+        resolveTargets(
+          selector: TargetSelector.currentEnemy,
+          caster: hero,
           currentTarget: corpse,
           units: <Combatant>[hero, corpse],
+          layout: kArenaLayout,
         ),
         isEmpty,
       );
