@@ -1,3 +1,4 @@
+import 'game_time.dart';
 import 'presentation.dart';
 import 'skill_effect.dart';
 import 'stat.dart';
@@ -128,12 +129,12 @@ class ActiveStatus {
 
   /// Advances the clock, calling [onTick] once per whole tick interval elapsed.
   void advance(double dt, void Function(ActiveStatus status) onTick) {
-    remaining -= dt;
+    remaining = GameTime.countDown(remaining, dt);
     if (!definition.ticks) {
       return;
     }
     _sinceTick += dt;
-    while (_sinceTick >= definition.tickInterval) {
+    while (GameTime.hasElapsed(_sinceTick, definition.tickInterval)) {
       _sinceTick -= definition.tickInterval;
       onTick(this);
     }

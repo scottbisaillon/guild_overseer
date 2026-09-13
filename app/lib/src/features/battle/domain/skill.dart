@@ -1,5 +1,4 @@
-import 'dart:math' as math;
-
+import '../../../core/domain/game_time.dart';
 import '../../../core/domain/presentation.dart';
 import '../../../core/domain/skill_effect.dart';
 
@@ -60,7 +59,7 @@ class SkillSlot {
   /// waiting on a target never costs cooldown progress.
   void tick(double dt) {
     if (_remaining > 0) {
-      _remaining = math.max(0, _remaining - dt);
+      _remaining = GameTime.countDown(_remaining, dt);
     }
   }
 

@@ -80,6 +80,7 @@ lib/
         status.dart              buffs, debuffs and damage over time
         presentation.dart        cue ids and colour roles
         cue_registry.dart        id -> whatever draws it
+        game_time.dart           counting simulated time down honestly
       events/game_event.dart     the sealed GameEvent hierarchy — one bus
     features/
       home/view/                 landing screen

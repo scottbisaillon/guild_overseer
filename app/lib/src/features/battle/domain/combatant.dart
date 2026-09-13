@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import '../../../core/domain/combat_role.dart';
 import '../../../core/domain/combat_snapshot.dart';
 import '../../../core/domain/faction.dart';
+import '../../../core/domain/game_time.dart';
 import '../../../core/domain/stat.dart';
 import '../../../core/domain/stat_block.dart';
 import '../../../core/domain/status.dart';
@@ -105,7 +106,7 @@ class Combatant {
   /// every living unit, whether or not it has a target.
   void tickCooldowns(double dt) {
     if (_globalCooldownRemaining > 0) {
-      _globalCooldownRemaining = math.max(0, _globalCooldownRemaining - dt);
+      _globalCooldownRemaining = GameTime.countDown(_globalCooldownRemaining, dt);
     }
     for (final SkillSlot slot in rotation) {
       slot.tick(dt);
