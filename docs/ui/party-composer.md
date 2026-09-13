@@ -32,3 +32,24 @@ A Flutter screen. `LongPressDraggable` and `DragTarget` handle party slot assign
 Trait conflict evaluation and RQS preview both call pure Dart functions inline during `build()` — `BlocBuilder` rebuilds the screen on every party change, which is the right trigger. No separate subscription or state needed.
 
 Dispatch writes a `DispatchPartyEvent` to `GameBloc`. The Bloc validates requirements, creates `ActiveRun` in state, and `go_router` navigates to `/dungeon/idle` or `/dungeon/active` based on whether `PlayerCharacter` is in the party.
+
+---
+
+## Built so far
+
+A first slice exists at `/party`, ahead of the systems the rest of this screen
+depends on. It picks from a hard-coded list of eleven units and places them in
+the six formation slots — the same grid the fight is resolved on, drawn with
+the front line on the right, as the arena draws it.
+
+- **Placing** — tap a unit and tap a slot, or drag it across. Both land on
+  `PartyFormation`, which keeps one unit per slot and one slot per unit, so a
+  drop onto an occupied cell swaps rather than overwrites.
+- **Dispatch** — encodes the formation into `/battle?party=…`, so a composed
+  party is a link that survives a reload. `buildRoster` stands it up as
+  combatants; a party that names nobody it recognises falls back to the
+  authored one.
+
+Not built yet: dungeon selection, trait conflicts, composition score, RQS, and
+skill selection. Skills are whatever the unit was authored with — when skill
+selection lands it belongs on this screen, on the unit being placed.

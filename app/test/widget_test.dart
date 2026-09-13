@@ -7,6 +7,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('GUILD OVERSEER'), findsOneWidget);
+    expect(find.text('Compose a party'), findsOneWidget);
     expect(find.text('Open battle mockup'), findsOneWidget);
   });
 }

@@ -5,10 +5,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/domain/faction.dart';
 import '../../../core/events/game_event.dart';
+import '../../party/view/party_screen.dart';
 import '../bloc/battle_bloc.dart';
 import '../bloc/battle_state.dart';
 import '../data/mock_roster.dart';
 import '../domain/battle_simulation.dart';
+import '../domain/party_formation.dart';
 import '../game/battle_game.dart';
 import 'battle_palette.dart';
 import 'widgets/battle_controls.dart';
@@ -23,9 +25,14 @@ import 'widgets/roster_panel.dart';
 /// `GameWidget` under Flutter HUD widgets, with the simulation's event stream
 /// as the only wire between them.
 class BattleScreen extends StatefulWidget {
-  const BattleScreen({super.key});
+  const BattleScreen({this.party, super.key});
 
   static const String routePath = '/battle';
+
+  /// The party the player composed, or null to fight the authored one. Held
+  /// for the life of the screen: a restart rebuilds the same roster, so the
+  /// fight being watched again is the fight that was watched.
+  final PartyFormation? party;
 
   @override
   State<BattleScreen> createState() => _BattleScreenState();
@@ -44,7 +51,9 @@ class _BattleScreenState extends State<BattleScreen> {
   @override
   void initState() {
     super.initState();
-    _simulation = BattleSimulation(rosterBuilder: buildMockRoster);
+    _simulation = BattleSimulation(
+      rosterBuilder: () => buildRoster(party: widget.party ?? kDefaultParty),
+    );
     _game = BattleGame(simulation: _simulation);
     _bloc = BattleBloc(
       simulation: _simulation,
@@ -59,6 +68,16 @@ class _BattleScreenState extends State<BattleScreen> {
     super.dispose();
   }
 
+  /// Back the way the player came, carrying the party with it, so returning
+  /// to the screen they composed on does not hand them an empty board.
+  String _backDestination() => switch (widget.party) {
+        final PartyFormation party => Uri(
+            path: PartyScreen.routePath,
+            queryParameters: <String, String>{'party': party.encode()},
+          ).toString(),
+        null => '/',
+      };
+
   void _setTargetLines(bool value) {
     setState(() => _showTargetLines = value);
     _game.showTargetLines = value;
@@ -71,7 +90,8 @@ class _BattleScreenState extends State<BattleScreen> {
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: () => context.go('/'),
+              tooltip: widget.party == null ? 'Home' : 'Back to party select',
+              onPressed: () => context.go(_backDestination()),
             ),
             title: const Text(
               'BATTLE MOCKUP',

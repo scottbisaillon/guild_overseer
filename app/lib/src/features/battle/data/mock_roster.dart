@@ -7,7 +7,9 @@ import '../../../core/domain/stat_modifier.dart';
 import '../../../core/domain/status.dart';
 import '../../../core/domain/target_priority.dart';
 import '../domain/combatant.dart';
+import '../domain/party_formation.dart';
 import '../domain/skill.dart';
+import '../domain/unit_blueprint.dart';
 import '../../../core/domain/target_selector.dart';
 import '../../../core/domain/skill_effect.dart';
 
@@ -388,167 +390,262 @@ const ItemDefinition acolytesFocus = ItemDefinition(
 /// they are written against never matters.
 const ModifierSource _item = ModifierSource.item('authored');
 
-/// Equips [unit] and hands it back, so a roster reads as one expression.
-Combatant _wearing(Combatant unit, List<ItemDefinition> items) {
-  for (final ItemDefinition item in items) {
-    unit.gear.equip(item);
+// ---------------------------------------------------------------------------
+// Units
+//
+// The cast, as blueprints rather than combatants. A blueprint does not know
+// where it stands — the player decides that on the party screen, and a
+// blueprint becomes a unit in a slot only when a fight is built from one. The
+// dungeon's inhabitants are authored exactly the same way; they simply never
+// get a say in where they stand.
+// ---------------------------------------------------------------------------
+
+/// Everybody the player may take along.
+///
+/// Deliberately wider than a party: six slots out of eleven candidates is what
+/// makes composing one a decision. Two of each role, give or take, so no party
+/// is forced and no role is unavailable.
+const List<UnitBlueprint> kRecruitableUnits = <UnitBlueprint>[
+  UnitBlueprint(
+    id: 'ally_bramm',
+    name: 'Bramm Ironvow',
+    role: CombatRole.tank,
+    maxHealth: 440,
+    priority: TargetPriority.nearest,
+    skills: <SkillDefinition>[fortify, shieldSlam, strike],
+    gear: <ItemDefinition>[ironGreatsword, wardensShield],
+  ),
+  UnitBlueprint(
+    id: 'ally_kessa',
+    name: 'Kessa Vane',
+    role: CombatRole.meleeDps,
+    maxHealth: 260,
+    priority: TargetPriority.nearest,
+    skills: <SkillDefinition>[recklessStrike, cleave, strike],
+    gear: <ItemDefinition>[ironGreatsword],
+  ),
+  UnitBlueprint(
+    id: 'ally_doren',
+    name: 'Doren Hale',
+    role: CombatRole.meleeDps,
+    maxHealth: 250,
+    priority: TargetPriority.frontline,
+    skills: <SkillDefinition>[cleave, strike],
+  ),
+  UnitBlueprint(
+    id: 'ally_ysolde',
+    name: 'Ysolde Marrow',
+    role: CombatRole.healer,
+    maxHealth: 200,
+    priority: TargetPriority.nearest,
+    skills: <SkillDefinition>[mend, smite],
+    gear: <ItemDefinition>[acolytesFocus],
+  ),
+  UnitBlueprint(
+    id: 'ally_fenn',
+    name: 'Fenn Quill',
+    role: CombatRole.rangedDps,
+    maxHealth: 210,
+    priority: TargetPriority.weakest,
+    skills: <SkillDefinition>[piercingShot, shot],
+    gear: <ItemDefinition>[huntingBow],
+  ),
+  UnitBlueprint(
+    id: 'ally_mira',
+    name: 'Mira Sol',
+    role: CombatRole.support,
+    maxHealth: 220,
+    priority: TargetPriority.backline,
+    skills: <SkillDefinition>[disrupt, smite],
+  ),
+  UnitBlueprint(
+    id: 'ally_tovin',
+    name: 'Tovin Marsh',
+    role: CombatRole.tank,
+    maxHealth: 400,
+    priority: TargetPriority.frontline,
+    skills: <SkillDefinition>[fortify, strike],
+    gear: <ItemDefinition>[wardensShield],
+  ),
+  UnitBlueprint(
+    id: 'ally_kell',
+    name: 'Kell Brant',
+    role: CombatRole.meleeDps,
+    maxHealth: 240,
+    priority: TargetPriority.weakest,
+    skills: <SkillDefinition>[recklessStrike, strike],
+    gear: <ItemDefinition>[ironGreatsword],
+  ),
+  UnitBlueprint(
+    id: 'ally_serah',
+    name: 'Serah Dunn',
+    role: CombatRole.rangedDps,
+    maxHealth: 205,
+    priority: TargetPriority.backline,
+    skills: <SkillDefinition>[piercingShot, shot],
+    gear: <ItemDefinition>[huntingBow],
+  ),
+  UnitBlueprint(
+    id: 'ally_orin',
+    name: 'Orin Vale',
+    role: CombatRole.healer,
+    maxHealth: 195,
+    priority: TargetPriority.nearest,
+    skills: <SkillDefinition>[mend, smite],
+  ),
+  UnitBlueprint(
+    id: 'ally_pell',
+    name: 'Pell Ashgrove',
+    role: CombatRole.support,
+    maxHealth: 215,
+    priority: TargetPriority.healerFirst,
+    skills: <SkillDefinition>[disrupt, smite],
+  ),
+];
+
+/// The room the mockup fights: six inhabitants, in a formation nobody picks.
+const List<UnitBlueprint> kDungeonUnits = <UnitBlueprint>[
+  UnitBlueprint(
+    id: 'enemy_warden',
+    name: 'Bone Warden',
+    role: CombatRole.tank,
+    maxHealth: 470,
+    priority: TargetPriority.nearest,
+    skills: <SkillDefinition>[crushingBlow, claw],
+  ),
+  UnitBlueprint(
+    id: 'enemy_ghoul_a',
+    name: 'Crypt Ghoul',
+    role: CombatRole.meleeDps,
+    maxHealth: 265,
+    priority: TargetPriority.nearest,
+    skills: <SkillDefinition>[rend, claw],
+  ),
+  UnitBlueprint(
+    id: 'enemy_ghoul_b',
+    name: 'Grave Ghoul',
+    role: CombatRole.meleeDps,
+    maxHealth: 265,
+    priority: TargetPriority.nearest,
+    skills: <SkillDefinition>[rend, claw],
+  ),
+  UnitBlueprint(
+    id: 'enemy_acolyte',
+    name: 'Plague Acolyte',
+    role: CombatRole.healer,
+    maxHealth: 200,
+    priority: TargetPriority.nearest,
+    skills: <SkillDefinition>[darkMend, wither],
+  ),
+  UnitBlueprint(
+    id: 'enemy_construct',
+    name: 'Ranged Construct',
+    role: CombatRole.rangedDps,
+    maxHealth: 265,
+    priority: TargetPriority.weakest,
+    skills: <SkillDefinition>[arcBolt, bolt],
+  ),
+  UnitBlueprint(
+    id: 'enemy_hexweaver',
+    name: 'Hexweaver',
+    role: CombatRole.support,
+    maxHealth: 215,
+    // The Debuffer archetype hunts the party healer specifically.
+    priority: TargetPriority.healerFirst,
+    skills: <SkillDefinition>[hex, lash],
+  ),
+];
+
+// ---------------------------------------------------------------------------
+// Formations
+//
+// Column 0 is the front line, nearest the centre of the arena; column 1 is the
+// back line. Both sides use the same shape, mirrored.
+// ---------------------------------------------------------------------------
+
+/// Where the party stands when the player has not composed one: the six the
+/// mockup shipped with, in the slots they were authored in.
+final PartyFormation kDefaultParty = PartyFormation(<FormationSlot, String>{
+  (row: 0, column: 0): 'ally_bramm',
+  (row: 1, column: 0): 'ally_kessa',
+  (row: 2, column: 0): 'ally_doren',
+  (row: 0, column: 1): 'ally_ysolde',
+  (row: 1, column: 1): 'ally_fenn',
+  (row: 2, column: 1): 'ally_mira',
+});
+
+/// Where the dungeon's inhabitants stand. Not the player's business.
+final PartyFormation kDungeonFormation =
+    PartyFormation(<FormationSlot, String>{
+  (row: 0, column: 0): 'enemy_warden',
+  (row: 1, column: 0): 'enemy_ghoul_a',
+  (row: 2, column: 0): 'enemy_ghoul_b',
+  (row: 0, column: 1): 'enemy_acolyte',
+  (row: 1, column: 1): 'enemy_construct',
+  (row: 2, column: 1): 'enemy_hexweaver',
+});
+
+/// The recruitable unit with this id, or null if there is no such unit.
+UnitBlueprint? recruitableUnit(String id) {
+  for (final UnitBlueprint unit in kRecruitableUnits) {
+    if (unit.id == id) {
+      return unit;
+    }
   }
-  return unit;
+  return null;
 }
 
-/// Six party members on the left and six dungeon inhabitants on the right.
-List<Combatant> buildMockRoster() => <Combatant>[
-      ..._allies(),
-      ..._enemies(),
+/// The default fight: the authored party against the authored room.
+///
+/// The golden transcript is recorded from this, so what it builds is fixed.
+List<Combatant> buildMockRoster() => buildRoster(party: kDefaultParty);
+
+/// The party the player composed, against the room.
+///
+/// Placements naming a unit that does not exist are dropped rather than
+/// refused — a stale link is worth a smaller party, not a crash. A party that
+/// ends up empty is nobody's idea of a fight, so it falls back to the authored
+/// one; the party screen will not dispatch an empty party in the first place.
+List<Combatant> buildRoster({required PartyFormation party}) {
+  final List<Combatant> allies = _spawn(
+    party,
+    kRecruitableUnits,
+    Faction.ally,
+  );
+  return <Combatant>[
+    ...allies.isEmpty
+        ? _spawn(kDefaultParty, kRecruitableUnits, Faction.ally)
+        : allies,
+    ..._spawn(kDungeonFormation, kDungeonUnits, Faction.enemy),
+  ];
+}
+
+/// Stands [formation] up as combatants, front line first, top to bottom.
+///
+/// Order matters: the simulation steps units in the order it is handed them,
+/// so a formation always spawning in the same order is what makes the same
+/// party fight the same fight twice.
+List<Combatant> _spawn(
+  PartyFormation formation,
+  List<UnitBlueprint> catalogue,
+  Faction faction,
+) =>
+    <Combatant>[
+      for (final FormationSlot slot in PartyFormation.slots())
+        if (formation.at(slot) case final String id)
+          if (_find(catalogue, id) case final UnitBlueprint blueprint)
+            blueprint.spawn(
+              faction: faction,
+              row: slot.row,
+              column: slot.column,
+            ),
     ];
 
-List<Combatant> _allies() => <Combatant>[
-      _wearing(
-        Combatant(
-          id: 'ally_bramm',
-          name: 'Bramm Ironvow',
-          faction: Faction.ally,
-          role: CombatRole.tank,
-          row: 0,
-          column: 0,
-          maxHealth: 440,
-          priority: TargetPriority.nearest,
-          skills: const <SkillDefinition>[fortify, shieldSlam, strike],
-        ),
-        <ItemDefinition>[ironGreatsword, wardensShield],
-      ),
-      _wearing(
-        Combatant(
-          id: 'ally_kessa',
-          name: 'Kessa Vane',
-          faction: Faction.ally,
-          role: CombatRole.meleeDps,
-          row: 1,
-          column: 0,
-          maxHealth: 260,
-          priority: TargetPriority.nearest,
-          skills: const <SkillDefinition>[recklessStrike, cleave, strike],
-        ),
-        <ItemDefinition>[ironGreatsword],
-      ),
-      Combatant(
-        id: 'ally_doren',
-        name: 'Doren Hale',
-        faction: Faction.ally,
-        role: CombatRole.meleeDps,
-        row: 2,
-        column: 0,
-        maxHealth: 250,
-        priority: TargetPriority.frontline,
-        skills: const <SkillDefinition>[cleave, strike],
-      ),
-      _wearing(
-        Combatant(
-          id: 'ally_ysolde',
-          name: 'Ysolde Marrow',
-          faction: Faction.ally,
-          role: CombatRole.healer,
-          row: 0,
-          column: 1,
-          maxHealth: 200,
-          priority: TargetPriority.nearest,
-          skills: const <SkillDefinition>[mend, smite],
-        ),
-        <ItemDefinition>[acolytesFocus],
-      ),
-      _wearing(
-        Combatant(
-          id: 'ally_fenn',
-          name: 'Fenn Quill',
-          faction: Faction.ally,
-          role: CombatRole.rangedDps,
-          row: 1,
-          column: 1,
-          maxHealth: 210,
-          priority: TargetPriority.weakest,
-          skills: const <SkillDefinition>[piercingShot, shot],
-        ),
-        <ItemDefinition>[huntingBow],
-      ),
-      Combatant(
-        id: 'ally_mira',
-        name: 'Mira Sol',
-        faction: Faction.ally,
-        role: CombatRole.support,
-        row: 2,
-        column: 1,
-        maxHealth: 220,
-        priority: TargetPriority.backline,
-        skills: const <SkillDefinition>[disrupt, smite],
-      ),
-    ];
-
-List<Combatant> _enemies() => <Combatant>[
-      Combatant(
-        id: 'enemy_warden',
-        name: 'Bone Warden',
-        faction: Faction.enemy,
-        role: CombatRole.tank,
-        row: 0,
-        column: 0,
-        maxHealth: 470,
-        priority: TargetPriority.nearest,
-        skills: const <SkillDefinition>[crushingBlow, claw],
-      ),
-      Combatant(
-        id: 'enemy_ghoul_a',
-        name: 'Crypt Ghoul',
-        faction: Faction.enemy,
-        role: CombatRole.meleeDps,
-        row: 1,
-        column: 0,
-        maxHealth: 265,
-        priority: TargetPriority.nearest,
-        skills: const <SkillDefinition>[rend, claw],
-      ),
-      Combatant(
-        id: 'enemy_ghoul_b',
-        name: 'Grave Ghoul',
-        faction: Faction.enemy,
-        role: CombatRole.meleeDps,
-        row: 2,
-        column: 0,
-        maxHealth: 265,
-        priority: TargetPriority.nearest,
-        skills: const <SkillDefinition>[rend, claw],
-      ),
-      Combatant(
-        id: 'enemy_acolyte',
-        name: 'Plague Acolyte',
-        faction: Faction.enemy,
-        role: CombatRole.healer,
-        row: 0,
-        column: 1,
-        maxHealth: 200,
-        priority: TargetPriority.nearest,
-        skills: const <SkillDefinition>[darkMend, wither],
-      ),
-      Combatant(
-        id: 'enemy_construct',
-        name: 'Ranged Construct',
-        faction: Faction.enemy,
-        role: CombatRole.rangedDps,
-        row: 1,
-        column: 1,
-        maxHealth: 265,
-        priority: TargetPriority.weakest,
-        skills: const <SkillDefinition>[arcBolt, bolt],
-      ),
-      Combatant(
-        id: 'enemy_hexweaver',
-        name: 'Hexweaver',
-        faction: Faction.enemy,
-        role: CombatRole.support,
-        row: 2,
-        column: 1,
-        // The Debuffer archetype hunts the party healer specifically.
-        priority: TargetPriority.healerFirst,
-        maxHealth: 215,
-        skills: const <SkillDefinition>[hex, lash],
-      ),
-    ];
+UnitBlueprint? _find(List<UnitBlueprint> catalogue, String id) {
+  for (final UnitBlueprint blueprint in catalogue) {
+    if (blueprint.id == id) {
+      return blueprint;
+    }
+  }
+  return null;
+}
