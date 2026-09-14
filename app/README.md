@@ -161,24 +161,35 @@ JavaScript (`--platform chrome`) and the golden may legitimately differ.
 
 ## Deployment
 
+The site holds two clients under one deployment — this one at `/flutter/`, the
+Bevy skeleton at `/bevy/` — with a landing page at the root. See
+[`../clients/bevy`](../clients/bevy) for that client and
+[`../site`](../site) for the landing page.
+
 Three workflows, because building and publishing are different jobs with
 different rights:
 
 | Workflow | Trigger | What it does |
 |---|---|---|
-| `build.yml` | called by the other two | Analyze, test, build the web client, upload it as the Pages artifact. Pins the Flutter version. |
+| `build.yml` | called by the other two | Builds both clients, assembles the site, uploads it as the Pages artifact. Pins the Flutter and Rust versions. |
 | `ci.yml` | pull requests against `main`, manual | Runs that build. Read-only: no Pages permissions, nothing to publish with. |
 | `pages.yml` | pushes to `main`, manual | Runs that build, then deploys the artifact to Pages. |
 
 `build.yml` is a reusable workflow (`on: workflow_call`) rather than a copy in
-each: one definition of what a build is, and one place the Flutter version is
-pinned. A called workflow runs inside the caller's run, so the artifact the
+each: one definition of what the site is, and one place each toolchain version
+is pinned. A called workflow runs inside the caller's run, so the artifact the
 build uploads is the artifact the deploy job publishes — what goes to Pages is
 the build that passed, not a rebuild of it.
 
-A pull request therefore builds the site exactly as a deploy would, including
-the base href and the SPA fallback, and stops there. Pages is set to deploy
-from GitHub Actions.
+Inside it, each client builds in its own job and uploads a plain artifact; a
+third job downloads both and stitches them into the single Pages artifact.
+There is one Pages artifact per deployment, which is why the clients cannot
+each upload their own. The upside is that neither client's job knows the other
+exists, and a pull request builds the whole site exactly as a deploy would.
+
+Because it is one deployment, the two clients also ship together: a change to
+either republishes both, and a failure in either blocks the other. Pages is set
+to deploy from GitHub Actions.
 
 Anything that is not a push to `main` stops after the build, because the
 `github-pages` environment only accepts deployments from the default branch. To
@@ -187,27 +198,35 @@ github-pages -> Deployment branches, and relax the gate on the deploy job.
 
 Two details make a project page work, both handled by the build:
 
-- **`--base-href /guild_overseer/`** — a project page is served from a
-  subdirectory, and without this every asset request goes to the domain root and
-  the page comes up blank.
-- **`404.html`** — Pages serves it for any path it has no file for, so copying
-  `index.html` over it means a refresh on `/battle` boots the app on that route.
-  This is what `usePathUrlStrategy()` in `main.dart` needs in order to use real
-  paths instead of `/#/battle`.
+- **`--base-href /guild_overseer/flutter/`** — a project page is served from a
+  subdirectory, and this client from a subdirectory of that. Without it every
+  asset request goes to the domain root and the page comes up blank.
+- **`404.html`** — Pages serves it for any path it has no file for, so a refresh
+  on `/flutter/battle` reaches it rather than a file. This is what
+  `usePathUrlStrategy()` in `main.dart` needs in order to use real paths instead
+  of `/#/battle`.
+
+  Pages recognises exactly one `404.html`, at the root of the site — a copy
+  inside `/flutter/` would be ignored — so the root copy is this client's own
+  `index.html`. It carries `<base href="/guild_overseer/flutter/">`, so it loads
+  its assets correctly wherever it is served from and the router reads the route
+  off the URL. The cost is that any unmatched path on the site lands in this
+  client rather than on a 404 page.
 
 The build also passes `--no-web-resources-cdn`, which bundles CanvasKit with the
 site instead of fetching it from `gstatic.com` at runtime. Drop that flag to use
 Google's CDN and shave a few MB off the deploy.
 
-To reproduce a deploy build locally:
+To reproduce a deploy build of this client locally:
 
 ```bash
-flutter build web --release --base-href /guild_overseer/ --no-web-resources-cdn
-cp build/web/index.html build/web/404.html
+flutter build web --release \
+  --base-href /guild_overseer/flutter/ --no-web-resources-cdn
 ```
 
 Serving `build/web` at the domain root will 404 on its assets — it expects to
-live under `/guild_overseer/`. For a plain local run, build without `--base-href`.
+live under `/guild_overseer/flutter/`. For a plain local run, build without
+`--base-href`.
 
 ## Next steps
 

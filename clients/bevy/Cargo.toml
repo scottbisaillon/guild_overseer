@@ -1,0 +1,62 @@
+[package]
+name = "guild_overseer_bevy"
+version = "0.1.0"
+edition = "2024"
+# Bevy 0.19 requires 1.95; pinned again in .github/workflows/build.yml so CI and
+# a local checkout cannot disagree about what "stable" means.
+rust-version = "1.95"
+publish = false
+
+# Trimmed rather than defaulted: the defaults pull in PBR, glTF, audio and
+# animation, none of which a 2D client uses, and all of which are paid for on
+# every wasm build and every download.
+[dependencies]
+bevy = { version = "0.19.1", default-features = false, features = [
+    "std",
+    "async_executor",
+    "bevy_asset",
+    "bevy_color",
+    "bevy_log",
+    "bevy_window",
+    "bevy_winit",
+    "bevy_camera",
+    "bevy_render",
+    "bevy_core_pipeline",
+    "bevy_sprite",
+    "bevy_sprite_render",
+    "bevy_text",
+    "bevy_ui",
+    "bevy_ui_render",
+    "default_font",
+] }
+
+# Threads and a windowing backend are native-only concerns; asking for either on
+# wasm is at best ignored and at worst a broken build.
+#
+# X11 only: winit loads it at runtime, so it needs nothing installed to build.
+# Wayland would pull `wayland-sys`, which wants `wayland-client` present at
+# build time and fails on a bare runner. Linux developers who want it can add
+# the "wayland" feature locally; Windows and macOS need neither.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+bevy = { version = "0.19.1", default-features = false, features = [
+    "multi_threaded",
+    "x11",
+] }
+
+# WebGL2 rather than WebGPU: one wasm artifact cannot serve both, and WebGL2 is
+# the one that runs in every browser today. Swap to "webgpu" when that changes.
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+bevy = { version = "0.19.1", default-features = false, features = ["webgl2"] }
+
+# A debug build of Bevy is unusably slow even for a skeleton, and the usual fix
+# is to optimise dependencies while leaving this crate's own code quick to build.
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+# The wasm is downloaded by every visitor, so trade link time for size.
+opt-level = "s"
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+strip = true

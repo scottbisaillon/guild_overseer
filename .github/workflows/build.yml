@@ -1,16 +1,27 @@
-# Builds the web client, and checks it on the way: analyze, test, then build.
+# Builds the site, and checks it on the way.
+#
+# The site is two clients under one deployment: the Flutter client at /flutter/
+# and the Bevy client at /bevy/, with a landing page at the root. Each client
+# builds in its own job and uploads a plain artifact; the `site` job stitches
+# them into the one artifact Pages deploys.
 #
 # Called rather than triggered — `workflow_call` has no events of its own — so
-# there is one definition of what a build is and two workflows that ask for
-# one: `ci.yml` on a pull request, `pages.yml` before a deploy. The Flutter
-# version is pinned here, once.
+# there is one definition of what the site is and two workflows that ask for
+# one: `ci.yml` on a pull request, `pages.yml` before a deploy. Both toolchain
+# versions are pinned here, once.
 name: Build
 
 on:
   workflow_call:
 
+env:
+  FLUTTER_VERSION: 3.47.4
+  # Bevy 0.19 needs 1.95 or newer; pinned exactly so a new stable cannot change
+  # what a rebuild of an old commit produces.
+  RUST_VERSION: 1.98.1
+
 jobs:
-  build:
+  flutter:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -22,7 +33,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.47.4
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
 
@@ -32,29 +43,148 @@ jobs:
 
       - run: flutter test
 
-      # A project page is served from /<repo>/, so the app has to be told what
-      # it is rooted at or every asset request goes to the domain root. A pull
-      # request builds it the same way the deploy does: a build that is not
-      # the one being published is not evidence about the one that is.
+      # The client is served from /<repo>/flutter/, so the app has to be told
+      # what it is rooted at or every asset request goes to the domain root. A
+      # pull request builds it the same way the deploy does: a build that is
+      # not the one being published is not evidence about the one that is.
       - name: Build web
         run: >-
           flutter build web
           --release
-          --base-href /${{ github.event.repository.name }}/
+          --base-href /${{ github.event.repository.name }}/flutter/
           --no-web-resources-cdn
 
-      # Pages serves 404.html for any path it has no file for. Handing it the
-      # app means a refresh on /battle still boots the app on that route
-      # instead of showing the Pages 404 page.
-      - name: Add SPA fallback
-        run: cp build/web/index.html build/web/404.html
-
-      # Uploaded from every build, deploy or not: a called workflow runs inside
-      # the caller's run, so this is the artifact `pages.yml` deploys, and on a
-      # pull request it is simply the site as that change would publish it.
+      # A plain artifact, not the Pages one: there is a single Pages artifact
+      # per deployment and it is assembled in the `site` job below.
       #
       # Paths here are relative to the workspace, not to the job's
       # working-directory.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flutter-client
+          path: app/build/web
+          retention-days: 1
+
+  bevy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: clients/bevy
+    steps:
+      - uses: actions/checkout@v4
+
+      # rustup ships on the runner, so the toolchain needs no third-party
+      # action — only a version and the wasm target.
+      - name: Install Rust
+        run: |
+          rustup toolchain install "$RUST_VERSION" \
+            --profile minimal --component clippy,rustfmt
+          rustup default "$RUST_VERSION"
+          rustup target add wasm32-unknown-unknown
+
+      # wasm-bindgen the CLI and wasm-bindgen the crate verify each other's
+      # versions and refuse to work across a mismatch, so the CLI version is
+      # read out of the lockfile rather than written down a second time.
+      - name: Resolve wasm-bindgen version
+        id: wasm-bindgen
+        run: |
+          version="$(
+            awk '/^name = "wasm-bindgen"$/ { found = 1; next }
+                 found && /^version = / { gsub(/[",]/, "", $3); print $3; exit }' \
+              Cargo.lock
+          )"
+          test -n "$version" || { echo "wasm-bindgen not in Cargo.lock"; exit 1; }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            clients/bevy/target
+          key: cargo-${{ runner.os }}-${{ env.RUST_VERSION }}-${{ hashFiles('clients/bevy/Cargo.lock') }}
+          restore-keys: cargo-${{ runner.os }}-${{ env.RUST_VERSION }}-
+
+      # Keyed by version: a bump misses the cache and reinstalls, which is the
+      # behaviour wanted.
+      - name: Cache wasm-bindgen CLI
+        id: wasm-bindgen-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/wasm-bindgen
+          key: wasm-bindgen-${{ runner.os }}-${{ steps.wasm-bindgen.outputs.version }}
+
+      - name: Install wasm-bindgen CLI
+        if: steps.wasm-bindgen-cache.outputs.cache-hit != 'true'
+        run: cargo install wasm-bindgen-cli --version ${{ steps.wasm-bindgen.outputs.version }} --locked
+
+      # The counterpart to `flutter analyze`.
+      - run: cargo fmt --check
+
+      # Build before lint, not after: clippy alone leaves only check artifacts
+      # behind, so a build that followed it would recompile the whole
+      # dependency graph. This way clippy reuses what the build produced.
+      - run: cargo build --release --target wasm32-unknown-unknown
+
+      - run: cargo clippy --target wasm32-unknown-unknown --release -- -D warnings
+
+      # `--target web` emits an ES module the page imports directly: no bundler,
+      # and no absolute paths, so the output works wherever it is mounted.
+      - name: Bundle for the web
+        run: |
+          wasm-bindgen \
+            --no-typescript \
+            --target web \
+            --out-dir dist \
+            --out-name guild_overseer_bevy \
+            target/wasm32-unknown-unknown/release/guild_overseer_bevy.wasm
+          cp web/index.html dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bevy-client
+          path: clients/bevy/dist
+          retention-days: 1
+
+  # One artifact, two clients. Assembling here rather than in either client's
+  # job is what lets a pull request build the whole site exactly as a deploy
+  # would, without either client knowing the other exists.
+  site:
+    needs: [flutter, bevy]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: flutter-client
+          path: _site/flutter
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: bevy-client
+          path: _site/bevy
+
+      - name: Add the landing page
+        run: cp site/index.html _site/index.html
+
+      # Pages serves 404.html for any path it has no file for, and recognises
+      # exactly one, at the root — a 404.html inside /flutter/ would be ignored.
+      # So the root copy is the Flutter client's own index, which carries
+      # `<base href="/<repo>/flutter/">`: a refresh on /flutter/battle loads it,
+      # resolves its assets through that base href, and boots the app on that
+      # route. The cost is that any unmatched path anywhere on the site lands in
+      # the Flutter client rather than on a 404 page. The Bevy client has no
+      # routes and needs no fallback.
+      - name: Add SPA fallback
+        run: cp _site/flutter/index.html _site/404.html
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: app/build/web
+          path: _site

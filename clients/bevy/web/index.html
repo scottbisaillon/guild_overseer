@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- No favicon, and no request for one: an unanswered /favicon.ico
+         falls through to the site-wide 404.html, which is the Flutter
+         client's index. -->
+    <link rel="icon" href="data:," />
+    <title>Guild Overseer — Bevy client</title>
+    <style>
+      :root { color-scheme: dark; }
+      html, body { margin: 0; height: 100%; background: #12141a; color: #c3c8d4;
+        font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+      /* The canvas fills the page and Bevy drives its backing resolution, so
+         the element must not also be laid out as inline content with a
+         baseline gap under it. */
+      #bevy-canvas { display: block; width: 100%; height: 100%; }
+      #status { position: absolute; inset: 0; display: grid; place-content: center;
+        text-align: center; pointer-events: none; }
+      #status.gone { display: none; }
+      a { color: #8fb6e8; }
+    </style>
+  </head>
+  <body>
+    <canvas id="bevy-canvas"></canvas>
+    <div id="status">
+      <p>Loading the Bevy client…</p>
+      <p>A few MB of WebAssembly. First load is the slow one.</p>
+    </div>
+
+    <!-- Relative, not absolute: this page is served from /<repo>/bevy/ on
+         Pages and from / on a local server, and neither should need a build
+         flag to say so. -->
+    <script type="module">
+      import init from './guild_overseer_bevy.js';
+
+      const status = document.getElementById('status');
+      try {
+        await init();
+        // Bevy owns the canvas from here; the placeholder would otherwise sit
+        // on top of the first frame.
+        status.classList.add('gone');
+      } catch (error) {
+        status.innerHTML =
+          '<p>The Bevy client failed to start.</p>' +
+          '<p>Check the browser console for details.</p>';
+        throw error;
+      }
+    </script>
+  </body>
+</html>
