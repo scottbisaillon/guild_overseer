@@ -9,30 +9,41 @@
 //! See `docs/architecture/` for where the real rules would live: a separate
 //! crate with no Bevy dependency, driven by this one.
 
+use bevy::camera::ScalingMode;
 use bevy::prelude::*;
 
 /// The mockup's formation: three columns, two rows, mirrored per side.
 const ROWS: i32 = 2;
 const COLUMNS: i32 = 3;
 
-/// Arena geometry, in world units. The camera is fixed, so these are also
-/// pixels at the default zoom.
+/// Arena geometry, in world units.
 const CELL: f32 = 64.0;
 const GAP: f32 = 12.0;
 const CENTRE_GAP: f32 = 96.0;
+
+/// The box the camera must keep on screen, with room to breathe around it.
+///
+/// Derived rather than written down: change the grid above and the camera
+/// still frames it. A window narrower than this ratio gets more vertical
+/// background, a wider one more horizontal — nothing is ever cut off.
+const ARENA_WIDTH: f32 =
+    2.0 * (CENTRE_GAP / 2.0 + COLUMNS as f32 * CELL + (COLUMNS - 1) as f32 * GAP) + 2.0 * MARGIN;
+const ARENA_HEIGHT: f32 = ROWS as f32 * CELL + (ROWS - 1) as f32 * GAP + 2.0 * MARGIN;
+const MARGIN: f32 = 24.0;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Guild Overseer — Bevy client".into(),
+                title: "Guild Overseer - Bevy client".into(),
                 // The page owns the canvas so the loading text can be replaced
                 // rather than sharing the document with a canvas Bevy appends.
                 canvas: Some("#bevy-canvas".into()),
                 fit_canvas_to_parent: true,
-                // Let the browser keep its own shortcuts; a skeleton has no
-                // claim on F5 or ctrl-W.
-                prevent_default_event_handling: false,
+                // The canvas keeps its own gestures. Left to the browser, a
+                // swipe on a phone scrolls the page and pulls to refresh
+                // rather than reaching the app at all.
+                prevent_default_event_handling: true,
                 ..default()
             }),
             ..default()
@@ -53,7 +64,19 @@ struct Breathing {
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn(Camera2d);
+    // Fit, rather than one world unit per pixel: at the default projection a
+    // phone-width viewport shows ~400 units of a 576-unit arena and clips the
+    // outer columns off both sides.
+    commands.spawn((
+        Camera2d,
+        Projection::from(OrthographicProjection {
+            scaling_mode: ScalingMode::AutoMin {
+                min_width: ARENA_WIDTH,
+                min_height: ARENA_HEIGHT,
+            },
+            ..OrthographicProjection::default_2d()
+        }),
+    ));
 
     for row in 0..ROWS {
         for column in 0..COLUMNS {
@@ -63,7 +86,10 @@ fn setup(mut commands: Commands) {
     }
 
     commands.spawn((
-        Text::new("Guild Overseer — Bevy client skeleton"),
+        // Short on purpose: bevy_ui lays out in the canvas's logical pixels,
+        // which on a phone is ~390 wide, and a longer label wraps to four
+        // lines and swamps the screen.
+        Text::new("Bevy client skeleton"),
         TextFont {
             font_size: FontSize::Px(16.0),
             ..default()
