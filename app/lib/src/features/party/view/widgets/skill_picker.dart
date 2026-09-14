@@ -32,9 +32,11 @@ Future<void> showSkillPicker(BuildContext context, UnitBlueprint unit) =>
 /// Two lists, because a rotation is two decisions: which skills, which the
 /// pool below answers, and in what order, which the rotation above answers —
 /// the first ready skill fires, so the order is the unit's priorities written
-/// down. Every gesture writes straight through to the cubit, like everything
-/// else on this screen: there is no draft to commit and nothing to lose by
-/// closing the dialog.
+/// down. Above both sits the basic attack, which is neither decision: it is
+/// what the unit does on a beat where nothing it chose is ready, so it reads
+/// as the given the rotation is built on top of. Every gesture writes straight
+/// through to the cubit, like everything else on this screen: there is no
+/// draft to commit and nothing to lose by closing the dialog.
 ///
 /// The pool is general — every unit may take anything in it. Skill trees will
 /// narrow that down per class, at which point this screen asks the tree what
@@ -68,6 +70,13 @@ class SkillPicker extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
+                  _sectionHeader('BASIC ATTACK', 'always ready'),
+                  const _Hint("The unit's own, and not on offer: it fires "
+                      'whenever every skill below is still on cooldown, so '
+                      'the unit is never left standing still.'),
+                  for (final SkillDefinition basic in unit.basicSkills)
+                    _BasicRow(skill: basic),
+                  const SizedBox(height: 12),
                   _sectionHeader(
                     'ROTATION',
                     '${chosen.length}/$kChosenSkillSlots',
@@ -77,8 +86,8 @@ class SkillPicker extends StatelessWidget {
                       'grid beside each skill is the arena — allies left, '
                       'enemies right — with the cells it lands on lit.'),
                   if (chosen.isEmpty)
-                    const _Hint('Nothing chosen — this unit will only ever '
-                        'use its basic attack.'),
+                    const _Hint('Nothing chosen — this unit will fall back '
+                        'to its basic attack every beat.'),
                   for (int index = 0; index < chosen.length; index++)
                     if (poolSkill(chosen[index]) case final SkillDefinition s)
                       _RotationRow(
@@ -101,8 +110,6 @@ class SkillPicker extends StatelessWidget {
                           _without(chosen, s.id),
                         ),
                       ),
-                  for (final SkillDefinition basic in unit.basicSkills)
-                    _BasicRow(skill: basic),
                   const SizedBox(height: 12),
                   _sectionHeader('SKILL POOL', '${pool.length} available'),
                   const _Hint('One pool for every unit, for now. Skill trees '
@@ -283,7 +290,13 @@ class _RotationRow extends StatelessWidget {
       );
 }
 
-/// The basic attack, which is the unit's own and not on offer.
+/// The basic attack: the unit's own, not on offer, and the one thing it can
+/// always do.
+///
+/// It sits above the rotation rather than at the end of it because it is not a
+/// priority the player set — it is the floor under every priority they set,
+/// what the unit falls back to on a beat where nothing else is ready. The lock
+/// says it is not the player's to trade away.
 class _BasicRow extends StatelessWidget {
   const _BasicRow({required this.skill});
 
@@ -292,34 +305,32 @@ class _BasicRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.fromLTRB(16, 2, 16, 2),
-        child: Opacity(
-          opacity: 0.65,
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
-            decoration: BoxDecoration(
-              border: Border.all(color: BattlePalette.gridLine),
-            ),
-            child: Row(
-              children: <Widget>[
-                const Icon(
-                  Icons.lock_outline,
-                  size: 12,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
+          decoration: BoxDecoration(
+            border: Border.all(color: BattlePalette.gridLine),
+            color: BattlePalette.background,
+          ),
+          child: Row(
+            children: <Widget>[
+              const Icon(
+                Icons.lock_outline,
+                size: 12,
+                color: BattlePalette.textMuted,
+              ),
+              const SizedBox(width: 8),
+              SkillReachGlyph(reach: reachOf(skill)),
+              const SizedBox(width: 10),
+              Expanded(child: _SkillText(skill: skill)),
+              const Text(
+                'FALLBACK',
+                style: TextStyle(
+                  fontSize: 9,
+                  letterSpacing: 1,
                   color: BattlePalette.textMuted,
                 ),
-                const SizedBox(width: 8),
-                SkillReachGlyph(reach: reachOf(skill)),
-                const SizedBox(width: 10),
-                Expanded(child: _SkillText(skill: skill)),
-                const Text(
-                  'BASIC · ALWAYS LAST',
-                  style: TextStyle(
-                    fontSize: 9,
-                    letterSpacing: 1,
-                    color: BattlePalette.textMuted,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );

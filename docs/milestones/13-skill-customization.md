@@ -17,7 +17,7 @@ On the party selection screen, the player chooses which skills each unit fights 
 - **One pool for everybody, for now.** Any unit may take any skill in the pool, including one no unit was authored with. Class skill trees are what will eventually narrow that down; gating before the tree exists would be a rule with nothing behind it, and the pool is the interim shape the tree can replace without touching the screen.
 - **The choice is an override, not a requirement.** A unit with no entry in the selection uses its authored skills. That keeps an untouched party identical to the authored roster — the golden fight still records the same fight — and means the screen can open empty without every unit starting blank.
 - **Choosing nothing is a choice.** An empty rotation is legal and distinct from having made no choice. It is a unit that only ever uses its basic attack: weak, not broken.
-- **Basic attacks are not in the pool.** Each unit keeps the basic attack it was authored with, and it always sits last in the rotation. A rotation that can empty itself is a unit standing still while its specials cool down, and the fallback is exactly what the basic attack was for.
+- **Basic attacks are not in the pool.** Each unit keeps the basic attack it was authored with, and it always sits last in the rotation. A rotation that can empty itself is a unit standing still while its specials cool down, and the fallback is exactly what the basic attack was for. Last in the rotation is where it fires, but the picker shows it first, in a slot of its own above the rotation: it is the floor under the player's priorities, not the least of them.
 - **Order is part of the choice.** The fight fires the first ready skill in rotation order, so the order the player puts skills in *is* the unit's priorities. The picker reorders rather than sorting for them.
 - **The rules live with the value, not the screen.** No duplicates and no more than the cap are enforced by the selection type itself, so the screen, a decoded link and a test all get the same answer, and a hand-edited link cannot produce a rotation the game could not have built.
 - **Unknown skill ids are dropped, not refused.** The same leniency a formation gives a unit id it does not recognise: a stale link is worth a shorter rotation, not a crash. The basic attack means the result is never an empty one.
@@ -27,7 +27,7 @@ On the party selection screen, the player chooses which skills each unit fights 
 ## Observable Behavior
 
 - Open party select. Each unit shows the skills it is bringing.
-- Open a unit's skill picker. Its rotation is listed in priority order, numbered, with its basic attack pinned at the bottom and marked as always last.
+- Open a unit's skill picker. Its basic attack has the first slot, in a section of its own, marked as the fallback it fires when everything else is on cooldown; the rotation follows below it, listed in priority order and numbered.
 - Tap a pool skill to take it; tap it again to give it back. The counter reads `n/3` and the pool stops accepting once the rotation is full.
 - Reorder the rotation, and the numbering follows.
 - Reset a unit and it goes back to the skills it was authored with.

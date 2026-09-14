@@ -297,10 +297,28 @@ void main() {
 
       expect(find.text('ROTATION'), findsOneWidget);
       expect(find.text('2/3'), findsOneWidget, reason: 'as authored');
-      // The basic attack is in the rotation and not in the pool: it is the
+      // The basic attack has its own slot and is not in the pool: it is the
       // unit's own, and not the player's to trade away.
       expect(inPicker(find.text('Strike')), findsOneWidget);
       expect(inPicker(find.text('Rally')), findsOneWidget);
+    });
+
+    testWidgets("the basic attack leads, as the unit's fallback",
+        (WidgetTester tester) async {
+      await pumpScreen(tester);
+
+      await openPicker(tester, bramm);
+
+      // Its own section above the rotation, labelled by when it fires rather
+      // than by where it sits: it is the floor under the player's priorities,
+      // not the last of them.
+      expect(inPicker(find.text('BASIC ATTACK')), findsOneWidget);
+      expect(inPicker(find.text('FALLBACK')), findsOneWidget);
+      expect(
+        tester.getTopLeft(inPicker(find.text('Strike'))).dy,
+        lessThan(tester.getTopLeft(inPicker(find.text('ROTATION'))).dy),
+        reason: 'the basic attack is drawn above the rotation it backs up',
+      );
     });
 
     testWidgets('every skill in the picker shows where it lands',
