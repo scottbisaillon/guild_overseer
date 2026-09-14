@@ -51,10 +51,11 @@ the front line on the right, as the arena draws it.
   column for a rank-wide blow, a row, or a whole side. The shapes come from the
   same targeting resolver the fight uses, and are the same shapes the battle
   draws under the units when the blow lands. Up to three skills per unit, from
-  one pool every unit shares; the unit's basic attack is not in the pool and
-  always sits last, so a rotation can never empty itself. A unit nobody has
-  opened the picker for fights with the skills it was authored with, and
-  "Reset to default" puts it back there.
+  one pool every unit shares; the unit's basic attack is not in the pool but
+  has a slot of its own above the rotation, read as what the unit does when
+  everything it chose is on cooldown, so a rotation can never empty itself. A
+  unit nobody has opened the picker for fights with the skills it was authored
+  with, and "Reset to default" puts it back there.
 - **Dispatch** — encodes the formation into `/battle?party=…` and the chosen
   skills into `&skills=…`, so a composed party is a link that survives a
   reload. `buildRoster` stands it up as combatants; a party that names nobody
