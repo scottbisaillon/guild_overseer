@@ -44,6 +44,14 @@ abstract final class Cue {
   /// A label rises off a unit that has just gained something unpleasant.
   static const String debuffMark = 'debuff_mark';
 
+  /// The ground a skill covered, wiped through once along its long axis — a
+  /// blow that swept a rank or a row.
+  static const String areaSweep = 'area_sweep';
+
+  /// The ground a skill covered, lighting up all at once and spreading — a
+  /// burst, a storm, a blessing over the whole party.
+  static const String areaPulse = 'area_pulse';
+
   /// Every id above. The renderer registers exactly this set.
   static const Set<String> all = <String>{
     lunge,
@@ -51,6 +59,8 @@ abstract final class Cue {
     beam,
     buffMark,
     debuffMark,
+    areaSweep,
+    areaPulse,
   };
 }
 
@@ -65,6 +75,7 @@ class PresentationSpec {
     this.cast,
     this.travel,
     this.impact,
+    this.area,
     this.color = CueColor.source,
   });
 
@@ -81,9 +92,21 @@ class PresentationSpec {
   /// Played once per target, at the target.
   final String? impact;
 
+  /// Played once for the skill, over everything it landed on at once.
+  ///
+  /// [travel] and [impact] describe one unit being hit, and repeating them is
+  /// how a skill that catches three units reads as three separate hits. This
+  /// is the other half: the shape the blow covered, drawn once, which is what
+  /// makes an area attack legible as one blow rather than a coincidence.
+  ///
+  /// Authored, not inferred from the number of targets: a skill whose effects
+  /// point at different sides — damage the enemy, buff the caster — lands on
+  /// several units without covering any ground between them.
+  final String? area;
+
   final CueColor color;
 
   /// Every cue this spec names, for validation.
   Iterable<String> get cueIds =>
-      <String?>[cast, travel, impact].whereType<String>();
+      <String?>[cast, travel, impact, area].whereType<String>();
 }

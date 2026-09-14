@@ -193,6 +193,47 @@ void main() {
       );
     });
 
+    test('a row skill hits the target and whoever stands behind it', () {
+      final Combatant hero = unit(id: 'hero');
+      final List<Combatant> enemies = <Combatant>[
+        unit(id: 'front', faction: Faction.enemy, row: 1, column: 0),
+        unit(id: 'behind', faction: Faction.enemy, row: 1, column: 1),
+        unit(id: 'elsewhere', faction: Faction.enemy, row: 2, column: 1),
+      ];
+
+      final List<Combatant> targets = resolveTargets(
+        selector: TargetSelector.currentEnemyRow,
+        caster: hero,
+        currentTarget: enemies.first,
+        units: <Combatant>[hero, ...enemies],
+        layout: kArenaLayout,
+      );
+
+      expect(
+        targets.map((Combatant c) => c.id),
+        <String>['front', 'behind'],
+      );
+    });
+
+    test('an area skill hits the whole opposing side and nobody else', () {
+      final Combatant hero = unit(id: 'hero');
+      final Combatant friend = unit(id: 'friend', row: 1);
+      final List<Combatant> enemies = <Combatant>[
+        unit(id: 'e0', faction: Faction.enemy, row: 0, column: 0),
+        unit(id: 'e1', faction: Faction.enemy, row: 2, column: 1),
+      ];
+
+      final List<Combatant> targets = resolveTargets(
+        selector: TargetSelector.allEnemies,
+        caster: hero,
+        currentTarget: null,
+        units: <Combatant>[hero, friend, ...enemies],
+        layout: kArenaLayout,
+      );
+
+      expect(targets.map((Combatant c) => c.id), <String>['e0', 'e1']);
+    });
+
     test('a single-target skill needs a living target', () {
       final Combatant hero = unit(id: 'hero');
       final Combatant corpse = unit(id: 'corpse', faction: Faction.enemy)

@@ -109,7 +109,7 @@ const SkillDefinition cleave = SkillDefinition(
   id: 'cleave',
   name: 'Cleave',
   cooldown: 5,
-  presentation: PresentationSpec(cast: Cue.lunge),
+  presentation: PresentationSpec(cast: Cue.lunge, area: Cue.areaSweep),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector.currentEnemyColumn,
@@ -182,7 +182,11 @@ const SkillDefinition rally = SkillDefinition(
   id: 'rally',
   name: 'Rally',
   cooldown: 14,
-  presentation: PresentationSpec(travel: Cue.beam, color: CueColor.heal),
+  presentation: PresentationSpec(
+    travel: Cue.beam,
+    area: Cue.areaPulse,
+    color: CueColor.heal,
+  ),
   effects: <EffectSpec>[
     EffectSpec(
       selector: TargetSelector(
@@ -193,6 +197,40 @@ const SkillDefinition rally = SkillDefinition(
         tieBreakByDistance: false,
       ),
       effect: HealEffect(coefficient: 2.4),
+    ),
+  ],
+);
+
+/// Arrows over a whole row: the target and whoever is standing behind it.
+///
+/// The row to Cleave's rank. Both are one blow across several units, and the
+/// only difference in how they read is which way the footprint runs.
+const SkillDefinition volley = SkillDefinition(
+  id: 'volley',
+  name: 'Volley',
+  cooldown: 7,
+  presentation: PresentationSpec(travel: Cue.bolt, area: Cue.areaSweep),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.currentEnemyRow,
+      effect: DamageEffect(coefficient: 2.6),
+    ),
+  ],
+);
+
+/// Everything on the other side at once, on a cooldown long enough that it is
+/// an opening rather than a rotation.
+const SkillDefinition tempest = SkillDefinition(
+  id: 'tempest',
+  name: 'Tempest',
+  cooldown: 16,
+  // The caster's own colour, like every other blow: red on red enemy cells is
+  // a footprint nobody can see.
+  presentation: PresentationSpec(area: Cue.areaPulse),
+  effects: <EffectSpec>[
+    EffectSpec(
+      selector: TargetSelector.allEnemies,
+      effect: DamageEffect(coefficient: 1.9),
     ),
   ],
 );
@@ -256,8 +294,10 @@ const List<SkillDefinition> kSkillPool = <SkillDefinition>[
   fortify,
   recklessStrike,
   cleave,
+  volley,
   lacerate,
   piercingShot,
+  tempest,
   disrupt,
   mend,
   rally,

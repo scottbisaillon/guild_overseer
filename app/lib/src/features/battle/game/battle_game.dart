@@ -157,9 +157,9 @@ class BattleGame extends FlameGame {
     final Vector2 origin = _positionOf(event.sourceId);
     final Color color = _colorFor(spec.color, event.sourceId);
 
-    // One cast, then travel and impact once per target. No branch on what kind
-    // of skill this was: the spec names cues and the registry resolves them,
-    // so a new visual never reaches this method.
+    // One cast and one area, then travel and impact once per target. No branch
+    // on what kind of skill this was: the spec names cues and the registry
+    // resolves them, so a new visual never reaches this method.
     _cues.play(
       spec.cast,
       CueContext(
@@ -168,6 +168,24 @@ class BattleGame extends FlameGame {
         destination: _positionOf(event.targetIds.first),
         color: color,
         source: source,
+      ),
+    );
+
+    // The ground the skill covered, handed over as the cells it reached. What
+    // shape those add up to is the cue's business, and which shape the skill
+    // asked for is the simulation's; neither has to tell the other.
+    _cues.play(
+      spec.area,
+      CueContext(
+        world: world,
+        origin: origin,
+        destination: _positionOf(event.targetIds.first),
+        color: color,
+        source: source,
+        cells: <Rect>[
+          for (final String targetId in event.targetIds)
+            if (_cellOf(targetId) case final Rect cell) cell,
+        ],
       ),
     );
     for (final String targetId in event.targetIds) {
@@ -182,6 +200,22 @@ class BattleGame extends FlameGame {
       _cues.play(spec.travel, context);
       _cues.play(spec.impact, context);
     }
+  }
+
+  /// The cell [unitId] is standing in, or null when the renderer cannot place
+  /// it — a unit that left the fight between the event and the frame drawing
+  /// it contributes no ground rather than a footprint at the origin.
+  Rect? _cellOf(String unitId) {
+    final Combatant? combatant = simulation.unitById(unitId);
+    if (combatant == null) {
+      return null;
+    }
+    final ArenaPoint point = combatant.position(layout);
+    return Rect.fromCenter(
+      center: Offset(point.x, point.y),
+      width: layout.cellSize,
+      height: layout.cellSize,
+    );
   }
 
   void _onStatusApplied(StatusApplied event) {

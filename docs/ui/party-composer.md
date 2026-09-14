@@ -46,7 +46,11 @@ the front line on the right, as the arena draws it.
   `PartyFormation`, which keeps one unit per slot and one slot per unit, so a
   drop onto an occupied cell swaps rather than overwrites.
 - **Choosing skills** — the bolt on a unit opens a picker: its rotation in
-  priority order above, the skill pool below. Up to three skills per unit, from
+  priority order above, the skill pool below, and beside every skill the arena
+  in miniature with the cells it lands on lit up — one cell for a strike, a
+  column for a rank-wide blow, a row, or a whole side. The shapes come from the
+  same targeting resolver the fight uses, and are the same shapes the battle
+  draws under the units when the blow lands. Up to three skills per unit, from
   one pool every unit shares; the unit's basic attack is not in the pool and
   always sits last, so a rotation can never empty itself. A unit nobody has
   opened the picker for fights with the skills it was authored with, and

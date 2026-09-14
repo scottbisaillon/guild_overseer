@@ -27,6 +27,7 @@ Each file follows the same shape:
 11. [Data-driven skills](11-data-driven-skills.md) — skill definitions move to a data file
 12. [Party selection screen](12-party-selection.md) — pre-gameplay UI for picking a party
 13. [Customizing a unit's skills](13-skill-customization.md) — a general skill pool the player picks a rotation from
+14. [Area attacks read as one blow](14-area-effects.md) — the footprint a rank, row or side-wide skill covers, in the fight and in the picker
 
 ## Notes on porting
 
