@@ -1,6 +1,8 @@
 import '../../../core/domain/combat_role.dart';
 import '../../../core/domain/faction.dart';
 import '../../../core/domain/item.dart';
+import '../../../core/domain/stat.dart';
+import '../../../core/domain/stat_modifier.dart';
 import '../../../core/domain/target_priority.dart';
 import 'combatant.dart';
 import 'skill.dart';
@@ -25,6 +27,8 @@ class UnitBlueprint {
     required this.priority,
     required this.skills,
     this.gear = const <ItemDefinition>[],
+    this.baseStats = const <Stat, double>{},
+    this.modifiers = const <StatModifier>[],
   });
 
   /// Stable across the app: this is what a placement refers to, and what the
@@ -60,6 +64,20 @@ class UnitBlueprint {
   /// pipeline, so equipping here is the whole of it.
   final List<ItemDefinition> gear;
 
+  /// Authored numbers beyond [maxHealth], for units that differ from the
+  /// declared defaults. Applied as *bases*, so percentage modifiers scale off
+  /// them the way they scale off health.
+  final Map<Stat, double> baseStats;
+
+  /// What the unit brings to the fight from outside it.
+  ///
+  /// A guild member arrives carrying their condition — morale, fatigue, and in
+  /// time their traits — and none of that is gear, a status, or something the
+  /// fight applied. It is the same pipeline regardless: they are granted at
+  /// spawn under the source they were authored with, and the combat maths
+  /// never learns that a guild exists.
+  final List<StatModifier> modifiers;
+
   /// The same unit fighting with [chosen] instead of what it was authored
   /// with, its basic attack still last in the rotation.
   ///
@@ -73,6 +91,8 @@ class UnitBlueprint {
         priority: priority,
         skills: <SkillDefinition>[...chosen, ...basicSkills],
         gear: gear,
+        baseStats: baseStats,
+        modifiers: modifiers,
       );
 
   /// A fresh combatant of this unit, standing at [row]/[column].
@@ -95,6 +115,13 @@ class UnitBlueprint {
       priority: priority,
       skills: skills,
     );
+    // Bases first: gear and condition are multipliers on top of what the unit
+    // is, so they have to land on the finished number rather than the default.
+    for (final MapEntry<Stat, double> stat in baseStats.entries) {
+      unit.stats.setBase(stat.key, stat.value);
+    }
+    unit.stats.addAll(modifiers);
+    unit.refreshStats();
     for (final ItemDefinition item in gear) {
       unit.gear.equip(item);
     }
