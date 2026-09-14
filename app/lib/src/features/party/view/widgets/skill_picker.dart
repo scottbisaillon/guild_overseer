@@ -6,11 +6,13 @@ import '../../../../core/domain/target_selector.dart';
 import '../../../battle/data/mock_roster.dart';
 import '../../../battle/domain/party_skills.dart';
 import '../../../battle/domain/skill.dart';
+import '../../../battle/domain/skill_reach.dart';
 import '../../../battle/domain/unit_blueprint.dart';
 import '../../../battle/view/battle_palette.dart';
 import '../../cubit/party_cubit.dart';
 import '../../cubit/party_state.dart';
 import 'role_glyph.dart';
+import 'skill_reach_glyph.dart';
 
 /// Opens the skill picker for [unit] over the party screen.
 ///
@@ -71,7 +73,9 @@ class SkillPicker extends StatelessWidget {
                     '${chosen.length}/$kChosenSkillSlots',
                   ),
                   const _Hint('Fires top to bottom: the first ready skill '
-                      'wins, so the heaviest hitter belongs at the top.'),
+                      'wins, so the heaviest hitter belongs at the top. The '
+                      'grid beside each skill is the arena — allies left, '
+                      'enemies right — with the cells it lands on lit.'),
                   if (chosen.isEmpty)
                     const _Hint('Nothing chosen — this unit will only ever '
                         'use its basic attack.'),
@@ -255,6 +259,8 @@ class _RotationRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
+              SkillReachGlyph(reach: reachOf(skill)),
+              const SizedBox(width: 10),
               Expanded(child: _SkillText(skill: skill)),
               _IconAction(
                 icon: Icons.arrow_upward,
@@ -301,6 +307,8 @@ class _BasicRow extends StatelessWidget {
                   color: BattlePalette.textMuted,
                 ),
                 const SizedBox(width: 8),
+                SkillReachGlyph(reach: reachOf(skill)),
+                const SizedBox(width: 10),
                 Expanded(child: _SkillText(skill: skill)),
                 const Text(
                   'BASIC · ALWAYS LAST',
@@ -359,6 +367,8 @@ class _PoolRow extends StatelessWidget {
                           ? BattlePalette.ally
                           : BattlePalette.textMuted,
                     ),
+                    const SizedBox(width: 10),
+                    SkillReachGlyph(reach: reachOf(skill)),
                     const SizedBox(width: 10),
                     Expanded(child: _SkillText(skill: skill)),
                   ],

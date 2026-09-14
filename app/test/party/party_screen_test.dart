@@ -6,7 +6,9 @@ import 'package:guild_overseer/src/app/theme.dart';
 import 'package:guild_overseer/src/features/battle/domain/party_formation.dart';
 import 'package:guild_overseer/src/features/battle/domain/party_skills.dart';
 import 'package:guild_overseer/src/features/party/view/party_screen.dart';
+import 'package:guild_overseer/src/features/battle/data/mock_roster.dart';
 import 'package:guild_overseer/src/features/party/view/widgets/skill_picker.dart';
+import 'package:guild_overseer/src/features/party/view/widgets/skill_reach_glyph.dart';
 import 'package:guild_overseer/src/features/party/view/widgets/unit_bench.dart';
 import 'package:guild_overseer/src/features/party/view/widgets/unit_drag_source.dart';
 
@@ -299,6 +301,27 @@ void main() {
       // unit's own, and not the player's to trade away.
       expect(inPicker(find.text('Strike')), findsOneWidget);
       expect(inPicker(find.text('Rally')), findsOneWidget);
+    });
+
+    testWidgets('every skill in the picker shows where it lands',
+        (WidgetTester tester) async {
+      await pumpScreen(tester);
+
+      await openPicker(tester, bramm);
+
+      // Bramm's two skills, his basic attack, and every skill on offer.
+      expect(
+        find.byType(SkillReachGlyph),
+        findsNWidgets(3 + kSkillPool.length),
+      );
+      // Cleave takes a rank: three cells of the enemy formation, and the
+      // glyph is fed that by the same resolver the fight uses.
+      expect(
+        tester
+            .widgetList<SkillReachGlyph>(find.byType(SkillReachGlyph))
+            .where((SkillReachGlyph glyph) => glyph.reach.enemies.length == 3),
+        isNotEmpty,
+      );
     });
 
     testWidgets('a skill taken from the pool joins the rotation',

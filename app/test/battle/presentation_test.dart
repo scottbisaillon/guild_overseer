@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:guild_overseer/src/core/domain/presentation.dart';
 import 'package:guild_overseer/src/features/battle/data/mock_roster.dart';
 import 'package:guild_overseer/src/features/battle/domain/combatant.dart';
+import 'package:guild_overseer/src/core/domain/skill_effect.dart';
 import 'package:guild_overseer/src/features/battle/domain/skill.dart';
 
 /// Content validation: every visual the mockup asks for is one the renderer
@@ -22,6 +23,39 @@ void main() {
 
     expect(named, isNotEmpty, reason: 'the roster should ask for some visuals');
     expect(named.difference(Cue.all), isEmpty);
+  });
+
+  test('every cue the skill pool names is one the renderer declares', () {
+    final Set<String> named = <String>{
+      for (final SkillDefinition skill in kSkillPool)
+        ...skill.presentation.cueIds,
+    };
+
+    expect(named.difference(Cue.all), isEmpty);
+  });
+
+  test('a skill that can catch several units draws the ground it covered', () {
+    final List<SkillDefinition> everySkill = <SkillDefinition>[
+      ...kSkillPool,
+      for (final Combatant unit in buildMockRoster())
+        for (final SkillSlot slot in unit.rotation) slot.definition,
+    ];
+
+    for (final SkillDefinition skill in everySkill) {
+      final bool reachesSeveral = skill.effects.any(
+        (EffectSpec spec) =>
+            spec.selector.takesEveryone || spec.selector.count > 1,
+      );
+      if (!reachesSeveral) {
+        continue;
+      }
+      expect(
+        skill.presentation.area,
+        isNotNull,
+        reason: '${skill.name} can land on several units at once, so it needs '
+            'an area cue — otherwise one blow reads as several.',
+      );
+    }
   });
 
   test('statuses declare how they read', () {

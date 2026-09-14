@@ -93,11 +93,14 @@ lib/
           effect_resolver.dart   the one place that carries an effect out
           combatant.dart         a unit that fights
           targeting.dart         the one resolver for "who?"
+          skill_reach.dart       where a skill lands, for showing it early
           rotation.dart          what to fire
           battle_simulation.dart the tick loop and the event stream
         data/mock_roster.dart    the twelve units of the mockup
         game/                    Flame: renders the fight, owns no rules
           cues/battle_cues.dart  the registry of what each cue id draws
+          components/            one file per thing that can be drawn,
+                                 including the footprint an area skill covers
         bloc/                    GameEvent stream -> HUD state
         view/                    Flutter HUD over the GameWidget
 tool/simulate_battle.dart        headless runner

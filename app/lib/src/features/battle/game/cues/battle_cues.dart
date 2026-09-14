@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 
 import '../../../../core/domain/cue_registry.dart';
 import '../../../../core/domain/presentation.dart';
+import '../components/area_effect_component.dart';
 import '../components/floating_text_component.dart';
 import '../components/projectile_component.dart';
 import '../components/unit_component.dart';
@@ -22,6 +23,7 @@ class CueContext {
     this.source,
     this.target,
     this.label = '',
+    this.cells = const <Rect>[],
   });
 
   final World world;
@@ -41,6 +43,11 @@ class CueContext {
   /// Text for cues that write something — a status name, usually. Empty when
   /// the cue does not draw words.
   final String label;
+
+  /// The cell each target is standing in, for a cue that draws the ground a
+  /// skill covered rather than a line to one unit. Empty for the cues that
+  /// deal in a single target.
+  final List<Rect> cells;
 }
 
 /// Builds the registry the battle renderer draws with.
@@ -70,6 +77,14 @@ CueRegistry<CueContext> buildBattleCues() {
     ));
   });
 
+  cues.register(Cue.areaSweep, (CueContext context) {
+    _area(context, AreaStyle.sweep);
+  });
+
+  cues.register(Cue.areaPulse, (CueContext context) {
+    _area(context, AreaStyle.pulse);
+  });
+
   cues.register(Cue.buffMark, _mark);
   cues.register(Cue.debuffMark, _mark);
 
@@ -81,6 +96,23 @@ CueRegistry<CueContext> buildBattleCues() {
     'Registered cues and Cue.all have drifted apart.',
   );
   return cues;
+}
+
+/// The ground a skill covered, under the units standing on it.
+///
+/// Nothing to draw when the skill reached nobody the renderer can place: an
+/// area effect with no cells is a footprint of nowhere, and a fight is never
+/// worth stopping over a missing wash.
+void _area(CueContext context, AreaStyle style) {
+  if (context.cells.isEmpty) {
+    return;
+  }
+  context.world.add(AreaEffectComponent(
+    cells: context.cells,
+    color: context.color,
+    style: style,
+    from: context.origin,
+  ));
 }
 
 /// A short label rising off a unit — what a status looks like arriving, until

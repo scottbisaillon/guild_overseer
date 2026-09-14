@@ -155,6 +155,21 @@ class TargetSelector {
     count: unlimited,
   );
 
+  /// Everyone standing in the same row as the current target: the target, and
+  /// whoever is in front of or behind it.
+  static const TargetSelector currentEnemyRow = TargetSelector(
+    side: TargetSide.enemies,
+    anchor: TargetAnchor.currentTarget,
+    shape: TargetShape.sameRow,
+    count: unlimited,
+  );
+
+  /// The whole opposing side, wherever it is standing.
+  static const TargetSelector allEnemies = TargetSelector(
+    side: TargetSide.enemies,
+    count: unlimited,
+  );
+
   /// The most wounded member of the caster's own side, which may be itself.
   static const TargetSelector mostWoundedAlly = TargetSelector(
     side: TargetSide.allies,
