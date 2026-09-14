@@ -1,12 +1,34 @@
 # Guild Overseer — Bevy client
 
 A skeleton. It draws the mockup's formation grid — three columns, two rows, two
-sides — and pulses the squares so that "it is running" is visible rather than
-inferred. There are no combat rules here; see [`../../docs`](../../docs) for
-where those are meant to live.
+sides — pulses the squares so that "it is running" is visible rather than
+inferred, and hangs a HUD over the top of it. There are no combat rules here;
+see [`../../docs`](../../docs) for where those are meant to live.
 
-Its job is to prove the deployment: that a Bevy app builds for wasm and ships
-to GitHub Pages under `/bevy/` alongside the Flutter client at `/flutter/`.
+Its job is to prove two things. First the deployment: that a Bevy app builds
+for wasm and ships to GitHub Pages under `/bevy/` alongside the Flutter client
+at `/flutter/`. Second the toolkit: that `bevy_ui` can carry the HUD
+[`docs/ui/active-run.md`](../../docs/ui/active-run.md) describes, on a phone as
+well as on a desktop.
+
+## What is on screen
+
+Four widgets, each one a thing the real game needs and each one leaning on a
+different corner of `bevy_ui`. They are useful in themselves and they are also
+the test: if one of them could not be built this way, better to find out now.
+
+| Widget | What it does | What it exercises |
+|---|---|---|
+| **Room strip** | Progress through the dungeon, the boss room marked wider, a clock that becomes the enrage countdown once the boss room starts. **Pause** freezes the run and the arena's pulse with it. | A flex row that wraps at phone width, text rewritten per frame, a button that gates other systems through a run condition. |
+| **Party roster** | One card per member: health bar, fatigue bar under it, role and current status. Tapping a card selects that member — the roster doubles as the member tab switcher. | Percentage-width fills inside clipped tracks, equal-share flex columns that survive a 390px canvas, buttons built out of nested nodes. |
+| **Rotation row** | The selected member's cooldowns, a dark sweep draining out of each slot as its cooldown runs down, and an outline when it is ready. **Target priority** cycles nearest → weakest → threat → strongest → manual. **Retreat** stops the run and says so in the log — as much as a skeleton can honestly do. | Absolutely-positioned overlays inside a clipped parent, `Display::None` collapsing the slots a shorter rotation does not use, sibling draw order. |
+| **Combat log** | The last few damage, heal, skill and loot lines, newest at the bottom, colour-coded by kind. | Children spawned and despawned while the app runs, and a fixed-height panel that clips rather than grows. |
+
+None of this is a simulation. The widgets read a resource in
+[`src/run.rs`](src/run.rs) that drains health, spins cooldowns and walks the
+party through rooms on a timer — a puppet, deliberately, so that every widget
+can be seen working. When the real rules crate arrives it publishes a resource
+in that shape and the HUD does not change.
 
 ## Toolchain
 
