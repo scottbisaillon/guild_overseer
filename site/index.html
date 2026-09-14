@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- No favicon, and no request for one: an unanswered /favicon.ico
+         falls through to the site-wide 404.html, which is the Flutter
+         client's index. -->
+    <link rel="icon" href="data:," />
+    <title>Guild Overseer — clients</title>
+    <style>
+      :root { color-scheme: dark; }
+      body { margin: 0; min-height: 100vh; display: grid; place-content: center;
+        gap: 2rem; padding: 2rem; background: #12141a; color: #c3c8d4;
+        font: 15px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; }
+      h1 { font-size: 1.25rem; font-weight: 600; margin: 0; color: #e6e9f0; }
+      p { margin: 0.25rem 0 0; color: #878fa3; }
+      ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+      a { display: block; padding: 1rem 1.25rem; border: 1px solid #262a35;
+        border-radius: 6px; text-decoration: none; color: #8fb6e8;
+        background: #171a22; }
+      a:hover { border-color: #3a4152; }
+      a span { display: block; color: #878fa3; }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>Guild Overseer</h1>
+      <p>Two clients, one deployment.</p>
+    </div>
+    <ul>
+      <li>
+        <!-- Relative so the site works under /<repo>/ on Pages and at the root
+             of any other static host without rewriting these links. -->
+        <a href="flutter/">
+          Flutter client
+          <span>The battle mockup and party composer.</span>
+        </a>
+      </li>
+      <li>
+        <a href="bevy/">
+          Bevy client
+          <span>A skeleton, proving the deployment.</span>
+        </a>
+      </li>
+    </ul>
+  </body>
+</html>
